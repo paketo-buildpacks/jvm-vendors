@@ -1,0 +1,2377 @@
+# Copyright 2018-2020 the original author or authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+api = "0.10"
+
+[buildpack]
+  description = "A Cloud Native Buildpack that provides JVM vendor implementations of JREs and JDKs"
+  homepage = "https://github.com/paketo-buildpacks/jvm-vendors"
+  id = "paketo-buildpacks/jvm-vendors"
+  keywords = ["java", "jvm", "jre", "jdk"]
+  name = "Paketo Buildpack for JVM Vendors"
+  sbom-formats = ["application/vnd.syft+json", "application/vnd.cyclonedx+json"]
+  version = "{{.version}}"
+
+  [[buildpack.licenses]]
+    type = "Apache-2.0"
+    uri = "https://github.com/paketo-buildpacks/jvm-vendors/blob/main/LICENSE"
+
+[metadata]
+  include-files = ["LICENSE", "NOTICE", "README.md", "linux/amd64/bin/build", "linux/amd64/bin/detect", "linux/amd64/bin/main", "linux/amd64/bin/helper", "linux/arm64/bin/build", "linux/arm64/bin/detect", "linux/arm64/bin/main", "linux/arm64/bin/helper", "buildpack.toml"]
+  pre-package = "scripts/build.sh"
+
+  [[metadata.configurations]]
+    default = "0"
+    description = "the headroom in memory calculation"
+    launch = true
+    name = "BPL_JVM_HEAD_ROOM"
+
+  [[metadata.configurations]]
+    default = "35% of classes"
+    description = "the number of loaded classes in memory calculation"
+    launch = true
+    name = "BPL_JVM_LOADED_CLASS_COUNT"
+
+  [[metadata.configurations]]
+    default = "250"
+    description = "the number of threads in memory calculation"
+    launch = true
+    name = "BPL_JVM_THREAD_COUNT"
+
+  [[metadata.configurations]]
+    default = ""
+    description = "write heap dumps on error to this path"
+    launch = true
+    name = "BPL_HEAP_DUMP_PATH"
+
+  [[metadata.configurations]]
+    default = "true"
+    description = "enables Java Native Memory Tracking (NMT)"
+    launch = true
+    name = "BPL_JAVA_NMT_ENABLED"
+
+  [[metadata.configurations]]
+    default = "summary"
+    description = "configure level of NMT, summary or detail"
+    launch = true
+    name = "BPL_JAVA_NMT_LEVEL"
+
+  [[metadata.configurations]]
+    default = "false"
+    description = "enables Java Management Extensions (JMX)"
+    launch = true
+    name = "BPL_JMX_ENABLED"
+
+  [[metadata.configurations]]
+    default = "5000"
+    description = "configure the JMX port"
+    launch = true
+    name = "BPL_JMX_PORT"
+
+  [[metadata.configurations]]
+    default = "false"
+    description = "enables Java remote debugging support"
+    launch = true
+    name = "BPL_DEBUG_ENABLED"
+
+  [[metadata.configurations]]
+    default = "8000"
+    description = "configure the remote debugging port"
+    launch = true
+    name = "BPL_DEBUG_PORT"
+
+  [[metadata.configurations]]
+    default = "false"
+    description = "configure whether to suspend execution until a debugger has attached"
+    launch = true
+    name = "BPL_DEBUG_SUSPEND"
+
+  [[metadata.configurations]]
+    default = "false"
+    description = "enables Java Flight Recording (JFR)"
+    launch = true
+    name = "BPL_JFR_ENABLED"
+
+  [[metadata.configurations]]
+    default = ""
+    description = "configure custom Java Flight Recording (JFR) arguments"
+    launch = true
+    name = "BPL_JFR_ARGS"
+
+  [[metadata.configurations]]
+    build = true
+    default = "false"
+    description = "enables running jlink tool to generate custom JRE"
+    name = "BP_JVM_JLINK_ENABLED"
+
+  [[metadata.configurations]]
+    build = true
+    default = "--no-man-pages --no-header-files --strip-debug --compress=1"
+    description = "configure custom link arguments (--output must be omitted)"
+    name = "BP_JVM_JLINK_ARGS"
+
+  [[metadata.configurations]]
+    build = true
+    default = "17"
+    description = "the Java version"
+    name = "BP_JVM_VERSION"
+
+  [[metadata.configurations]]
+    build = true
+    default = "JRE"
+    description = "the JVM type - JDK or JRE"
+    name = "BP_JVM_TYPE"
+
+  [[metadata.configurations]]
+    description = "the JVM launch flags"
+    launch = true
+    name = "JAVA_TOOL_OPTIONS"
+
+  [[metadata.configurations]]
+    description = "the default JVM vendor"
+    build = true
+    name = "BP_JVM_VENDOR"
+    default = ""
+
+  [[metadata.configurations]]
+    description = "the available JVM vendors"
+    build = true
+    name = "BP_JVM_VENDORS"
+    default = ""
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@8.0.422?arch=amd64"
+sha256 = "abaaa90deadf51bd28921453baf2992b3dff6171bb7142f5bdd14ef269f7b245"
+source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk-sources_8u432b06.tar.gz"
+source-sha256 = "35de71e4352e72bfaec591642819cd3d814519a047dfefbc3b08255309e99d3e"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u432b06.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:1.8.0:update432:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@8.0.422?arch=amd64"
+sha256 = "bb8c8cc575b69e68e12a213674ec2e3848baff4f1955d2973d98e67666ab94d7"
+source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk-sources_8u432b06.tar.gz"
+source-sha256 = "35de71e4352e72bfaec591642819cd3d814519a047dfefbc3b08255309e99d3e"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jre_x64_linux_hotspot_8u432b06.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@11.0.25?arch=amd64"
+sha256 = "191baa2e052627614022171400a917d28f0987dc54da48aaf07b06f552bb9884"
+source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk-sources_11.0.25_9.tar.gz"
+source-sha256 = "525654cdbc5d3b426516cdefdcbda7bbfb7f45dacb19f4ebc69f23aa25d3f484"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.25_9.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:11.0.25:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@11.0.25?arch=amd64"
+sha256 = "84cd7101f39172a4db085fb52940595bb14dad6bc3afb5bf82ee497eceaf86d3"
+source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk-sources_11.0.25_9.tar.gz"
+source-sha256 = "525654cdbc5d3b426516cdefdcbda7bbfb7f45dacb19f4ebc69f23aa25d3f484"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.25_9.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@17.0.13?arch=amd64"
+sha256 = "8682892fc02965930b9022c066fa164dd6f458ef4a5dc262016aa28333b30f49"
+source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jdk-sources_17.0.13_11.tar.gz"
+source-sha256 = "dfcdba82f1ef7a622524e58bcc1357b85e77d95c66ed220006dde07f18c7694d"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jdk_x64_linux_hotspot_17.0.13_11.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@17.0.13?arch=amd64"
+sha256 = "4086cc7cb2d9e7810141f255063caad10a8a018db5e6b47fa5394c506ab65bff"
+source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jdk-sources_17.0.13_11.tar.gz"
+source-sha256 = "dfcdba82f1ef7a622524e58bcc1357b85e77d95c66ed220006dde07f18c7694d"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jre_x64_linux_hotspot_17.0.13_11.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@21.0.5?arch=amd64"
+sha256 = "3c654d98404c073b8a7e66bffb27f4ae3e7ede47d13284c132d40a83144bfd8c"
+source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk-sources_21.0.5_11.tar.gz"
+source-sha256 = "96310bd4ffdf9ef847e3e7453a7bbbadc75dacfe9b3089fe3d0403d073fe9e7c"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk_x64_linux_hotspot_21.0.5_11.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@21.0.5?arch=amd64"
+sha256 = "553dda64b3b1c3c16f8afe402377ffebe64fb4a1721a46ed426a91fd18185e62"
+source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk-sources_21.0.5_11.tar.gz"
+source-sha256 = "96310bd4ffdf9ef847e3e7453a7bbbadc75dacfe9b3089fe3d0403d073fe9e7c"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_x64_linux_hotspot_21.0.5_11.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-dk@23.0.1?arch=amd64"
+sha256 = "2400267e4e9c0f6ae880a4d763af6caf18c673714bdee5debf8388b0b5d52886"
+source = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk-sources_23.0.1_11.tar.gz"
+source-sha256 = "77cd5f9297130cacd23bacf3164575304c07aec938a884f6ae80623fe8581466"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_linux_hotspot_23.0.1_11.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@23.0.1?arch=amd64"
+sha256 = "1233cbec40f05c76ad926b68521ae78c6ae4f454996ef549602be6987069fa77"
+source = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk-sources_23.0.1_11.tar.gz"
+source-sha256 = "77cd5f9297130cacd23bacf3164575304c07aec938a884f6ae80623fe8581466"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jre_x64_linux_hotspot_23.0.1_11.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@8.0.422?arch=arm64"
+sha256 = "383caabc20428e9500f2e07965317ed4387a0e336104483e29a9e06eeffbf26b"
+source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk-sources_8u432b06.tar.gz"
+source-sha256 = "35de71e4352e72bfaec591642819cd3d814519a047dfefbc3b08255309e99d3e"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk_aarch64_linux_hotspot_8u432b06.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:1.8.0:update432:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@8.0.422?arch=arm64"
+sha256 = "786522da4c761104dd8274c81edc90126a25acaafbbbc5da886b3fb51f33cba2"
+source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk-sources_8u432b06.tar.gz"
+source-sha256 = "35de71e4352e72bfaec591642819cd3d814519a047dfefbc3b08255309e99d3e"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jre_aarch64_linux_hotspot_8u432b06.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@11.0.25?arch=arm64"
+sha256 = "f2087cc3abdd509b74facf8e43e81e36244d14c70dec080b8f3a662695417ca7"
+source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk-sources_11.0.25_9.tar.gz"
+source-sha256 = "525654cdbc5d3b426516cdefdcbda7bbfb7f45dacb19f4ebc69f23aa25d3f484"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.25_9.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:11.0.25:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@11.0.25?arch=arm64"
+sha256 = "e37ba6636e31f3c9191ac7e3fd0ab7fb354a2f3b320d68bfb95efd1e053134c9"
+source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk-sources_11.0.25_9.tar.gz"
+source-sha256 = "525654cdbc5d3b426516cdefdcbda7bbfb7f45dacb19f4ebc69f23aa25d3f484"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.25_9.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@17.0.13?arch=arm64"
+sha256 = "0c17fa4f14c0d2cc9e9334f996fccdddc5da4459d768f3105c7ff0283c47bf62"
+source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jdk-sources_17.0.13_11.tar.gz"
+source-sha256 = "dfcdba82f1ef7a622524e58bcc1357b85e77d95c66ed220006dde07f18c7694d"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.13_11.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@17.0.13?arch=arm64"
+sha256 = "97c4fb748eaa1292fb2f28fec90a3eba23e35974ef67f8b3aa304ad4db2ba162"
+source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jdk-sources_17.0.13_11.tar.gz"
+source-sha256 = "dfcdba82f1ef7a622524e58bcc1357b85e77d95c66ed220006dde07f18c7694d"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.13_11.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@21.0.5?arch=arm64"
+sha256 = "6482639ed9fd22aa2e704cc366848b1b3e1586d2bf1213869c43e80bca58fe5c"
+source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk-sources_21.0.5_11.tar.gz"
+source-sha256 = "96310bd4ffdf9ef847e3e7453a7bbbadc75dacfe9b3089fe3d0403d073fe9e7c"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.5_11.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@21.0.5?arch=arm64"
+sha256 = "e4d02c33aeaf8e1148c1c505e129a709c5bc1889e855d4fb4f001b1780db42b4"
+source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk-sources_21.0.5_11.tar.gz"
+source-sha256 = "96310bd4ffdf9ef847e3e7453a7bbbadc75dacfe9b3089fe3d0403d073fe9e7c"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.5_11.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-dk@23.0.1?arch=arm64"
+sha256 = "808e3843293e50515bf02ad2f956e543da65e32dac82ae7a266a147b3485c61a"
+source = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk-sources_23.0.1_11.tar.gz"
+source-sha256 = "77cd5f9297130cacd23bacf3164575304c07aec938a884f6ae80623fe8581466"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_aarch64_linux_hotspot_23.0.1_11.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*"]
+id = "jre-adoptium"
+name = "Adoptium JRE"
+purl = "pkg:generic/adoptium-jre@23.0.1?arch=arm64"
+sha256 = "0b498a5b673cb50fe9cfd0a13bd39c7259b4fad4d930d614e1563aeb8bca7f0e"
+source = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk-sources_23.0.1_11.tar.gz"
+source-sha256 = "77cd5f9297130cacd23bacf3164575304c07aec938a884f6ae80623fe8581466"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jre_aarch64_linux_hotspot_23.0.1_11.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@8.0.432?arch=amd64"
+sha256 = "22f075ae25940a36273c170154b4d8c2c49d579cb07cc9cd12e05dc14c7fa7f0"
+source = "https://github.com/dragonwell-project/dragonwell8/archive/refs/tags/dragonwell-extended-8.23.22_jdk8u432-ga.tar.gz"
+source-sha256 = "807cd2dfed826bc7d2ca83aed830d33a00de6ec47a4d790b20daf5d9aae6c517"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell8/releases/download/dragonwell-extended-8.23.22_jdk8u432-ga/Alibaba_Dragonwell_Extended_8.23.22_x64_linux.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@11.0.25?arch=amd64"
+sha256 = "c9c8dfdb3a5c6eb824bcac4c324a7d68eddc7b5644a939584bffb99d24ef7b6d"
+source = "https://github.com/dragonwell-project/dragonwell11/archive/refs/tags/dragonwell-extended-11.0.25.22_jdk-11.0.25-ga.tar.gz"
+source-sha256 = "51a66fde9e5b6062ed4a8727d4093c9d24119426e2d4ca115267affeb9fb082b"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell11/releases/download/dragonwell-extended-11.0.25.22_jdk-11.0.25-ga/Alibaba_Dragonwell_Extended_11.0.25.22.9_x64_linux.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@17.0.13?arch=amd64"
+sha256 = "281d1c204fc0bfa6d7669921a8261cc7efc7513818d3312e9306786814457966"
+source = "https://github.com/dragonwell-project/dragonwell17/archive/refs/tags/dragonwell-standard-17.0.13.0.14+9_jdk-17.0.13-ga.tar.gz"
+source-sha256 = "24a39ea3d3a234849580c9243777666f20f4d9fd10a231c741a7623f9bbf0fee"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell17/releases/download/dragonwell-standard-17.0.13.0.14%2B9_jdk-17.0.13-ga/Alibaba_Dragonwell_Standard_17.0.13.0.14.9_x64_linux.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@21.0.5?arch=amd64"
+sha256 = "1437441d429425d9162b5fa8a6a61e9e6eadd0f51d5b98dcce800011e3d79f1c"
+source = "https://github.com/dragonwell-project/dragonwell21/archive/refs/tags/dragonwell-extended-21.0.5.0.5+9_jdk-21.0.5-ga.tar.gz"
+source-sha256 = "b82a52f6e4a811d518385fd3b4e66360c2ace77e0cc23b96e5cd25b02262f7f5"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell21/releases/download/dragonwell-extended-21.0.5.0.5%2B9_jdk-21.0.5-ga/Alibaba_Dragonwell_Extended_21.0.5.0.5.9_x64_linux.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@8.0.432?arch=arm64"
+sha256 = "6561a9fd3a3efaba7013ce4d9e0b1a04c807d9162ad69fb9af818c3e18753481"
+source = "https://github.com/dragonwell-project/dragonwell8/archive/refs/tags/dragonwell-extended-8.23.22_jdk8u432-ga.tar.gz"
+source-sha256 = "807cd2dfed826bc7d2ca83aed830d33a00de6ec47a4d790b20daf5d9aae6c517"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell8/releases/download/dragonwell-extended-8.23.22_jdk8u432-ga/Alibaba_Dragonwell_Extended_8.23.22_aarch64_linux.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@11.0.25?arch=arm64"
+sha256 = "ccced36cdc0f1f5f5a15ca8936ac9c8a52d0a2d675b8ff3d4569840ab64ffcd2"
+source = "https://github.com/dragonwell-project/dragonwell11/archive/refs/tags/dragonwell-extended-11.0.25.22_jdk-11.0.25-ga.tar.gz"
+source-sha256 = "51a66fde9e5b6062ed4a8727d4093c9d24119426e2d4ca115267affeb9fb082b"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell11/releases/download/dragonwell-extended-11.0.25.22_jdk-11.0.25-ga/Alibaba_Dragonwell_Extended_11.0.25.22.9_aarch64_linux.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@17.0.13?arch=arm64"
+sha256 = "cef392b633cb84c8439a4fa881f57e634ef3518a3ecc01d05279ee196fc02ead"
+source = "https://github.com/dragonwell-project/dragonwell17/archive/refs/tags/dragonwell-standard-17.0.13.0.14+9_jdk-17.0.13-ga.tar.gz"
+source-sha256 = "24a39ea3d3a234849580c9243777666f20f4d9fd10a231c741a7623f9bbf0fee"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell17/releases/download/dragonwell-standard-17.0.13.0.14%2B9_jdk-17.0.13-ga/Alibaba_Dragonwell_Standard_17.0.13.0.14.9_aarch64_linux.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-alibaba-dragonwell"
+name = "Dragonwell JDK"
+purl = "pkg:generic/alibaba/dragonwell-jdk@21.0.5?arch=arm64"
+sha256 = "c624926001a4a11bda006d94b5d0bc3fe321ad4580e2fe8a0ea59e4afa1710ae"
+source = "https://github.com/dragonwell-project/dragonwell21/archive/refs/tags/dragonwell-extended-21.0.5.0.5+9_jdk-21.0.5-ga.tar.gz"
+source-sha256 = "b82a52f6e4a811d518385fd3b4e66360c2ace77e0cc23b96e5cd25b02262f7f5"
+stacks = ["*"]
+uri = "https://github.com/dragonwell-project/dragonwell21/releases/download/dragonwell-extended-21.0.5.0.5%2B9_jdk-21.0.5-ga/Alibaba_Dragonwell_Extended_21.0.5.0.5.9_aarch64_linux.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@8.0.422?arch=amd64"
+sha256 = "eaecf5827e11fd60c3ff0a2294b4451974ebec9fcf3d62da9c0e19ada5178247"
+source = "https://github.com/corretto/corretto-8/archive/refs/tags/8.432.06.1.tar.gz"
+source-sha256 = "b96f2415ef5865bc234d8852f7081a34b90add03214c4159467b922fb1cf17f1"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/8.432.06.1/amazon-corretto-8.432.06.1-linux-x64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@11.0.25?arch=amd64"
+sha256 = "68e75fa1048b9e2aec0c19f8defe399868f11862028a93b9afba0dbb462dfc02"
+source = "https://github.com/corretto/corretto-11/archive/refs/tags/11.0.25.9.1.tar.gz"
+source-sha256 = "efe1fffaf6359673f97f02b9e3a65dd7cbebcb37783ddd82d32fb340001b3ebc"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/11.0.25.9.1/amazon-corretto-11.0.25.9.1-linux-x64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@17.0.13?arch=amd64"
+sha256 = "31ccb0791940add3fa49b82fff5f87a65dbea27d294f58a753b9775f9752ecc7"
+source = "https://github.com/corretto/corretto-17/archive/refs/tags/17.0.13.11.1.tar.gz"
+source-sha256 = "a77450b3e60c351ba2a744b8692333c2d6b6b2b5c76f62cfa62103c77ece3d21"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/17.0.13.11.1/amazon-corretto-17.0.13.11.1-linux-x64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@21.0.5?arch=amd64"
+sha256 = "d5027d69a01e65d102de6a5699252447b92b5f2e5c49eb27117001004443e1ac"
+source = "https://github.com/corretto/corretto-21/archive/refs/tags/21.0.5.11.1.tar.gz"
+source-sha256 = "1e2c68d332d9cebb876d5c2f999cc8e79eaed817406f29b27b0359c83f40d22b"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/21.0.5.11.1/amazon-corretto-21.0.5.11.1-linux-x64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@23.0.1?arch=amd64"
+sha256 = "eb55c6fca0a2ac7a88fec203142602736294705804fbfdbb6767135659442dfb"
+source = "https://github.com/corretto/corretto-23/archive/refs/tags/23.0.1.8.1.tar.gz"
+source-sha256 = "243f30e224fbb32ed28359130dc3330a6bc3e696234b06603a62970afc764b82"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/23.0.1.8.1/amazon-corretto-23.0.1.8.1-linux-x64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@8.0.422?arch=arm64"
+sha256 = "0143a71fca1db3ca60730d39a1b59c22ee31f0977f5cab8236421adcd5b992a0"
+source = "https://github.com/corretto/corretto-8/archive/refs/tags/8.432.06.1.tar.gz"
+source-sha256 = "b96f2415ef5865bc234d8852f7081a34b90add03214c4159467b922fb1cf17f1"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/8.432.06.1/amazon-corretto-8.432.06.1-linux-aarch64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@11.0.25?arch=arm64"
+sha256 = "130b51021d30e13f7b15c0b1febb6c6dfa8bcd52f9212528a342f1bc4432f9f6"
+source = "https://github.com/corretto/corretto-11/archive/refs/tags/11.0.25.9.1.tar.gz"
+source-sha256 = "efe1fffaf6359673f97f02b9e3a65dd7cbebcb37783ddd82d32fb340001b3ebc"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/11.0.25.9.1/amazon-corretto-11.0.25.9.1-linux-aarch64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@17.0.13?arch=arm64"
+sha256 = "89ab3c3d0335243033c850153047399b5c028c2a61e842c3a5d1ca7809d46d1a"
+source = "https://github.com/corretto/corretto-17/archive/refs/tags/17.0.13.11.1.tar.gz"
+source-sha256 = "a77450b3e60c351ba2a744b8692333c2d6b6b2b5c76f62cfa62103c77ece3d21"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/17.0.13.11.1/amazon-corretto-17.0.13.11.1-linux-aarch64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@21.0.5?arch=arm64"
+sha256 = "f9ff86ddc8aa923489d0f39f9b202742c3bbef949e03786a25d25cec0082e7c3"
+source = "https://github.com/corretto/corretto-21/archive/refs/tags/21.0.5.11.1.tar.gz"
+source-sha256 = "1e2c68d332d9cebb876d5c2f999cc8e79eaed817406f29b27b0359c83f40d22b"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/21.0.5.11.1/amazon-corretto-21.0.5.11.1-linux-aarch64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*", "cpe:2.3:a:amazon:corretto:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-amazon-corretto"
+name = "Corretto JDK"
+purl = "pkg:generic/amazon/corretto-jdk@23.0.1?arch=arm64"
+sha256 = "7903bae0aeaaf4af95ef37ad7e7da1098d2523699170f96349ce93c9c31c73eb"
+source = "https://github.com/corretto/corretto-23/archive/refs/tags/23.0.1.8.1.tar.gz"
+source-sha256 = "243f30e224fbb32ed28359130dc3330a6bc3e696234b06603a62970afc764b82"
+stacks = ["*"]
+uri = "https://corretto.aws/downloads/resources/23.0.1.8.1/amazon-corretto-23.0.1.8.1-linux-aarch64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://aws.amazon.com/corretto/faqs/#Licensing_and_Open_Source"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:1.8.0:update432:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@8.0.422?arch=amd64"
+sha256 = "cc3dc7883441a38d910333a9417d8123b0973a86a08828242299a16157c272c0"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu8.82.0.21-ca-jdk8.0.432-linux_x64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:1.8.0:update432:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:1.8.0:update432:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@8.0.422?arch=amd64"
+sha256 = "dc58d7da9f5ceeb0bddec964303fc4f2aab628ce2e9af0ddb8e7dc5a37c70f01"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu8.82.0.21-ca-jre8.0.432-linux_x64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@11.0.25?arch=amd64"
+sha256 = "fabe2091d43604d3ae248a7d96e6cfb9ed37eaf980b225730b7b18289b3f6eaf"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu11.76.21-ca-jdk11.0.25-linux_x64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:11.0.25:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:11.0.25:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@11.0.25?arch=amd64"
+sha256 = "2696d23e20a7e6cc22d36a27c3d917b6b390d0e6ac1819e791d99a1fc159317c"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu11.76.21-ca-jre11.0.25-linux_x64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@17.0.13?arch=amd64"
+sha256 = "dfae910c1583e60bf527d634ce0ddfaa16f094da9cd662f8e6634a5a5a80c4f2"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu17.54.21-ca-jdk17.0.13-linux_x64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:17.0.13:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@17.0.13?arch=amd64"
+sha256 = "2d74f026d0d184075ad99de343c6a24bd702eb25d87ce6de5e3ab8df1cd3ef25"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu17.54.21-ca-jre17.0.13-linux_x64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@21.0.5?arch=amd64"
+sha256 = "5320a33714f58c0104191d244759daa6a6d46819d447347ba9003132e5489d92"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu21.38.21-ca-jdk21.0.5-linux_x64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:21.0.5:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@21.0.5?arch=amd64"
+sha256 = "c68d85d44361351e518bae848439571c508a4db317c22768f723dc62d60a46eb"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu21.38.21-ca-jre21.0.5-linux_x64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:22.0.2:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:22.0.2:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@22.0.2?arch=amd64"
+sha256 = "d48c661239200f9507480f91f99285794f9e484786c605015bc5bf0e19eb6613"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu22.32.15-ca-jdk22.0.2-linux_x64.tar.gz"
+version = "22.0.2"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:23.0.1:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@23.0.1?arch=amd64"
+sha256 = "7e0d7f638d6c3453b390953be5376221e73efda83d72c3cfac346a4c1469dc10"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu23.30.13-ca-jre23.0.1-linux_x64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:1.8.0:update432:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@8.0.422?arch=arm64"
+sha256 = "b400f65b63243e41851f20b64374def6ae687de8d15bfb37ef876c2d77548bf5"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu8.82.0.21-ca-jdk8.0.432-linux_aarch64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:1.8.0:update432:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:1.8.0:update432:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@8.0.422?arch=arm64"
+sha256 = "189b6a80f626be1bf19c50f1c45193fe8f8a0dcf8d8631fcbccf429d1293d349"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu8.82.0.21-ca-jre8.0.432-linux_aarch64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@11.0.25?arch=arm64"
+sha256 = "7ae5d196916dc4e8b84e4c5b48fd16f45f83e94eac35a22f019194896c210de1"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu11.76.21-ca-jdk11.0.25-linux_aarch64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:11.0.25:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:11.0.25:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@11.0.25?arch=arm64"
+sha256 = "d7fcfeda4941893183fb1ecb85591d75935e2608dfc4360082cf41dbd97f35ca"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu11.76.21-ca-jre11.0.25-linux_aarch64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@17.0.13?arch=arm64"
+sha256 = "cb9e8ad1f00ef2883e3798181f7f0fd7c76d6b8e81997a52aeb220c9cd9cebaa"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu17.54.21-ca-jdk17.0.13-linux_aarch64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:17.0.13:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@17.0.13?arch=arm64"
+sha256 = "ee0d9b75a5d4126a2758d4af3de893eb09e0207a05c8f29f1615ea2ddb959fc9"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu17.54.21-ca-jre17.0.13-linux_aarch64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@21.0.5?arch=arm64"
+sha256 = "8bd387315620bb66a84945a51bcebb9016354b557c747e94d4837e68ea4077ec"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu21.38.21-ca-jdk21.0.5-linux_aarch64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:21.0.5:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@21.0.5?arch=arm64"
+sha256 = "01d8fccb87b8acf6ea3347a2090d9ced11aa37e50fccaa3a1f98a76347fcf812"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu21.38.21-ca-jre21.0.5-linux_aarch64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-azul-zulu"
+name = "Azul Zulu JDK"
+purl = "pkg:generic/azul-zulu-jdk@23.0.1?arch=arm64"
+sha256 = "62c5834b9e97c41a9569c9fc1e889484f2f76e89e098eca3e6d4a4379451116f"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu23.30.13-ca-jdk23.0.1-linux_aarch64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*", "cpe:2.3:a:azul:zulu:23.0.1:*:*:*:*:*:*:*"]
+id = "jre-azul-zulu"
+name = "Azul Zulu JRE"
+purl = "pkg:generic/azul-zulu-jre@23.0.1?arch=arm64"
+sha256 = "d74cd3f6b2152c675f7eee51c59c6b3c8e81951e8d46aaae0fa9550b6cce3d00"
+stacks = ["*"]
+uri = "https://cdn.azul.com/zulu/bin/zulu23.30.13-ca-jre23.0.1-linux_aarch64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@8.0.422?arch=amd64"
+sha256 = "d16b7a89aeedf297fab1bdd74104badbf5421ae62c67e7c70285d26a4420f3d2"
+source = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jdk8u432+7-src.tar.gz"
+source-sha256 = "3893d0963e52c8d08d3bc426ea3c42ae45cf7b5dac19986ab5581c00d162f62a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jdk8u432+7-linux-amd64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@8.0.422?arch=amd64"
+sha256 = "a0a5c1b4187f55633c1c68bc3337824c90025d4e28177f1dc803a1358e6df3b3"
+source = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jdk8u432+7-src.tar.gz"
+source-sha256 = "3893d0963e52c8d08d3bc426ea3c42ae45cf7b5dac19986ab5581c00d162f62a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jre8u432+7-linux-amd64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@11.0.25?arch=amd64"
+sha256 = "22fe4fa7c1fc577e46a91a60ec4e2808436231f84caf7a9a6bf2167e63852f14"
+source = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jdk11.0.25+11-src.tar.gz"
+source-sha256 = "15b062af8d50e7996e6d44a027f039cefbb0b8e2f81aa1984661118366e6e788"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jdk11.0.25+11-linux-amd64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:11.0.25:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@11.0.25?arch=amd64"
+sha256 = "39b84c75331d726c31e7e55bc25687f8d8f59346a820a0661ff394caadc5ad6b"
+source = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jdk11.0.25+11-src.tar.gz"
+source-sha256 = "15b062af8d50e7996e6d44a027f039cefbb0b8e2f81aa1984661118366e6e788"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jre11.0.25+11-linux-amd64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:22.3.4:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:11.0.22:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@22.3.5?arch=amd64"
+sha256 = "4bc6e366838fc4a4592868432ace2f640ff1341254e4ca3922e5cbf1a55b8914"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/22.3.5+1-11.0.22+12/bellsoft-liberica-vm-openjdk11.0.22+12-22.3.5+1-src.tar.gz"
+source-sha256 = "f6cb4932124b30e822f2b72cbf4849c55331e2be469bdbb8457619c18e13bf3c"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/22.3.5+1-11.0.22+12/bellsoft-liberica-vm-core-openjdk11.0.22+12-22.3.5+1-linux-amd64.tar.gz"
+version = "11.0.22"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@17.0.13?arch=amd64"
+sha256 = "25f8ffa72fdab92bcc6e664d09d437a8e3d9131d4b5c940aaf795bc4057bdd6f"
+source = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jdk17.0.13+12-src.tar.gz"
+source-sha256 = "01bccb7af7279fefb7574e55a385b86ced7f7f643375553dcf3e65e92e977423"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jdk17.0.13+12-linux-amd64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@17.0.13?arch=amd64"
+sha256 = "6804f306c5d24cf66a7d2ecf1584898e9cbe4575ff1e7988566950e0f6d43a3b"
+source = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jdk17.0.13+12-src.tar.gz"
+source-sha256 = "01bccb7af7279fefb7574e55a385b86ced7f7f643375553dcf3e65e92e977423"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jre17.0.13+12-linux-amd64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:23.0.2:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@23.0.6?arch=amd64"
+sha256 = "8fd51612d2ef71e3f2fe36bfbdf07ad05cc3e916d3f0c867547a5c4c4d0f04f0"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/23.0.6+1-17.0.13+12/bellsoft-liberica-vm-openjdk17.0.13+12-23.0.6+1-src.tar.gz"
+source-sha256 = "ce18028bc90530161343ee2ec18b0779581ebb7601094e5005363418d9c5bb55"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/23.0.6+1-17.0.13+12/bellsoft-liberica-vm-core-openjdk17.0.13+12-23.0.6+1-linux-amd64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@21.0.5?arch=amd64"
+sha256 = "94e05a8c504030ebfe33a0fd9425809e1faf1251b7910af4cdb61bf6b433d830"
+source = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jdk21.0.5+11-src.tar.gz"
+source-sha256 = "f3fa519ce924b486456334dbfb9d2d69fdd590a6fecf714f0bf0591d6559055e"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jdk21.0.5+11-linux-amd64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@21.0.5?arch=amd64"
+sha256 = "2cbf37c40e2b4add99ce8b3a5a5ec6a2c43cce0b2f20bd8b740bff0b20908a28"
+source = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jdk21.0.5+11-src.tar.gz"
+source-sha256 = "f3fa519ce924b486456334dbfb9d2d69fdd590a6fecf714f0bf0591d6559055e"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jre21.0.5+11-linux-amd64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:24.1.0:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@24.1.1?arch=amd64"
+sha256 = "e7c1cb37fcb1b2b3de75fbba99c6f1f99f2ceb6d212d104b39c1a88ca282687e"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/24.1.1+1-23.0.1+13/bellsoft-liberica-vm-openjdk23.0.1+13-24.1.1+1-src.tar.gz"
+source-sha256 = "425a998141de36f6b221781648b827b72c9f3779379e025eeeea9948acf9a282"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/24.1.1+1-23.0.1+13/bellsoft-liberica-vm-openjdk23.0.1+13-24.1.1+1-linux-amd64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@23.0.1?arch=amd64"
+sha256 = "0e4ea0b358229f1694484e39221bac510b6020ac8807c86529c5abf4be505e3d"
+source = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jdk23.0.1+13-src.tar.gz"
+source-sha256 = "9398f349ffd372551daa6ef77d92181b0b7ccef0e612433b8184e06e07399c0a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jdk23.0.1+13-linux-amd64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@23.0.1?arch=amd64"
+sha256 = "9a2fed91d14fd610bbdcc44dd1403f9fb7136907cfbbf111f6546948ce68531b"
+source = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jdk23.0.1+13-src.tar.gz"
+source-sha256 = "9398f349ffd372551daa6ef77d92181b0b7ccef0e612433b8184e06e07399c0a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jre23.0.1+13-linux-amd64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:23.1.1:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@23.1.5?arch=amd64"
+sha256 = "f40afc6c7f44e5c2767b16d7b7f53550e337e9f8069e8d7c5b22da8b40cebcbc"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/23.1.5+1-21.0.5+11/bellsoft-liberica-vm-openjdk21.0.5+11-23.1.5+1-src.tar.gz"
+source-sha256 = "0a75585489b2cd2147bf707de4e22696ac34088d3d297dd7476e6a64cad96b9f"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/23.1.5+1-21.0.5+11/bellsoft-liberica-vm-core-openjdk21.0.5+11-23.1.5+1-linux-amd64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@8.0.422?arch=arm64"
+sha256 = "14f7a56bd4383ba301226d68d47df560da0a9996cd0579735a7216ec818b1804"
+source = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jdk8u432+7-src.tar.gz"
+source-sha256 = "3893d0963e52c8d08d3bc426ea3c42ae45cf7b5dac19986ab5581c00d162f62a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jdk8u432+7-linux-aarch64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@8.0.422?arch=arm64"
+sha256 = "62c0a56002341523ba4c7379f6a498e21020a084616784d3b077d6f7651adf00"
+source = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jdk8u432+7-src.tar.gz"
+source-sha256 = "3893d0963e52c8d08d3bc426ea3c42ae45cf7b5dac19986ab5581c00d162f62a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/8u432+7/bellsoft-jre8u432+7-linux-aarch64.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@11.0.25?arch=arm64"
+sha256 = "9fdb52255e5910ffb1bcd9940be37cf8c244e8a11f887a5b407f97bcf57be9c5"
+source = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jdk11.0.25+11-src.tar.gz"
+source-sha256 = "15b062af8d50e7996e6d44a027f039cefbb0b8e2f81aa1984661118366e6e788"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jdk11.0.25+11-linux-aarch64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:11.0.25:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@11.0.25?arch=arm64"
+sha256 = "86481272eea85362dd94a131cd0e88c133b6e52c367be3bbaa7bddc0d4c29308"
+source = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jdk11.0.25+11-src.tar.gz"
+source-sha256 = "15b062af8d50e7996e6d44a027f039cefbb0b8e2f81aa1984661118366e6e788"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/11.0.25+11/bellsoft-jre11.0.25+11-linux-aarch64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:22.3.3:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:11.0.22:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@22.3.5?arch=arm64"
+sha256 = "a53bf8563dcd062ad5c4fc4764a75f30b5623164155940b657a870d9aa68dfc5"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/22.3.5+1-11.0.22+12/bellsoft-liberica-vm-openjdk11.0.22+12-22.3.5+1-src.tar.gz"
+source-sha256 = "f6cb4932124b30e822f2b72cbf4849c55331e2be469bdbb8457619c18e13bf3c"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/22.3.5+1-11.0.22+12/bellsoft-liberica-vm-core-openjdk11.0.22+12-22.3.5+1-linux-aarch64.tar.gz"
+version = "11.0.22"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@17.0.13?arch=arm64"
+sha256 = "0f26bcc032637649fdba9ad4262d28e59530e83a0a75cf554ad44d62ec058a3c"
+source = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jdk17.0.13+12-src.tar.gz"
+source-sha256 = "01bccb7af7279fefb7574e55a385b86ced7f7f643375553dcf3e65e92e977423"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jdk17.0.13+12-linux-aarch64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@17.0.13?arch=arm64"
+sha256 = "64814ecbbf7141a6470239c9984020158c2dad6ec9e4082dcae20c6eeb412c5b"
+source = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jdk17.0.13+12-src.tar.gz"
+source-sha256 = "01bccb7af7279fefb7574e55a385b86ced7f7f643375553dcf3e65e92e977423"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/17.0.13+12/bellsoft-jre17.0.13+12-linux-aarch64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:22.3.4:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@23.0.6?arch=arm64"
+sha256 = "877482d5106288fb5f27ef2e8fb3fdde63a95e9c0ed249fe9922a8f0221ea86d"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/23.0.6+1-17.0.13+12/bellsoft-liberica-vm-openjdk17.0.13+12-23.0.6+1-src.tar.gz"
+source-sha256 = "ce18028bc90530161343ee2ec18b0779581ebb7601094e5005363418d9c5bb55"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/23.0.6+1-17.0.13+12/bellsoft-liberica-vm-core-openjdk17.0.13+12-23.0.6+1-linux-aarch64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@21.0.5?arch=arm64"
+sha256 = "ed8aa310acedabfae56c65a63492d842bb2a9be467f662ba8dd99cbdb0f47120"
+source = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jdk21.0.5+11-src.tar.gz"
+source-sha256 = "f3fa519ce924b486456334dbfb9d2d69fdd590a6fecf714f0bf0591d6559055e"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jdk21.0.5+11-linux-aarch64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@21.0.5?arch=arm64"
+sha256 = "fab7488ee1da090080e10ab1ecdd8ae06e6ac7953183e40e77863a3233c14f3c"
+source = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jdk21.0.5+11-src.tar.gz"
+source-sha256 = "f3fa519ce924b486456334dbfb9d2d69fdd590a6fecf714f0bf0591d6559055e"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jre21.0.5+11-linux-aarch64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:23.1.1:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@23.1.5?arch=arm64"
+sha256 = "2d2835e9776f3533616f0608f0f0f95b78f219e6960c2a5eb9e26af2b39ed5c4"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/23.1.5+1-21.0.5+11/bellsoft-liberica-vm-openjdk21.0.5+11-23.1.5+1-src.tar.gz"
+source-sha256 = "0a75585489b2cd2147bf707de4e22696ac34088d3d297dd7476e6a64cad96b9f"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/23.1.5+1-21.0.5+11/bellsoft-liberica-vm-core-openjdk21.0.5+11-23.1.5+1-linux-aarch64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-bellsoft-liberica"
+name = "BellSoft Liberica JDK"
+purl = "pkg:generic/bellsoft-jdk@23.0.1?arch=arm64"
+sha256 = "0ebc5261c58082ad25d471b77c341221a694858afffb1edd9b5c8ba786caa969"
+source = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jdk23.0.1+13-src.tar.gz"
+source-sha256 = "9398f349ffd372551daa6ef77d92181b0b7ccef0e612433b8184e06e07399c0a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jdk23.0.1+13-linux-aarch64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*"]
+id = "jre-bellsoft-liberica"
+name = "BellSoft Liberica JRE"
+purl = "pkg:generic/bellsoft-jre@23.0.1?arch=arm64"
+sha256 = "b64ba1b01f13c9fbf32fbd9fe1b96967db18881caf4d3d490c068aaacdc51c70"
+source = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jdk23.0.1+13-src.tar.gz"
+source-sha256 = "9398f349ffd372551daa6ef77d92181b0b7ccef0e612433b8184e06e07399c0a"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/Liberica/releases/download/23.0.1+13/bellsoft-jre23.0.1+13-linux-aarch64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:graalvm:24.1.0:*:*:*:community:*:*:*", "cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "native-image-svm-bellsoft-liberica"
+name = "BellSoft Liberica NIK"
+purl = "pkg:generic/bellsoft-nik@24.1.1?arch=arm64"
+sha256 = "933c162c16aa51a6d17d9e90e0088773a4843acc822fe1fbfb04b049e3102bd4"
+source = "https://github.com/bell-sw/LibericaNIK/releases/download/24.1.1+1-23.0.1+13/bellsoft-liberica-vm-openjdk23.0.1+13-24.1.1+1-src.tar.gz"
+source-sha256 = "425a998141de36f6b221781648b827b72c9f3779379e025eeeea9948acf9a282"
+stacks = ["*"]
+uri = "https://github.com/bell-sw/LibericaNIK/releases/download/24.1.1+1-23.0.1+13/bellsoft-liberica-vm-openjdk23.0.1+13-24.1.1+1-linux-aarch64.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@8.0.432?arch=amd64"
+sha256 = "3c036812cfc97c184c3569bf1edec0fd10b6c70c14aa74cfb7cb211b7f15326b"
+source = "https://github.com/ibmruntimes/semeru8-binaries/archive/refs/tags/jdk8u432-b06_openj9-0.48.0.tar.gz"
+source-sha256 = "e50bd49a3222e6593de6c73bfe2e19197bcc6687b1cdac96314e99340ca7617d"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u432-b06_openj9-0.48.0/ibm-semeru-open-jdk_x64_linux_8u432b06_openj9-0.48.0.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@8.0.432?arch=amd64"
+sha256 = "b38ef6c7520463822affa424b4ad0e16686b86b01255b0c9912743d3f6e98a73"
+source = "https://github.com/ibmruntimes/semeru8-binaries/archive/refs/tags/jdk8u432-b06_openj9-0.48.0.tar.gz"
+source-sha256 = "e50bd49a3222e6593de6c73bfe2e19197bcc6687b1cdac96314e99340ca7617d"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u432-b06_openj9-0.48.0/ibm-semeru-open-jre_x64_linux_8u432b06_openj9-0.48.0.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@11.0.22?arch=amd64"
+sha256 = "1dc99080a9e1b3b19f0c9c7063d920d9a0ced8b35e5f7c1fc9f6769c5a9c6a37"
+source = "https://github.com/ibmruntimes/semeru11-binaries/archive/refs/tags/jdk-11.0.25+9_openj9-0.48.0.tar.gz"
+source-sha256 = "7a2149b6140269ac892f47cfc95728a96ca8962abb00ee93d35d7b2a688a29bb"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.25%2B9_openj9-0.48.0/ibm-semeru-open-jdk_x64_linux_11.0.25_9_openj9-0.48.0.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@11.0.17?arch=amd64"
+sha256 = "7d8407bbc68303e84615d1981abbdda690236edfcff5535789dc7915a3c4f629"
+source = "https://github.com/ibmruntimes/semeru11-binaries/archive/refs/tags/jdk-11.0.25+9_openj9-0.48.0.tar.gz"
+source-sha256 = "7a2149b6140269ac892f47cfc95728a96ca8962abb00ee93d35d7b2a688a29bb"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.25%2B9_openj9-0.48.0/ibm-semeru-open-jre_x64_linux_11.0.25_9_openj9-0.48.0.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@17.0.10?arch=amd64"
+sha256 = "0964047f5f4f2419e9c7dee9d2f5d34968dcd271741f4341429ebe3a6fd80cb6"
+source = "https://github.com/ibmruntimes/semeru17-binaries/archive/refs/tags/jdk-17.0.13+11_openj9-0.48.0.tar.gz"
+source-sha256 = "4e53924cfe06bc521691728d141d21206547063dc130c329d9cc401c389d4595"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.13%2B11_openj9-0.48.0/ibm-semeru-open-jdk_x64_linux_17.0.13_11_openj9-0.48.0.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@17.0.10?arch=amd64"
+sha256 = "0cbc8917a20d7c495d765f6986b5fe0b08133fcf48ef6b43d92b61f5c4f325d7"
+source = "https://github.com/ibmruntimes/semeru17-binaries/archive/refs/tags/jdk-17.0.13+11_openj9-0.48.0.tar.gz"
+source-sha256 = "4e53924cfe06bc521691728d141d21206547063dc130c329d9cc401c389d4595"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.13%2B11_openj9-0.48.0/ibm-semeru-open-jre_x64_linux_17.0.13_11_openj9-0.48.0.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@21.0.2?arch=amd64"
+sha256 = "ccca1486fd445a7500881e3e43eda58a6b26e4c2efa2926b7a67aeff6d114514"
+source = "https://github.com/ibmruntimes/semeru21-binaries/archive/refs/tags/jdk-21.0.5+11_openj9-0.48.0.tar.gz"
+source-sha256 = "38df9d5ebfdb3b49864be081290fb3573f7d71271340cbded793a7f1a3cdad7b"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.5%2B11_openj9-0.48.0/ibm-semeru-open-jdk_x64_linux_21.0.5_11_openj9-0.48.0.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@21.0.2?arch=amd64"
+sha256 = "3cd0ac0e28ad83fe9097569c6ba0c84772d697c1a34fa5b93c9fcbe0493d43c8"
+source = "https://github.com/ibmruntimes/semeru21-binaries/archive/refs/tags/jdk-21.0.5+11_openj9-0.48.0.tar.gz"
+source-sha256 = "38df9d5ebfdb3b49864be081290fb3573f7d71271340cbded793a7f1a3cdad7b"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.5%2B11_openj9-0.48.0/ibm-semeru-open-jre_x64_linux_21.0.5_11_openj9-0.48.0.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@8.0.432?arch=arm64"
+sha256 = "a32dc297d99435ad1ee70f3527ad2b5b27fb7f0f3f1b452d1539a9b0f19068fd"
+source = "https://github.com/ibmruntimes/semeru8-binaries/archive/refs/tags/jdk8u432-b06_openj9-0.48.0.tar.gz"
+source-sha256 = "e50bd49a3222e6593de6c73bfe2e19197bcc6687b1cdac96314e99340ca7617d"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u432-b06_openj9-0.48.0/ibm-semeru-open-jdk_aarch64_linux_8u432b06_openj9-0.48.0.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@8.0.432?arch=arm64"
+sha256 = "01e57b0ada3dc34b08d2f4644b64244f7a1e9a63cf885f47b9baadf663230b5d"
+source = "https://github.com/ibmruntimes/semeru8-binaries/archive/refs/tags/jdk8u432-b06_openj9-0.48.0.tar.gz"
+source-sha256 = "e50bd49a3222e6593de6c73bfe2e19197bcc6687b1cdac96314e99340ca7617d"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u432-b06_openj9-0.48.0/ibm-semeru-open-jre_aarch64_linux_8u432b06_openj9-0.48.0.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@11.0.22?arch=arm64"
+sha256 = "73eac0441938990a87d188d8ae3f9de6a0cdb89c3b75e1647411ec0a093ca414"
+source = "https://github.com/ibmruntimes/semeru11-binaries/archive/refs/tags/jdk-11.0.25+9_openj9-0.48.0.tar.gz"
+source-sha256 = "7a2149b6140269ac892f47cfc95728a96ca8962abb00ee93d35d7b2a688a29bb"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.25%2B9_openj9-0.48.0/ibm-semeru-open-jdk_aarch64_linux_11.0.25_9_openj9-0.48.0.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@11.0.17?arch=arm64"
+sha256 = "3ebe7dc3fc6d7a0145d8834d01ca5adda19c1812af9a4f63655bc4de463377b6"
+source = "https://github.com/ibmruntimes/semeru11-binaries/archive/refs/tags/jdk-11.0.25+9_openj9-0.48.0.tar.gz"
+source-sha256 = "7a2149b6140269ac892f47cfc95728a96ca8962abb00ee93d35d7b2a688a29bb"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.25%2B9_openj9-0.48.0/ibm-semeru-open-jre_aarch64_linux_11.0.25_9_openj9-0.48.0.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@17.0.10?arch=arm64"
+sha256 = "77ce078b6040defe6aca3734c8805671866bf7a27008af751542c96dc02bbfe5"
+source = "https://github.com/ibmruntimes/semeru17-binaries/archive/refs/tags/jdk-17.0.13+11_openj9-0.48.0.tar.gz"
+source-sha256 = "4e53924cfe06bc521691728d141d21206547063dc130c329d9cc401c389d4595"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.13%2B11_openj9-0.48.0/ibm-semeru-open-jdk_aarch64_linux_17.0.13_11_openj9-0.48.0.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@17.0.10?arch=arm64"
+sha256 = "e737c9d2f4fc5a4fd5e58ec044ef9f118ffe2fbd5a7a4953fa02cd9d56b6cb47"
+source = "https://github.com/ibmruntimes/semeru17-binaries/archive/refs/tags/jdk-17.0.13+11_openj9-0.48.0.tar.gz"
+source-sha256 = "4e53924cfe06bc521691728d141d21206547063dc130c329d9cc401c389d4595"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.13%2B11_openj9-0.48.0/ibm-semeru-open-jre_aarch64_linux_17.0.13_11_openj9-0.48.0.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jdk-eclipse-openj9"
+name = "OpenJ9 JDK"
+purl = "pkg:generic/ibmruntimes/semeru-jdk@21.0.2?arch=arm64"
+sha256 = "f57f9966c1b116fb0d414aba7f5621c855b11f1b042a336552820c408921917b"
+source = "https://github.com/ibmruntimes/semeru21-binaries/archive/refs/tags/jdk-21.0.5+11_openj9-0.48.0.tar.gz"
+source-sha256 = "38df9d5ebfdb3b49864be081290fb3573f7d71271340cbded793a7f1a3cdad7b"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.5%2B11_openj9-0.48.0/ibm-semeru-open-jdk_aarch64_linux_21.0.5_11_openj9-0.48.0.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:eclipse:openj9:0.48.0:*:*:*:*:*:*:*"]
+id = "jre-eclipse-openj9"
+name = "OpenJ9 JRE"
+purl = "pkg:generic/ibmruntimes/semeru-jre@21.0.2?arch=arm64"
+sha256 = "27fb02bb8e409c5330bbed15f6dce74c3f8255c1f2ef937a697c1b903ca9477a"
+source = "https://github.com/ibmruntimes/semeru21-binaries/archive/refs/tags/jdk-21.0.5+11_openj9-0.48.0.tar.gz"
+source-sha256 = "38df9d5ebfdb3b49864be081290fb3573f7d71271340cbded793a7f1a3cdad7b"
+stacks = ["*"]
+uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.5%2B11_openj9-0.48.0/ibm-semeru-open-jre_aarch64_linux_21.0.5_11_openj9-0.48.0.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception"
+uri = "https://github.com/eclipse/openj9/blob/master/LICENSE"
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.9:*:*:*:*:*:*:*:*"]
+id = "jdk-graalvm"
+name = "GraalVM for JDK"
+purl = "pkg:generic/graalvm-jdk@17.0.9&arch=amd64"
+sha256 = "e47ba7229cef02393e19d5b8f46f7f1cab4829dd17bfe84d5431fc8ff0e22a96"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-17.0.9.tar.gz"
+source-sha256 = "488b8d968a114f52606cab5e080b53d264e550c8f3e66993952363744df2b63e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-17.0.9/graalvm-community-jdk-17.0.9_linux-x64_bin.tar.gz"
+version = "17.0.9"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.2:*:*:*:*:*:*:*:*"]
+id = "jdk-graalvm"
+name = "GraalVM for JDK"
+purl = "pkg:generic/graalvm-jdk@21.0.2&arch=amd64"
+sha256 = "b048069aaa3a99b84f5b957b162cc181a32a4330cbc35402766363c5be76ae48"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-21.0.2.tar.gz"
+source-sha256 = "a99dfd8246c0e6cbbf756e76f301426ea58eeb85da1b172a566e2ba3e1583e5a"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-21.0.2/graalvm-community-jdk-21.0.2_linux-x64_bin.tar.gz"
+version = "21.0.2"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*:*"]
+id = "jdk-graalvm"
+name = "GraalVM for JDK"
+purl = "pkg:generic/graalvm-jdk@23.0.1&arch=amd64"
+sha256 = "e26a0a74064b1689c056b5f24d7cc3b271f57f576be063b139d27aafa1322951"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-23.0.1.tar.gz"
+source-sha256 = "00f2dbfb001131aa455268e09f30596a437844768a1b7e1b1abe1101a36dd58e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-23.0.1/graalvm-community-jdk-23.0.1_linux-x64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.9:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-graalvm"
+name = "GraalVM for Native Image"
+purl = "pkg:generic/graalvm-jdk@17.0.9&arch=amd64"
+sha256 = "e47ba7229cef02393e19d5b8f46f7f1cab4829dd17bfe84d5431fc8ff0e22a96"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-17.0.9.tar.gz"
+source-sha256 = "488b8d968a114f52606cab5e080b53d264e550c8f3e66993952363744df2b63e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-17.0.9/graalvm-community-jdk-17.0.9_linux-x64_bin.tar.gz"
+version = "17.0.9"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.2:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-graalvm"
+name = "GraalVM for Native Image"
+purl = "pkg:generic/graalvm-jdk@21.0.2&arch=amd64"
+sha256 = "b048069aaa3a99b84f5b957b162cc181a32a4330cbc35402766363c5be76ae48"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-21.0.2.tar.gz"
+source-sha256 = "a99dfd8246c0e6cbbf756e76f301426ea58eeb85da1b172a566e2ba3e1583e5a"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-21.0.2/graalvm-community-jdk-21.0.2_linux-x64_bin.tar.gz"
+version = "21.0.2"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-graalvm"
+name = "GraalVM for Native Image"
+purl = "pkg:generic/graalvm-jdk@23.0.1&arch=amd64"
+sha256 = "e26a0a74064b1689c056b5f24d7cc3b271f57f576be063b139d27aafa1322951"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-23.0.1.tar.gz"
+source-sha256 = "00f2dbfb001131aa455268e09f30596a437844768a1b7e1b1abe1101a36dd58e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-23.0.1/graalvm-community-jdk-23.0.1_linux-x64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.9:*:*:*:*:*:*:*:*"]
+id = "jdk-graalvm"
+name = "GraalVM for JDK"
+purl = "pkg:generic/graalvm-jdk@17.0.9&arch=arm64"
+sha256 = "c3281b21f5220c2f76cf6fa0d646bc42e2d729af2c022bb06e557a613ba16102"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-17.0.9.tar.gz"
+source-sha256 = "488b8d968a114f52606cab5e080b53d264e550c8f3e66993952363744df2b63e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-17.0.9/graalvm-community-jdk-17.0.9_linux-aarch64_bin.tar.gz"
+version = "17.0.9"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.2:*:*:*:*:*:*:*:*"]
+id = "jdk-graalvm"
+name = "GraalVM for JDK"
+purl = "pkg:generic/graalvm-jdk@21.0.2&arch=arm64"
+sha256 = "a34be691ce68f0acf4655c7c6c63a9a49ed276a11859d7224fd94fc2f657cd7a"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-21.0.2.tar.gz"
+source-sha256 = "a99dfd8246c0e6cbbf756e76f301426ea58eeb85da1b172a566e2ba3e1583e5a"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-21.0.2/graalvm-community-jdk-21.0.2_linux-aarch64_bin.tar.gz"
+version = "21.0.2"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*:*"]
+id = "jdk-graalvm"
+name = "GraalVM for JDK"
+purl = "pkg:generic/graalvm-jdk@23.0.1&arch=arm64"
+sha256 = "5a456db9162a89be5fadd50e703c19313d25ef7f5043b750b639cd0460335e60"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-23.0.1.tar.gz"
+source-sha256 = "00f2dbfb001131aa455268e09f30596a437844768a1b7e1b1abe1101a36dd58e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-23.0.1/graalvm-community-jdk-23.0.1_linux-aarch64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.9:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-graalvm"
+name = "GraalVM for Native Image"
+purl = "pkg:generic/graalvm-jdk@17.0.9&arch=arm64"
+sha256 = "c3281b21f5220c2f76cf6fa0d646bc42e2d729af2c022bb06e557a613ba16102"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-17.0.9.tar.gz"
+source-sha256 = "488b8d968a114f52606cab5e080b53d264e550c8f3e66993952363744df2b63e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-17.0.9/graalvm-community-jdk-17.0.9_linux-aarch64_bin.tar.gz"
+version = "17.0.9"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.2:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-graalvm"
+name = "GraalVM for Native Image"
+purl = "pkg:generic/graalvm-jdk@21.0.2&arch=arm64"
+sha256 = "a34be691ce68f0acf4655c7c6c63a9a49ed276a11859d7224fd94fc2f657cd7a"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-21.0.2.tar.gz"
+source-sha256 = "a99dfd8246c0e6cbbf756e76f301426ea58eeb85da1b172a566e2ba3e1583e5a"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-21.0.2/graalvm-community-jdk-21.0.2_linux-aarch64_bin.tar.gz"
+version = "21.0.2"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-graalvm"
+name = "GraalVM for Native Image"
+purl = "pkg:generic/graalvm-jdk@23.0.1&arch=arm64"
+sha256 = "5a456db9162a89be5fadd50e703c19313d25ef7f5043b750b639cd0460335e60"
+source = "https://github.com/graalvm/graalvm-ce-builds/archive/refs/tags/jdk-23.0.1.tar.gz"
+source-sha256 = "00f2dbfb001131aa455268e09f30596a437844768a1b7e1b1abe1101a36dd58e"
+stacks = ["*"]
+uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-23.0.1/graalvm-community-jdk-23.0.1_linux-aarch64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-oracle"
+name = "Oracle JDK"
+purl = "pkg:generic/oracle-jdk@21.0.5?arch=amd64"
+sha256 = "9c2f7c39e0d5b296ce50e563740694b2ebfe4a620415d1b2b848ba47bebceb47"
+stacks = ["*"]
+uri = "https://download.oracle.com/java/21/archive/jdk-21.0.5_linux-x64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "Oracle No-Fee Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/no-fee-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-oracle"
+name = "Oracle JDK"
+purl = "pkg:generic/oracle-jdk@23.0.1?arch=amd64"
+sha256 = "2bda38cd0f31d593b56ee5a607401bc6f245aafe07535b6525572861c2d15d6f"
+stacks = ["*"]
+uri = "https://download.oracle.com/java/23/archive/jdk-23.0.1_linux-x64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "Oracle No-Fee Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/no-fee-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-oracle"
+name = "Oracle GraalVM"
+purl = "pkg:generic/graalvm-jdk@21.0.5?arch=amd64"
+sha256 = "c1960d4f9d278458bde1cd15115ac2f0b3240cb427d51cfeceb79dab91a7f5c9"
+stacks = ["*"]
+uri = "https://download.oracle.com/graalvm/21/archive/graalvm-jdk-21.0.5_linux-x64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GraalVM Free Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/graal-free-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-oracle"
+name = "Oracle GraalVM"
+purl = "pkg:generic/graalvm-jdk@23.0.1?arch=amd64"
+sha256 = "46ec9582ebe114f93470403f2cc123238ac0c7982129c358af7d8e1de52dd663"
+stacks = ["*"]
+uri = "https://download.oracle.com/graalvm/23/archive/graalvm-jdk-23.0.1_linux-x64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GraalVM Free Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/graal-free-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-oracle"
+name = "Oracle JDK"
+purl = "pkg:generic/oracle-jdk@21.0.5?arch=arm64"
+sha256 = "d5569b6ac748c4f95c42f3810174a37f41e60e9130b783e0716a088b826fe14d"
+stacks = ["*"]
+uri = "https://download.oracle.com/java/21/archive/jdk-21.0.5_linux-aarch64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "Oracle No-Fee Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/no-fee-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+id = "jdk-oracle"
+name = "Oracle JDK"
+purl = "pkg:generic/oracle-jdk@23.0.1?arch=arm64"
+sha256 = "b4a1f97f4d4ba4929e63dc1497b09fc213a0c7ef90f5585bc6503ffba47f7ee8"
+stacks = ["*"]
+uri = "https://download.oracle.com/java/23/archive/jdk-23.0.1_linux-aarch64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "Oracle No-Fee Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/no-fee-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-oracle"
+name = "Oracle GraalVM"
+purl = "pkg:generic/graalvm-jdk@21.0.5?arch=arm64"
+sha256 = "3ad68fbb2d13da528dfa0aea9e9345383245ec9c31094dce3905cefba9aac01e"
+stacks = ["*"]
+uri = "https://download.oracle.com/graalvm/21/archive/graalvm-jdk-21.0.5_linux-aarch64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GraalVM Free Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/graal-free-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*:*"]
+id = "native-image-svm-oracle"
+name = "Oracle GraalVM"
+purl = "pkg:generic/graalvm-jdk@23.0.1?arch=arm64"
+sha256 = "1835a98b87c439c8c654d97956c22d409855952e5560a8127f56c50f3f919d7d"
+stacks = ["*"]
+uri = "https://download.oracle.com/graalvm/23/archive/graalvm-jdk-23.0.1_linux-aarch64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GraalVM Free Terms and Conditions License"
+uri = "https://www.oracle.com/downloads/licenses/graal-free-license.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium/temurin@8.0.432?arch=amd64"
+sha256 = "abaaa90deadf51bd28921453baf2992b3dff6171bb7142f5bdd14ef269f7b245"
+source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk-sources_8u432b06.tar.gz"
+source-sha256 = "35de71e4352e72bfaec591642819cd3d814519a047dfefbc3b08255309e99d3e"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u432b06.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-microsoft-openjdk"
+name = "Microsoft OpenJDK"
+purl = "pkg:generic/microsoft/openjdk@11.0.25?arch=amd64"
+sha256 = "930b261dfc293f2548272b38b0a6646e042d9dc0d112b4ef4d915c8a508a5575"
+stacks = ["*"]
+uri = "https://aka.ms/download-jdk/microsoft-jdk-11.0.25-linux-x64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-microsoft-openjdk"
+name = "Microsoft OpenJDK"
+purl = "pkg:generic/microsoft/openjdk@17.0.13?arch=amd64"
+sha256 = "0af769656c48eb7ed35a5c7e14bef23f42f1438e1dc05090eb26d6d3cdf88686"
+stacks = ["*"]
+uri = "https://aka.ms/download-jdk/microsoft-jdk-17.0.13-linux-x64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-microsoft-openjdk"
+name = "Microsoft OpenJDK"
+purl = "pkg:generic/microsoft/openjdk@21.0.5?arch=amd64"
+sha256 = "0d42a80dbc92f2f112e6db3b4b9bd278c0776a73b6050812e720230813487ebd"
+stacks = ["*"]
+uri = "https://aka.ms/download-jdk/microsoft-jdk-21.0.5-linux-x64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:1.8.0:update432:*:*:*:*:*:*"]
+id = "jdk-adoptium"
+name = "Adoptium JDK"
+purl = "pkg:generic/adoptium-jdk@8.0.432?arch=arm64"
+sha256 = "383caabc20428e9500f2e07965317ed4387a0e336104483e29a9e06eeffbf26b"
+source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk-sources_8u432b06.tar.gz"
+source-sha256 = "35de71e4352e72bfaec591642819cd3d814519a047dfefbc3b08255309e99d3e"
+stacks = ["*"]
+uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u432-b06/OpenJDK8U-jdk_aarch64_linux_hotspot_8u432b06.tar.gz"
+version = "8.0.432"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:11.0.25:*:*:*:*:*:*:*"]
+id = "jdk-microsoft-openjdk"
+name = "Microsoft OpenJDK"
+purl = "pkg:generic/microsoft/openjdk@11.0.25?arch=arm64"
+sha256 = "a0bac052e41d483e945ca88b263252bb32e5dd24c122f85ad3177f1fad7281ae"
+stacks = ["*"]
+uri = "https://aka.ms/download-jdk/microsoft-jdk-11.0.25-linux-aarch64.tar.gz"
+version = "11.0.25"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+id = "jdk-microsoft-openjdk"
+name = "Microsoft OpenJDK"
+purl = "pkg:generic/microsoft/openjdk@17.0.13?arch=arm64"
+sha256 = "859c993dff29f87e49ce96ac01eb338a8a51ac75a49e841ac74160a1217f7489"
+stacks = ["*"]
+uri = "https://aka.ms/download-jdk/microsoft-jdk-17.0.13-linux-aarch64.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+id = "jdk-microsoft-openjdk"
+name = "Microsoft OpenJDK"
+purl = "pkg:generic/microsoft/openjdk@21.0.5?arch=arm64"
+sha256 = "356844fe544085b00cd73935e0c7a4c534f286799728fa6d6e996d1cb8b1a682"
+stacks = ["*"]
+uri = "https://aka.ms/download-jdk/microsoft-jdk-21.0.5-linux-aarch64.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+deprecation_date = "2026-09-30T00:00:00Z"
+id = "jdk-sap-machine"
+name = "SapMachine JDK"
+purl = "pkg:generic/sap-machine-jdk@17.0.13?arch=amd64"
+sha256 = "eaf562bf24e75cb14d46af6590bc9a5da3fd5a8ea1124821ac90b7588d6c4d7a"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-17.0.13.tar.gz"
+source-sha256 = "e7377af1e520629e27e65905d1e5cdc9686fd0aa14b1d542d487ece897377fa6"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-17.0.13/sapmachine-jdk-17.0.13_linux-x64_bin.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*"]
+deprecation_date = "2026-09-30T00:00:00Z"
+id = "jre-sap-machine"
+name = "SapMachine JRE"
+purl = "pkg:generic/sap-machine-jre@17.0.13?arch=amd64"
+sha256 = "b5f16befcb6415cfcf3bdb57b361c8eeca8176d494cd1e6c067cd56acec1afe6"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-17.0.13.tar.gz"
+source-sha256 = "e7377af1e520629e27e65905d1e5cdc9686fd0aa14b1d542d487ece897377fa6"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-17.0.13/sapmachine-jre-17.0.13_linux-x64_bin.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+deprecation_date = "2028-09-30T00:00:00Z"
+id = "jdk-sap-machine"
+name = "SapMachine JDK"
+purl = "pkg:generic/sap-machine-jdk@21.0.5?arch=amd64"
+sha256 = "713056536aea7bbb1f93fe978df20f69e23f37171abf272068339f75525b84d3"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-21.0.5.tar.gz"
+source-sha256 = "4845ad15012cf9a7c87af6b9eec4add69815fd0136fdef09eb1adcb95aca2df1"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-21.0.5/sapmachine-jdk-21.0.5_linux-x64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*"]
+deprecation_date = "2028-09-30T00:00:00Z"
+id = "jre-sap-machine"
+name = "SapMachine JRE"
+purl = "pkg:generic/sap-machine-jre@21.0.5?arch=amd64"
+sha256 = "7c91ba168f2d4409d0ea0b88feaec373685c2795c86331a985f9623c258455f5"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-21.0.5.tar.gz"
+source-sha256 = "4845ad15012cf9a7c87af6b9eec4add69815fd0136fdef09eb1adcb95aca2df1"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-21.0.5/sapmachine-jre-21.0.5_linux-x64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+deprecation_date = "2025-03-18T00:00:00Z"
+id = "jdk-sap-machine"
+name = "SapMachine JDK"
+purl = "pkg:generic/sap-machine-jdk@23.0.1?arch=amd64"
+sha256 = "9efc545611e29843f8a9566d32a69eba54f6538dfd5aca548a28ba7a03618ea1"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-23.0.1.tar.gz"
+source-sha256 = "82a5f2747fa876d70ee9d9e2f4850c0e7810e2dcb42cd608dc8f583eadc16608"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-23.0.1/sapmachine-jdk-23.0.1_linux-x64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*"]
+deprecation_date = "2025-03-18T00:00:00Z"
+id = "jre-sap-machine"
+name = "SapMachine JRE"
+purl = "pkg:generic/sap-machine-jre@23.0.1?arch=amd64"
+sha256 = "88ad5f98412d6bdb29032d2c3691e65e2af7e46dd0b56f30583f9003a0b7f824"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-23.0.1.tar.gz"
+source-sha256 = "82a5f2747fa876d70ee9d9e2f4850c0e7810e2dcb42cd608dc8f583eadc16608"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-23.0.1/sapmachine-jre-23.0.1_linux-x64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:17.0.13:*:*:*:*:*:*:*"]
+deprecation_date = "2026-09-30T00:00:00Z"
+id = "jdk-sap-machine"
+name = "SapMachine JDK"
+purl = "pkg:generic/sap-machine-jdk@17.0.13?arch=arm64"
+sha256 = "aca88dd086dd05a78f4e32b4352414004001b3f464c0af4394c7606ab8508d8d"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-17.0.13.tar.gz"
+source-sha256 = "e7377af1e520629e27e65905d1e5cdc9686fd0aa14b1d542d487ece897377fa6"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-17.0.13/sapmachine-jdk-17.0.13_linux-aarch64_bin.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:17.0.13:*:*:*:*:*:*:*"]
+deprecation_date = "2026-09-30T00:00:00Z"
+id = "jre-sap-machine"
+name = "SapMachine JRE"
+purl = "pkg:generic/sap-machine-jre@17.0.13?arch=arm64"
+sha256 = "b6eb2fee95be42e11feb001d6983d4db0d648d7125e636c0541e7acf6e04d953"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-17.0.13.tar.gz"
+source-sha256 = "e7377af1e520629e27e65905d1e5cdc9686fd0aa14b1d542d487ece897377fa6"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-17.0.13/sapmachine-jre-17.0.13_linux-aarch64_bin.tar.gz"
+version = "17.0.13"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:21.0.5:*:*:*:*:*:*:*"]
+deprecation_date = "2028-09-30T00:00:00Z"
+id = "jdk-sap-machine"
+name = "SapMachine JDK"
+purl = "pkg:generic/sap-machine-jdk@21.0.5?arch=arm64"
+sha256 = "81272eb1e755ae25e56f87066cfde849c8249ea7e4bf44e6baa0c940814968db"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-21.0.5.tar.gz"
+source-sha256 = "4845ad15012cf9a7c87af6b9eec4add69815fd0136fdef09eb1adcb95aca2df1"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-21.0.5/sapmachine-jdk-21.0.5_linux-aarch64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:21.0.5:*:*:*:*:*:*:*"]
+deprecation_date = "2028-09-30T00:00:00Z"
+id = "jre-sap-machine"
+name = "SapMachine JRE"
+purl = "pkg:generic/sap-machine-jre@21.0.5?arch=arm64"
+sha256 = "470dbc9957a79e2aef6688f70abb4ad4b42dc2db3b1b62634318adfd6fe6b41a"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-21.0.5.tar.gz"
+source-sha256 = "4845ad15012cf9a7c87af6b9eec4add69815fd0136fdef09eb1adcb95aca2df1"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-21.0.5/sapmachine-jre-21.0.5_linux-aarch64_bin.tar.gz"
+version = "21.0.5"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jdk:23.0.1:*:*:*:*:*:*:*"]
+deprecation_date = "2025-03-18T00:00:00Z"
+id = "jdk-sap-machine"
+name = "SapMachine JDK"
+purl = "pkg:generic/sap-machine-jdk@23.0.1?arch=arm64"
+sha256 = "148db264a94488d864f261758e582aa2365a1941471180ca22864a8ba0ab538a"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-23.0.1.tar.gz"
+source-sha256 = "82a5f2747fa876d70ee9d9e2f4850c0e7810e2dcb42cd608dc8f583eadc16608"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-23.0.1/sapmachine-jdk-23.0.1_linux-aarch64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[metadata.dependencies]]
+cpes = ["cpe:2.3:a:oracle:jre:23.0.1:*:*:*:*:*:*:*"]
+deprecation_date = "2025-03-18T00:00:00Z"
+id = "jre-sap-machine"
+name = "SapMachine JRE"
+purl = "pkg:generic/sap-machine-jre@23.0.1?arch=arm64"
+sha256 = "8597eb9e22c5c367bec5e85c96cefd7b0d24d745abff448c27ecaa815808d626"
+source = "https://github.com/SAP/SapMachine/archive/refs/tags/sapmachine-23.0.1.tar.gz"
+source-sha256 = "82a5f2747fa876d70ee9d9e2f4850c0e7810e2dcb42cd608dc8f583eadc16608"
+stacks = ["*"]
+uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-23.0.1/sapmachine-jre-23.0.1_linux-aarch64_bin.tar.gz"
+version = "23.0.1"
+
+[[metadata.dependencies.licenses]]
+type = "GPL-2.0 WITH Classpath-exception-2.0"
+uri = "https://openjdk.java.net/legal/gplv2+ce.html"
+
+[[stacks]]
+  id = "*"
+
+[[targets]]
+  arch = "amd64"
+  os = "linux"
+
+[[targets]]
+  arch = "arm64"
+  os = "linux"
