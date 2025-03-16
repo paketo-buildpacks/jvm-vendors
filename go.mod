@@ -1,8 +1,7 @@
 module github.com/paketo-buildpacks/jvm-vendors
 
 go 1.23
-
-toolchain go1.23.3
+toolchain go1.24.1
 
 require (
 	github.com/BurntSushi/toml v1.4.0
@@ -17,7 +16,7 @@ require (
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/sclevine/spec v1.4.0
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/sys v0.29.0
+	golang.org/x/sys v0.31.0
 	software.sslmate.com/src/go-pkcs12 v0.5.0
 )
 
