@@ -2,8 +2,6 @@ module github.com/paketo-buildpacks/jvm-vendors
 
 go 1.23
 
-toolchain go1.23.3
-
 require (
 	github.com/BurntSushi/toml v1.4.0
 	github.com/Masterminds/semver/v3 v3.3.1
@@ -11,7 +9,7 @@ require (
 	github.com/heroku/color v0.0.6
 	github.com/magiconair/properties v1.8.9
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/miekg/dns v1.1.62
+	github.com/miekg/dns v1.1.63
 	github.com/onsi/gomega v1.36.2
 	github.com/paketo-buildpacks/libpak/v2 v2.0.0-alpha.4
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
