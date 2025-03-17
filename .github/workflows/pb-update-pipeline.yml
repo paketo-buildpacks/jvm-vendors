@@ -14,17 +14,17 @@ jobs:
         runs-on:
             - ubuntu-latest
         steps:
-            - uses: actions/setup-go@v4
+            - uses: actions/setup-go@v5
               with:
-                go-version: "1.24"
+                go-version: "1.23"
             - name: Install octo
               run: |
                 #!/usr/bin/env bash
 
                 set -euo pipefail
 
-                go install -ldflags="-s -w" github.com/paketo-buildpacks/pipeline-builder/v2/cmd/octo@v2.0.0-alpha.1
-            - uses: actions/checkout@v3
+                go install -ldflags="-s -w" github.com/paketo-buildpacks/pipeline-builder/cmd/octo@latest
+            - uses: actions/checkout@v4
             - name: Update Pipeline
               id: pipeline
               run: |
@@ -55,6 +55,12 @@ jobs:
                 )
 
                 git add .github/
+                git add .gitignore
+
+                if [ -f scripts/build.sh ]; then
+                  git add scripts/build.sh
+                fi
+
                 git checkout -- .
 
                 echo "old-version=${OLD_VERSION}" >> "$GITHUB_OUTPUT"
@@ -65,7 +71,7 @@ jobs:
               env:
                 DESCRIPTOR: .github/pipeline-descriptor.yml
                 GITHUB_TOKEN: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
-            - uses: peter-evans/create-pull-request@v5
+            - uses: peter-evans/create-pull-request@v6
               with:
                 author: ${{ secrets.JAVA_GITHUB_USERNAME }} <${{ secrets.JAVA_GITHUB_USERNAME }}@users.noreply.github.com>
                 body: |-
