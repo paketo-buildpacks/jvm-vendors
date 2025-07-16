@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/BurntSushi/toml v1.4.0
-	github.com/Masterminds/semver/v3 v3.3.1
+	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/buildpacks/libcnb/v2 v2.0.0
 	github.com/heroku/color v0.0.6
 	github.com/magiconair/properties v1.8.9
