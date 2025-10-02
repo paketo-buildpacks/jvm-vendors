@@ -78,7 +78,7 @@ The following JVM Vendors are supported:
 - [GraalVM](https://www.graalvm.org/)
 - [Oracle](https://www.oracle.com/java/technologies/downloads/)
 - [Microsoft OpenJDK](https://www.microsoft.com/openjdk)
-- [SAP Machine](https://sap.github.io/SapMachine/)
+- [SAP Machine](https://sapmachine.io/)
 
 ## Bindings
 
