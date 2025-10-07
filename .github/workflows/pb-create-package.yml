@@ -1,20 +1,28 @@
-name: Tests
+name: Create Package
 "on":
-    merge_group:
+    release:
         types:
-            - checks_requested
-        branches:
-            - main
-    pull_request: {}
-    push:
-        branches:
-            - main
+            - published
 jobs:
     create-package:
-        name: Create Package Test
+        name: Create Package
         runs-on:
             - ubuntu-latest
         steps:
+            - name: Docker login gcr.io
+              if: ${{ (github.event_name != 'pull_request' || ! github.event.pull_request.head.repo.fork) && (github.actor != 'dependabot[bot]') }}
+              uses: docker/login-action@v3
+              with:
+                password: ${{ secrets.GCR_PUSH_BOT_JSON_KEY }}
+                registry: gcr.io
+                username: _json_key
+            - name: Docker login docker.io
+              if: ${{ (github.event_name != 'pull_request' || ! github.event.pull_request.head.repo.fork) && (github.actor != 'dependabot[bot]') }}
+              uses: docker/login-action@v3
+              with:
+                password: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD }}
+                registry: docker.io
+                username: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_USERNAME }}
             - uses: actions/setup-go@v5
               with:
                 go-version: "1.23"
@@ -25,6 +33,10 @@ jobs:
                 set -euo pipefail
 
                 go install -ldflags="-s -w" github.com/paketo-buildpacks/libpak/cmd/create-package@latest
+            - uses: buildpacks/github-actions/setup-tools@v5.7.2
+              with:
+                crane-version: 0.19.1
+                yj-version: 5.1.0
             - uses: buildpacks/github-actions/setup-pack@v5.7.2
               with:
                 pack-version: 0.34.2
@@ -40,7 +52,8 @@ jobs:
                 mkdir -p "${HOME}"/.pack
                 echo "experimental = true" >> "${HOME}"/.pack/config.toml
             - uses: actions/checkout@v4
-            - uses: actions/cache@v4
+            - if: ${{ false }}
+              uses: actions/cache@v4
               with:
                 key: ${{ runner.os }}-go-${{ hashFiles('**/buildpack.toml', '**/package.toml') }}
                 path: |-
@@ -111,10 +124,12 @@ jobs:
                   printf '[buildpack]\nuri = "%s"\n\n[platform]\nos = "%s"\n' "${HOME}/buildpack" "${OS}" >> "${HOME}/buildpack/package.toml"
                 fi
               env:
-                INCLUDE_DEPENDENCIES: "true"
+                INCLUDE_DEPENDENCIES: "false"
                 OS: linux
+                SOURCE_PATH: ""
                 VERSION: ${{ steps.version.outputs.version }}
             - name: Package Buildpack
+              id: package
               run: |-
                 #!/usr/bin/env bash
 
@@ -165,49 +180,37 @@ jobs:
                     --format "${FORMAT}" $([ -n "$TTL_SH_PUBLISH" ] && [ "$TTL_SH_PUBLISH" = "true" ] && echo "--publish")
                 fi
               env:
-                FORMAT: image
-                PACKAGES: test
-                TTL_SH_PUBLISH: "false"
+                PACKAGES: docker.io/paketobuildpacks/jvm-vendors gcr.io/paketo-buildpacks/jvm-vendors
+                PUBLISH: "true"
                 VERSION: ${{ steps.version.outputs.version }}
-    unit:
-        name: Unit Test
-        runs-on:
-            - ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/cache@v4
-              with:
-                key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                path: ${{ env.HOME }}/go/pkg/mod
-                restore-keys: ${{ runner.os }}-go-
-            - uses: actions/setup-go@v5
-              with:
-                go-version: "1.23"
-            - name: Install richgo
+                VERSION_MAJOR: ${{ steps.version.outputs.version-major }}
+                VERSION_MINOR: ${{ steps.version.outputs.version-minor }}
+            - name: Update release with digest
               run: |
                 #!/usr/bin/env bash
 
                 set -euo pipefail
 
-                echo "Installing richgo ${RICHGO_VERSION}"
+                PAYLOAD=$(cat "${GITHUB_EVENT_PATH}")
 
-                mkdir -p "${HOME}"/bin
-                echo "${HOME}/bin" >> "${GITHUB_PATH}"
+                RELEASE_ID=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.id')
+                RELEASE_TAG_NAME=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.tag_name')
+                RELEASE_NAME=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.name')
+                RELEASE_BODY=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.body')
 
-                curl \
-                  --location \
-                  --show-error \
-                  --silent \
-                  "https://github.com/kyoh86/richgo/releases/download/v${RICHGO_VERSION}/richgo_${RICHGO_VERSION}_linux_amd64.tar.gz" \
-                | tar -C "${HOME}"/bin -xz richgo
+                gh api \
+                  --method PATCH \
+                  "/repos/:owner/:repo/releases/${RELEASE_ID}" \
+                  --field "tag_name=${RELEASE_TAG_NAME}" \
+                  --field "name=${RELEASE_NAME}" \
+                  --field "body=${RELEASE_BODY//<!-- DIGEST PLACEHOLDER -->/\`${DIGEST}\`}"
               env:
-                RICHGO_VERSION: 0.3.10
-            - name: Run Tests
-              run: |
-                #!/usr/bin/env bash
-
-                set -euo pipefail
-
-                richgo test ./...
-              env:
-                RICHGO_FORCE_COLOR: "1"
+                DIGEST: ${{ steps.package.outputs.digest }}
+                GITHUB_TOKEN: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+            - if: ${{ true }}
+              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:5.7.2
+              with:
+                address: docker.io/paketobuildpacks/jvm-vendors@${{ steps.package.outputs.digest }}
+                id: paketo-buildpacks/jvm-vendors
+                token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+                version: ${{ steps.version.outputs.version }}
