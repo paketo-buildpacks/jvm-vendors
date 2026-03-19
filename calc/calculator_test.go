@@ -112,6 +112,24 @@ func testCalculator(t *testing.T, context spec.G, it spec.S) {
 			"all memory regions require 273310K which is greater than 272287K available for allocation: -Xmx1M, 0 headroom, -XX:MaxDirectMemorySize=10M, -XX:MaxMetaspaceSize=14238K, -XX:ReservedCodeCacheSize=240M, -Xss1M * 2 threads"))
 	})
 
+	it("returns error when calculated heap is positive but below JVM minimum of 2M", func() {
+		// TotalMemory = fixed regions + 1M, so heap calculates to 1M (positive, passes the
+		// AllRegionsSize > TotalMemory check) but is below MinHeapSize(2M) — only that guard catches it.
+		// fixed = direct(10M) + metaspace(~14M) + code_cache(240M) + stack2M = ~277M
+		loadedClasses := 100
+		metaspace := calc.ClassOverhead + calc.ClassSize*int64(loadedClasses)
+		fixed := (10+240+2+1)*calc.Mebi + metaspace
+		c := calc.Calculator{
+			HeadRoom:         0,
+			LoadedClassCount: loadedClasses,
+			ThreadCount:      calc.ThreadCount{Value: 2, Provenance: calc.UserConfigured},
+			TotalMemory:      calc.Size{Value: fixed},
+		}
+		_, err := c.Calculate("")
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(Equal("calculated heap size (1048576) is less than the JVM minimum of 2M. To resolve this, reduce one or more of: thread stack size (-Xss), currently: -Xss1M. thread count ($BPL_JVM_THREAD_COUNT), currently: 2. code cache size (-XX:ReservedCodeCacheSize), currently: -XX:ReservedCodeCacheSize=240M"))
+	})
+
 	context("low-profile mode", func() {
 		it("does not scale at 1G (baseline)", func() {
 			c := calc.Calculator{
