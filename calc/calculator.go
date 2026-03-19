@@ -123,17 +123,6 @@ func (c *Calculator) Calculate(flags string) (Output, error) {
 		}
 	}
 
-	if m.Heap.Value < MinHeapSize {
-		return Output{}, fmt.Errorf(
-			"calculated heap size (%d) is less than the JVM minimum of 2M.\n"+
-				"To resolve this, reduce one or more of:\n"+
-				"  - thread stack size (-Xss), currently: %s\n"+
-				"  - thread count ($BPL_JVM_THREAD_COUNT), currently: %d\n"+
-				"  - code cache size (-XX:ReservedCodeCacheSize), currently: %s",
-			m.Heap.Value, m.Stack, threadCount.Value, m.ReservedCodeCache,
-		)
-	}
-
 	a, err := m.AllRegionsSize(threadCount.Value)
 	if err != nil {
 		return Output{}, fmt.Errorf("unable to calculate all regions size\n%w", err)
@@ -143,6 +132,13 @@ func (c *Calculator) Calculate(flags string) (Output, error) {
 		return Output{}, fmt.Errorf(
 			"all memory regions require %s which is greater than %s available for allocation: %s",
 			a, c.TotalMemory, m.AllRegionsString(threadCount.Value))
+	}
+
+	if m.Heap.Value < MinHeapSize {
+		return Output{}, fmt.Errorf(
+			"calculated heap size (%d) is less than the JVM minimum of 2M. To resolve this, reduce one or more of: thread stack size (-Xss), currently: %s. thread count ($BPL_JVM_THREAD_COUNT), currently: %d. code cache size (-XX:ReservedCodeCacheSize), currently: %s",
+			m.Heap.Value, m.Stack, threadCount.Value, m.ReservedCodeCache,
+		)
 	}
 
 	return Output{Memory: m, ThreadCount: threadCount}, nil

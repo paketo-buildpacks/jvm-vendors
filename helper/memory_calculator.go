@@ -178,7 +178,7 @@ func (m MemoryCalculator) Execute() (map[string]string, error) {
 	}
 
 	mem := o.Memory
-	if mem.Heap != nil && mem.Heap.Provenance == calc.UserConfigured {
+	if mem.Heap.Provenance == calc.UserConfigured {
 		m.Logger.Body("WARNING: -Xmx is set directly in $JAVA_TOOL_OPTIONS. " +
 			"This can cause memory-calculator failures or leave unused memory in the container. " +
 			"It is strongly recommended to let the calculator manage heap size.")
