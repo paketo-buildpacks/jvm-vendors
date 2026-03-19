@@ -37,7 +37,6 @@ const (
 	DefaultMemoryLimitPathV1 = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
 	DefaultMemoryLimitPathV2 = "/sys/fs/cgroup/memory.max"
 	DefaultMemoryInfoPath    = "/proc/meminfo"
-	DefaultThreadCount       = 250
 	MaxJVMSize               = 64 * calc.Tebi
 	UnsetTotalMemory         = int64(9_223_372_036_854_771_712)
 )
@@ -54,7 +53,7 @@ func (m MemoryCalculator) Execute() (map[string]string, error) {
 		err error
 		c   = calc.Calculator{
 			HeadRoom:    DefaultHeadroom,
-			ThreadCount: DefaultThreadCount,
+			ThreadCount: calc.DefaultThreadCountValue,
 		}
 		deprecatedHeadroom bool
 	)
@@ -132,9 +131,11 @@ func (m MemoryCalculator) Execute() (map[string]string, error) {
 	}
 
 	if threadCount, ok := os.LookupEnv("BPL_JVM_THREAD_COUNT"); ok {
-		if c.ThreadCount, err = strconv.Atoi(threadCount); err != nil {
+		v, err := strconv.Atoi(threadCount)
+		if err != nil {
 			return nil, fmt.Errorf("unable to convert $BPL_JVM_THREAD_COUNT=%s to integer\n%w", threadCount, err)
 		}
+		c.ThreadCount = calc.ThreadCount{Value: v, Provenance: calc.UserConfigured}
 	}
 
 	totalMemory := m.getMemoryLimitFromPath(m.MemoryLimitPathV1)
@@ -167,31 +168,47 @@ func (m MemoryCalculator) Execute() (map[string]string, error) {
 		c.TotalMemory = calc.Size{Value: totalMemory}
 	}
 
-	r, err := c.Calculate(opts)
+	if c.TotalMemory.Value < calc.LowProfileThreshold {
+		c.LowProfile = true
+	}
+
+	o, err := c.Calculate(opts)
 	if err != nil {
 		return nil, fmt.Errorf("unable to calculate memory configuration\n%w", err)
 	}
 
+	mem := o.Memory
+	if mem.Heap != nil && mem.Heap.Provenance == calc.UserConfigured {
+		m.Logger.Body("WARNING: -Xmx is set directly in $JAVA_TOOL_OPTIONS. " +
+			"This can cause memory-calculator failures or leave unused memory in the container. " +
+			"It is strongly recommended to let the calculator manage heap size.")
+	}
+
+	if mem.ReservedCodeCache.Provenance == calc.Calculated && mem.ReservedCodeCache.Value < 240*calc.Mebi {
+		m.Logger.Bodyf("WARNING: Code cache size is %s, below the default of 240M. "+
+			"JIT compilation performance may be reduced, especially under load.", mem.ReservedCodeCache)
+	}
+
 	var calculated []string
-	if r.DirectMemory.Provenance != calc.UserConfigured {
-		calculated = append(calculated, r.DirectMemory.String())
+	if mem.DirectMemory.Provenance != calc.UserConfigured {
+		calculated = append(calculated, mem.DirectMemory.String())
 	}
-	if r.Heap.Provenance != calc.UserConfigured {
-		calculated = append(calculated, r.Heap.String())
+	if mem.Heap.Provenance != calc.UserConfigured {
+		calculated = append(calculated, mem.Heap.String())
 	}
-	if r.Metaspace.Provenance != calc.UserConfigured {
-		calculated = append(calculated, r.Metaspace.String())
+	if mem.Metaspace.Provenance != calc.UserConfigured {
+		calculated = append(calculated, mem.Metaspace.String())
 	}
-	if r.ReservedCodeCache.Provenance != calc.UserConfigured {
-		calculated = append(calculated, r.ReservedCodeCache.String())
+	if mem.ReservedCodeCache.Provenance != calc.UserConfigured {
+		calculated = append(calculated, mem.ReservedCodeCache.String())
 	}
-	if r.Stack.Provenance != calc.UserConfigured {
-		calculated = append(calculated, r.Stack.String())
+	if mem.Stack.Provenance != calc.UserConfigured {
+		calculated = append(calculated, mem.Stack.String())
 	}
 	values = append(values, calculated...)
 
 	m.Logger.Bodyf("Calculated JVM Memory Configuration: %s (Total Memory: %s, Thread Count: %d, Loaded Class Count: %d, Headroom: %d%%)",
-		strings.Join(calculated, " "), c.TotalMemory, c.ThreadCount, c.LoadedClassCount, c.HeadRoom)
+		strings.Join(calculated, " "), c.TotalMemory, o.ThreadCount.Value, c.LoadedClassCount, c.HeadRoom)
 
 	return map[string]string{"JAVA_TOOL_OPTIONS": strings.Join(values, " ")}, nil
 }
