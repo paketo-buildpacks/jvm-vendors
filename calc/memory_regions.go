@@ -30,6 +30,7 @@ type MemoryRegions struct {
 	Metaspace         *Metaspace
 	ReservedCodeCache ReservedCodeCache
 	Stack             Stack
+	ScalingFactor     float64
 }
 
 func NewMemoryRegionsFromFlags(flags string) (MemoryRegions, error) {
@@ -37,6 +38,7 @@ func NewMemoryRegionsFromFlags(flags string) (MemoryRegions, error) {
 		DirectMemory:      DefaultDirectMemory,
 		ReservedCodeCache: DefaultReservedCodeCache,
 		Stack:             DefaultStack,
+		ScalingFactor:     1.0,
 	}
 
 	p, err := shellwords.Parse(flags)

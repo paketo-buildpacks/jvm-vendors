@@ -38,6 +38,7 @@ func testMemoryRegions(t *testing.T, context spec.G, it spec.S) {
 				DirectMemory:      calc.DefaultDirectMemory,
 				ReservedCodeCache: calc.DefaultReservedCodeCache,
 				Stack:             calc.DefaultStack,
+				ScalingFactor:     1.0,
 			}))
 		})
 
@@ -49,6 +50,7 @@ func testMemoryRegions(t *testing.T, context spec.G, it spec.S) {
 					Metaspace:         &calc.Metaspace{Value: calc.Kibi, Provenance: calc.UserConfigured},
 					ReservedCodeCache: calc.ReservedCodeCache{Value: calc.Kibi, Provenance: calc.UserConfigured},
 					Stack:             calc.Stack{Value: calc.Kibi, Provenance: calc.UserConfigured},
+					ScalingFactor:     1.0,
 				}))
 		})
 	})
