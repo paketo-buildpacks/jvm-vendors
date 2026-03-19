@@ -274,22 +274,18 @@ func testCalculator(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		// minimum floor: stack never goes below 256K
+		// scaling factor = 0.0625
 		it("enforces minimum stack size floor", func() {
 			c := calc.Calculator{
 				HeadRoom:         0,
 				LoadedClassCount: 0,
 				LowProfile:       true,
 				ThreadCount:      calc.DefaultThreadCountValue,
-				TotalMemory:      calc.Size{Value: 64 * calc.Mebi}, // very small, scaling factor = 0.0625
+				TotalMemory:      calc.Size{Value: 64 * calc.Mebi},
 			}
 			out, err := c.Calculate("")
-			// may fail due to heap < 2M, but stack must be at MinStackSize if it gets that far
-			if err == nil {
-				Expect(out.Memory.Stack.Value).To(BeNumerically(">=", calc.MinStackSize))
-			} else {
-				// error expected — too little memory
-				Expect(out.Memory.Stack.Value).To(Equal(int64(0))) // zero value on error return
-			}
+			Expect(err).NotTo(HaveOccurred())
+			Expect(out.Memory.Stack.Value).To(BeNumerically(">=", calc.MinStackSize))
 		})
 
 		// minimum floor: thread count never goes below 30
