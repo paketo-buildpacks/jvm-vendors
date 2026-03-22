@@ -136,8 +136,8 @@ func (c *Calculator) Calculate(flags string) (Output, error) {
 
 	if m.Heap.Value < MinHeapSize {
 		return Output{}, fmt.Errorf(
-			"calculated heap size (%d) is less than the JVM minimum of 2M. To resolve this, reduce one or more of: thread stack size (-Xss), currently: %s. thread count ($BPL_JVM_THREAD_COUNT), currently: %d. code cache size (-XX:ReservedCodeCacheSize), currently: %s",
-			m.Heap.Value, m.Stack, threadCount.Value, m.ReservedCodeCache,
+			"calculated heap size (%d) is less than the JVM minimum of %s. To resolve this, reduce one or more of: thread stack size (-Xss), currently: %s. thread count ($BPL_JVM_THREAD_COUNT), currently: %d. code cache size (-XX:ReservedCodeCacheSize), currently: %s",
+			m.Heap.Value, Size{Value: MinHeapSize}, m.Stack, threadCount.Value, m.ReservedCodeCache,
 		)
 	}
 

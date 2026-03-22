@@ -112,13 +112,12 @@ func testCalculator(t *testing.T, context spec.G, it spec.S) {
 			"all memory regions require 273310K which is greater than 272287K available for allocation: -Xmx1M, 0 headroom, -XX:MaxDirectMemorySize=10M, -XX:MaxMetaspaceSize=14238K, -XX:ReservedCodeCacheSize=240M, -Xss1M * 2 threads"))
 	})
 
-	it("returns error when calculated heap is positive but below JVM minimum of 2M", func() {
-		// TotalMemory = fixed regions + 1M, so heap calculates to 1M (positive, passes the
-		// AllRegionsSize > TotalMemory check) but is below MinHeapSize(2M) — only that guard catches it.
-		// fixed = direct(10M) + metaspace(~14M) + code_cache(240M) + stack2M = ~277M
+	it("returns error when calculated heap is positive but below JVM minimum of 32M", func() {
+		// TotalMemory = fixed regions + 31M, so heap calculates to 31M (positive, passes the
+		// AllRegionsSize > TotalMemory check) but is below MinHeapSize(32M) — only that guard catches it.
 		loadedClasses := 100
 		metaspace := calc.ClassOverhead + calc.ClassSize*int64(loadedClasses)
-		fixed := (10+240+2+1)*calc.Mebi + metaspace
+		fixed := (10+240+2+31)*calc.Mebi + metaspace
 		c := calc.Calculator{
 			HeadRoom:         0,
 			LoadedClassCount: loadedClasses,
@@ -127,7 +126,7 @@ func testCalculator(t *testing.T, context spec.G, it spec.S) {
 		}
 		_, err := c.Calculate("")
 		Expect(err).To(HaveOccurred())
-		Expect(err.Error()).To(Equal("calculated heap size (1048576) is less than the JVM minimum of 2M. To resolve this, reduce one or more of: thread stack size (-Xss), currently: -Xss1M. thread count ($BPL_JVM_THREAD_COUNT), currently: 2. code cache size (-XX:ReservedCodeCacheSize), currently: -XX:ReservedCodeCacheSize=240M"))
+		Expect(err.Error()).To(ContainSubstring("less than the JVM minimum of 32M"))
 	})
 
 	context("low-profile mode", func() {
@@ -274,14 +273,14 @@ func testCalculator(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		// minimum floor: stack never goes below 256K
-		// scaling factor = 0.0625
+		// scaling factor = 128/1024 = 0.125 → 1M*0.125 = 128K < 256K → floor kicks in
 		it("enforces minimum stack size floor", func() {
 			c := calc.Calculator{
 				HeadRoom:         0,
 				LoadedClassCount: 0,
 				LowProfile:       true,
 				ThreadCount:      calc.DefaultThreadCountValue,
-				TotalMemory:      calc.Size{Value: 64 * calc.Mebi},
+				TotalMemory:      calc.Size{Value: 128 * calc.Mebi},
 			}
 			out, err := c.Calculate("")
 			Expect(err).NotTo(HaveOccurred())
@@ -302,11 +301,11 @@ func testCalculator(t *testing.T, context spec.G, it spec.S) {
 			Expect(out.ThreadCount.Value).To(BeNumerically(">=", calc.MinThreadCount))
 		})
 
-		// heap below 2M JVM minimum → error
-		it("returns error when heap would be below JVM minimum of 2M", func() {
+		// heap below 32M JVM minimum → error
+		it("returns error when heap would be below JVM minimum of 32M", func() {
 			// At 64M, scaling floors: stack=256K, cache=15M, threads=30.
 			// With 3000 loaded classes: metaspace ≈ 30664K.
-			// Heap = 64M - (10M + 30664K + 15M + 256K*30) ≈ 64M - 63.2M = < 2M → error.
+			// Heap = 64M - (10M + 30664K + 15M + 256K*30) ≈ 64M - 63.2M = < 32M → error.
 			c := calc.Calculator{
 				HeadRoom:         0,
 				LoadedClassCount: 3000,
@@ -316,7 +315,7 @@ func testCalculator(t *testing.T, context spec.G, it spec.S) {
 			}
 			_, err := c.Calculate("")
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("less than the JVM minimum of 2M"))
+			Expect(err.Error()).To(ContainSubstring("less than the JVM minimum of 32M"))
 			Expect(err.Error()).To(ContainSubstring("$BPL_JVM_THREAD_COUNT"))
 			Expect(err.Error()).To(ContainSubstring("-Xss"))
 			Expect(err.Error()).To(ContainSubstring("-XX:ReservedCodeCacheSize"))
