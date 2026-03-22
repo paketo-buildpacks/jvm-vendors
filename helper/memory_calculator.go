@@ -169,7 +169,18 @@ func (m MemoryCalculator) Execute() (map[string]string, error) {
 	}
 
 	if c.TotalMemory.Value < calc.LowProfileThreshold {
-		c.LowProfile = true
+		m.Logger.Bodyf("WARNING: Container memory is below %s. A future release will automatically "+
+			"apply a low memory profile, which adjusts JVM memory settings for small containers. "+
+			"To opt out, set BPL_LOW_MEMORY_PROFILE_DISABLED=true.",
+			calc.Size{Value: calc.LowProfileThreshold})
+
+		if s, ok := os.LookupEnv("BPL_LOW_MEMORY_PROFILE_DISABLED"); ok {
+			if v, err := strconv.ParseBool(s); err != nil {
+				return nil, fmt.Errorf("unable to convert $BPL_LOW_MEMORY_PROFILE_DISABLED=%s to boolean\n%w", s, err)
+			} else {
+				c.LowProfile = !v
+			}
+		}
 	}
 
 	o, err := c.Calculate(opts)
