@@ -110,6 +110,12 @@ api = "0.10"
     name = "BPL_JFR_ARGS"
 
   [[metadata.configurations]]
+    default = "true"
+    description = "disable the low memory profile for containers with less than 1G of memory"
+    launch = true
+    name = "BPL_LOW_MEMORY_PROFILE_DISABLED"
+
+  [[metadata.configurations]]
     build = true
     default = "false"
     description = "enables running jlink tool to generate custom JRE"

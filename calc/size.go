@@ -37,6 +37,13 @@ const (
 	Tebi = 1_024 * Gibi
 
 	SizePattern = "([\\d]+)([kmgtKMGT]?)"
+
+	// LowProfileThreshold constants applied automatically when available memory < LowProfileThreshold.
+	LowProfileThreshold = 1 * Gibi
+	MinStackSize        = 256 * Kibi
+	MinCodeCacheSize    = 2496 * Kibi
+	MinThreadCount      = 30
+	MinHeapSize         = 32 * Mebi
 )
 
 var SizeRE = regexp.MustCompile(fmt.Sprintf("^%s$", SizePattern))
