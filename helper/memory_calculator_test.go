@@ -343,40 +343,61 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 			})
 
 			context("low-profile mode (container < 1G)", func() {
-				it("scales stack, threads, and code cache at 512M", func() {
+				it("emits a warning when memory is below threshold", func() {
 					Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 512*calc.Mebi, 10), 0600)).To(Succeed())
 
-					result, err := m.Execute()
-					Expect(err).NotTo(HaveOccurred())
-					opts := result["JAVA_TOOL_OPTIONS"]
-					Expect(opts).To(ContainSubstring("-Xss512K"))
-					Expect(opts).To(ContainSubstring("-XX:ReservedCodeCacheSize=120M"))
-					Expect(opts).NotTo(ContainSubstring("-Xss1M"))
-					Expect(opts).NotTo(ContainSubstring("-XX:ReservedCodeCacheSize=240M"))
+					var logOutput strings.Builder
+					m.Logger = log.NewPaketoLogger(&logOutput)
+
+					// Without low-profile scaling, 512M is too small for unscaled defaults, so Execute returns an error.
+					// The warning should still have been emitted before the calculation failed.
+					_, _ = m.Execute()
+					Expect(logOutput.String()).To(ContainSubstring("WARNING: Container memory is below 1G"))
 				})
 
-				it("scales stack, threads, and code cache at 256M", func() {
-					Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 256*calc.Mebi, 10), 0600)).To(Succeed())
+				it("does not activate low profile by default", func() {
+					Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 512*calc.Mebi, 10), 0600)).To(Succeed())
 
-					result, err := m.Execute()
-					Expect(err).NotTo(HaveOccurred())
-					opts := result["JAVA_TOOL_OPTIONS"]
-					Expect(opts).To(ContainSubstring("-Xss256K"))
-					Expect(opts).To(ContainSubstring("-XX:ReservedCodeCacheSize=60M"))
-					Expect(opts).NotTo(ContainSubstring("-Xss1M"))
-					Expect(opts).NotTo(ContainSubstring("-XX:ReservedCodeCacheSize=240M"))
+					// Without low-profile scaling, unscaled defaults (240M code cache + 250 * 1M stack)
+					// exceed 512M, so the calculator returns an error about fixed regions being too large.
+					_, err := m.Execute()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("fixed memory regions require"))
 				})
 
-				context("$BPL_JVM_THREAD_COUNT set with 256M container", func() {
+				context("BPL_LOW_MEMORY_PROFILE_DISABLED=false", func() {
 					it.Before(func() {
-						Expect(os.Setenv("BPL_JVM_THREAD_COUNT", "50")).To(Succeed())
+						Expect(os.Setenv("BPL_LOW_MEMORY_PROFILE_DISABLED", "false")).To(Succeed())
 					})
 
 					it.After(func() {
-						Expect(os.Unsetenv("BPL_JVM_THREAD_COUNT")).To(Succeed())
+						Expect(os.Unsetenv("BPL_LOW_MEMORY_PROFILE_DISABLED")).To(Succeed())
 					})
 
-					it("respects user thread count, still scales stack and code cache", func() {
+					it("emits a warning even when low profile is enabled", func() {
+						Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 512*calc.Mebi, 10), 0600)).To(Succeed())
+
+						var logOutput strings.Builder
+						m.Logger = log.NewPaketoLogger(&logOutput)
+
+						_, err := m.Execute()
+						Expect(err).NotTo(HaveOccurred())
+						Expect(logOutput.String()).To(ContainSubstring("WARNING: Container memory is below 1G"))
+					})
+
+					it("scales stack, threads, and code cache at 512M", func() {
+						Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 512*calc.Mebi, 10), 0600)).To(Succeed())
+
+						result, err := m.Execute()
+						Expect(err).NotTo(HaveOccurred())
+						opts := result["JAVA_TOOL_OPTIONS"]
+						Expect(opts).To(ContainSubstring("-Xss512K"))
+						Expect(opts).To(ContainSubstring("-XX:ReservedCodeCacheSize=120M"))
+						Expect(opts).NotTo(ContainSubstring("-Xss1M"))
+						Expect(opts).NotTo(ContainSubstring("-XX:ReservedCodeCacheSize=240M"))
+					})
+
+					it("scales stack, threads, and code cache at 256M", func() {
 						Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 256*calc.Mebi, 10), 0600)).To(Succeed())
 
 						result, err := m.Execute()
@@ -384,46 +405,68 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 						opts := result["JAVA_TOOL_OPTIONS"]
 						Expect(opts).To(ContainSubstring("-Xss256K"))
 						Expect(opts).To(ContainSubstring("-XX:ReservedCodeCacheSize=60M"))
-					})
-				})
-
-				context("user sets -XX:ReservedCodeCacheSize in $JAVA_TOOL_OPTIONS with 256M container", func() {
-					it.Before(func() {
-						Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-XX:ReservedCodeCacheSize=120M")).To(Succeed())
+						Expect(opts).NotTo(ContainSubstring("-Xss1M"))
+						Expect(opts).NotTo(ContainSubstring("-XX:ReservedCodeCacheSize=240M"))
 					})
 
-					it.After(func() {
-						Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+					context("$BPL_JVM_THREAD_COUNT set with 256M container", func() {
+						it.Before(func() {
+							Expect(os.Setenv("BPL_JVM_THREAD_COUNT", "50")).To(Succeed())
+						})
+
+						it.After(func() {
+							Expect(os.Unsetenv("BPL_JVM_THREAD_COUNT")).To(Succeed())
+						})
+
+						it("respects user thread count, still scales stack and code cache", func() {
+							Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 256*calc.Mebi, 10), 0600)).To(Succeed())
+
+							result, err := m.Execute()
+							Expect(err).NotTo(HaveOccurred())
+							opts := result["JAVA_TOOL_OPTIONS"]
+							Expect(opts).To(ContainSubstring("-Xss256K"))
+							Expect(opts).To(ContainSubstring("-XX:ReservedCodeCacheSize=60M"))
+						})
 					})
 
-					it("respects user code cache, still scales stack", func() {
-						Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 256*calc.Mebi, 10), 0600)).To(Succeed())
+					context("user sets -XX:ReservedCodeCacheSize in $JAVA_TOOL_OPTIONS with 256M container", func() {
+						it.Before(func() {
+							Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-XX:ReservedCodeCacheSize=120M")).To(Succeed())
+						})
 
-						result, err := m.Execute()
-						Expect(err).NotTo(HaveOccurred())
-						opts := result["JAVA_TOOL_OPTIONS"]
-						Expect(opts).To(ContainSubstring("-Xss256K"))
-						Expect(opts).To(ContainSubstring("-XX:ReservedCodeCacheSize=120M"))
+						it.After(func() {
+							Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+						})
+
+						it("respects user code cache, still scales stack", func() {
+							Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 256*calc.Mebi, 10), 0600)).To(Succeed())
+
+							result, err := m.Execute()
+							Expect(err).NotTo(HaveOccurred())
+							opts := result["JAVA_TOOL_OPTIONS"]
+							Expect(opts).To(ContainSubstring("-Xss256K"))
+							Expect(opts).To(ContainSubstring("-XX:ReservedCodeCacheSize=120M"))
+						})
 					})
-				})
 
-				context("user sets -Xmx in $JAVA_TOOL_OPTIONS", func() {
-					it.Before(func() {
-						Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-Xmx200M")).To(Succeed())
-					})
+					context("user sets -Xmx in $JAVA_TOOL_OPTIONS", func() {
+						it.Before(func() {
+							Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-Xmx200M")).To(Succeed())
+						})
 
-					it.After(func() {
-						Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
-					})
+						it.After(func() {
+							Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+						})
 
-					it("emits a warning about -Xmx", func() {
-						var logOutput strings.Builder
-						m.Logger = log.NewPaketoLogger(&logOutput)
+						it("emits a warning about -Xmx", func() {
+							var logOutput strings.Builder
+							m.Logger = log.NewPaketoLogger(&logOutput)
 
-						result, err := m.Execute()
-						Expect(err).NotTo(HaveOccurred())
-						Expect(logOutput.String()).To(ContainSubstring("WARNING: -Xmx is set directly in $JAVA_TOOL_OPTIONS"))
-						_ = result
+							result, err := m.Execute()
+							Expect(err).NotTo(HaveOccurred())
+							Expect(logOutput.String()).To(ContainSubstring("WARNING: -Xmx is set directly in $JAVA_TOOL_OPTIONS"))
+							_ = result
+						})
 					})
 				})
 			})
