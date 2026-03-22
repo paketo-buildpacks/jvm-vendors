@@ -43,7 +43,7 @@ const (
 	MinStackSize        = 256 * Kibi
 	MinCodeCacheSize    = 2496 * Kibi
 	MinThreadCount      = 30
-	MinHeapSize         = 2 * Mebi
+	MinHeapSize         = 32 * Mebi
 )
 
 var SizeRE = regexp.MustCompile(fmt.Sprintf("^%s$", SizePattern))
