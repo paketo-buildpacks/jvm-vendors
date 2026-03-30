@@ -199,4 +199,76 @@ func testJLink(t *testing.T, context spec.G, it spec.S) {
 		Expect(e.Args).To(ContainElement("java.se,java.base"))
 		Expect(e.Args).To(ContainElement("--output"))
 	})
+
+	it("adds compact object headers flag for Java 25+", func() {
+		args := []string{"--no-man-pages", "--no-header-files", "--strip-debug"}
+		exec := &mocks.Executor{}
+		j, err := jvmvendors.NewJLink(ctx.ApplicationPath, exec, args, cl, LaunchContribution, false, log.NewDiscardLogger())
+		Expect(err).NotTo(HaveOccurred())
+		j.JavaVersion = "25.0.0"
+		j.Logger = log.NewPaketoLogger(io.Discard)
+
+		layer, err := ctx.Layers.Layer("jlink")
+		Expect(err).NotTo(HaveOccurred())
+
+		exec.On("Execute", mock.MatchedBy(func(ex effect.Execution) bool {
+			return reflect.DeepEqual(ex.Args, []string{"--list-modules"})
+		})).Return(func(ex effect.Execution) error {
+			_, err := ex.Stdout.Write([]byte("java.se,java.base"))
+			Expect(err).ToNot(HaveOccurred())
+			return nil
+		})
+
+		exec.On("Execute", mock.MatchedBy(func(ex effect.Execution) bool {
+			return strings.Contains(ex.Command, "jlink")
+		})).Run(func(args mock.Arguments) {
+			err = os.MkdirAll(filepath.Join(ctx.Layers.Path, "jlink"), os.ModePerm)
+			jre, err := os.Open("testdata/3aa01010c0d3592ea248c8353d60b361231fa9bf9a7479b4f06451fef3e64524/stub-jre-11.tar.gz")
+			Expect(err).NotTo(HaveOccurred())
+			err = crush.Extract(jre, layer.Path, 1)
+			Expect(err).NotTo(HaveOccurred())
+		}).Return(nil)
+
+		err = j.Contribute(&layer)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.delim"]).To(Equal(" "))
+		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.append"]).To(Equal("-XX:+UseCompactObjectHeaders"))
+	})
+
+	it("does not add compact object headers flag for Java before 25", func() {
+		args := []string{"--no-man-pages", "--no-header-files", "--strip-debug"}
+		exec := &mocks.Executor{}
+		j, err := jvmvendors.NewJLink(ctx.ApplicationPath, exec, args, cl, LaunchContribution, false, log.NewDiscardLogger())
+		Expect(err).NotTo(HaveOccurred())
+		j.JavaVersion = "21.0.0"
+		j.Logger = log.NewPaketoLogger(io.Discard)
+
+		layer, err := ctx.Layers.Layer("jlink")
+		Expect(err).NotTo(HaveOccurred())
+
+		exec.On("Execute", mock.MatchedBy(func(ex effect.Execution) bool {
+			return reflect.DeepEqual(ex.Args, []string{"--list-modules"})
+		})).Return(func(ex effect.Execution) error {
+			_, err := ex.Stdout.Write([]byte("java.se,java.base"))
+			Expect(err).ToNot(HaveOccurred())
+			return nil
+		})
+
+		exec.On("Execute", mock.MatchedBy(func(ex effect.Execution) bool {
+			return strings.Contains(ex.Command, "jlink")
+		})).Run(func(args mock.Arguments) {
+			err = os.MkdirAll(filepath.Join(ctx.Layers.Path, "jlink"), os.ModePerm)
+			jre, err := os.Open("testdata/3aa01010c0d3592ea248c8353d60b361231fa9bf9a7479b4f06451fef3e64524/stub-jre-11.tar.gz")
+			Expect(err).NotTo(HaveOccurred())
+			err = crush.Extract(jre, layer.Path, 1)
+			Expect(err).NotTo(HaveOccurred())
+		}).Return(nil)
+
+		err = j.Contribute(&layer)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.delim"]).To(Equal(" "))
+		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.append"]).To(Equal("-XX:+ExitOnOutOfMemoryError"))
+	})
 }
