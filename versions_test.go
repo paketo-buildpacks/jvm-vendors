@@ -36,4 +36,14 @@ func testVersions(t *testing.T, context spec.G, it spec.S) {
 		Expect(jvmvendors.IsBeforeJava9("11.0.0")).To(BeFalse())
 		Expect(jvmvendors.IsBeforeJava9("")).To(BeFalse())
 	})
+
+	it("determines whether a version is Java 25 or later", func() {
+		Expect(jvmvendors.IsJava25OrLater("21.0.0")).To(BeFalse())
+		Expect(jvmvendors.IsJava25OrLater("24.0.0")).To(BeFalse())
+		Expect(jvmvendors.IsJava25OrLater("25.0.0")).To(BeTrue())
+		Expect(jvmvendors.IsJava25OrLater("25.0.1")).To(BeTrue())
+		Expect(jvmvendors.IsJava25OrLater("26.0.0")).To(BeTrue())
+		Expect(jvmvendors.IsJava25OrLater("26.2.4")).To(BeTrue())
+		Expect(jvmvendors.IsJava25OrLater("")).To(BeFalse())
+	})
 }

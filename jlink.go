@@ -124,6 +124,10 @@ func (j JLink) Contribute(layer *libcnb.Layer) error {
 			layer.LaunchEnvironment.Default("MALLOC_ARENA_MAX", "2")
 
 			layer.LaunchEnvironment.Append("JAVA_TOOL_OPTIONS", " ", "-XX:+ExitOnOutOfMemoryError")
+
+			if IsJava25OrLater(j.JavaVersion) {
+				layer.LaunchEnvironment.Append("JAVA_TOOL_OPTIONS", " ", "-XX:+UseCompactObjectHeaders")
+			}
 		}
 
 		return nil

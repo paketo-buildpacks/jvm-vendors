@@ -22,6 +22,7 @@ import (
 
 var Java9, _ = semver.NewVersion("9")
 var Java18, _ = semver.NewVersion("18")
+var Java25, _ = semver.NewVersion("25")
 
 func IsBeforeJava9(candidate string) bool {
 	v, err := semver.NewVersion(candidate)
@@ -39,4 +40,13 @@ func IsBeforeJava18(candidate string) bool {
 	}
 
 	return v.LessThan(Java18)
+}
+
+func IsJava25OrLater(candidate string) bool {
+	v, err := semver.NewVersion(candidate)
+	if err != nil {
+		return false
+	}
+
+	return !v.LessThan(Java25)
 }

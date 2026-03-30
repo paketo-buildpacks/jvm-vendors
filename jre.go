@@ -159,6 +159,10 @@ func ConfigureJRE(configCtx ConfigJREContext) error {
 		configCtx.Layer.LaunchEnvironment.Default("MALLOC_ARENA_MAX", "2")
 
 		configCtx.Layer.LaunchEnvironment.Append("JAVA_TOOL_OPTIONS", " ", "-XX:+ExitOnOutOfMemoryError")
+
+		if IsJava25OrLater(configCtx.JavaVersion) {
+			configCtx.Layer.LaunchEnvironment.Append("JAVA_TOOL_OPTIONS", " ", "-XX:+UseCompactObjectHeaders")
+		}
 	}
 	return nil
 }

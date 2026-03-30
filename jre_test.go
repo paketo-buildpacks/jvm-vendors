@@ -323,4 +323,26 @@ func testJRE(t *testing.T, context spec.G, it spec.S) {
 		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.delim"]).To(Equal(" "))
 		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.append"]).To(Equal("-XX:+ExitOnOutOfMemoryError"))
 	})
+
+	it("marks Java 25+ JRE layer for launch with compact object headers", func() {
+		dep := libpak.BuildModuleDependency{
+			Version: "25.0.0",
+			URI:     "https://localhost/stub-jre-11.tar.gz",
+			SHA256:  "3aa01010c0d3592ea248c8353d60b361231fa9bf9a7479b4f06451fef3e64524",
+		}
+		dc := libpak.DependencyCache{CachePath: "testdata", Logger: log.NewDiscardLogger()}
+
+		j, err := jvmvendors.NewJRE(ctx.ApplicationPath, dep, dc, jvmvendors.JREType, cl, LaunchContribution)
+		Expect(err).NotTo(HaveOccurred())
+
+		layer, err := ctx.Layers.Layer("test-layer")
+		Expect(err).NotTo(HaveOccurred())
+
+		err = j.Contribute(&layer)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(layer.LayerTypes.Launch).To(BeTrue())
+		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.delim"]).To(Equal(" "))
+		Expect(layer.LaunchEnvironment["JAVA_TOOL_OPTIONS.append"]).To(Equal("-XX:+UseCompactObjectHeaders"))
+	})
 }
