@@ -468,6 +468,55 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 							_ = result
 						})
 					})
+
+					context("compact object headers with Java 25+", func() {
+						it.Before(func() {
+							Expect(os.Setenv("BPI_JVM_VERSION", "25.0.0")).To(Succeed())
+						})
+
+						it.After(func() {
+							Expect(os.Unsetenv("BPI_JVM_VERSION")).To(Succeed())
+						})
+
+						it("appends -XX:+UseCompactObjectHeaders for Java 25+", func() {
+							Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 512*calc.Mebi, 10), 0600)).To(Succeed())
+
+							result, err := m.Execute()
+							Expect(err).NotTo(HaveOccurred())
+							opts := result["JAVA_TOOL_OPTIONS"]
+							Expect(opts).To(ContainSubstring("-XX:+UseCompactObjectHeaders"))
+						})
+					})
+
+					context("compact object headers with Java 24", func() {
+						it.Before(func() {
+							Expect(os.Setenv("BPI_JVM_VERSION", "24.0.0")).To(Succeed())
+						})
+
+						it.After(func() {
+							Expect(os.Unsetenv("BPI_JVM_VERSION")).To(Succeed())
+						})
+
+						it("does not append -XX:+UseCompactObjectHeaders for Java < 25", func() {
+							Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 512*calc.Mebi, 10), 0600)).To(Succeed())
+
+							result, err := m.Execute()
+							Expect(err).NotTo(HaveOccurred())
+							opts := result["JAVA_TOOL_OPTIONS"]
+							Expect(opts).NotTo(ContainSubstring("-XX:+UseCompactObjectHeaders"))
+						})
+					})
+
+					context("compact object headers without BPI_JVM_VERSION", func() {
+						it("does not append -XX:+UseCompactObjectHeaders when version is not set", func() {
+							Expect(os.WriteFile(memoryLimitPathV1, strconv.AppendInt([]byte{}, 512*calc.Mebi, 10), 0600)).To(Succeed())
+
+							result, err := m.Execute()
+							Expect(err).NotTo(HaveOccurred())
+							opts := result["JAVA_TOOL_OPTIONS"]
+							Expect(opts).NotTo(ContainSubstring("-XX:+UseCompactObjectHeaders"))
+						})
+					})
 				})
 			})
 

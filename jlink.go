@@ -98,6 +98,7 @@ func (j JLink) Contribute(layer *libcnb.Layer) error {
 		if IsLaunchContribution(j.Metadata) {
 			layer.LaunchEnvironment.Default("BPI_APPLICATION_PATH", j.ApplicationPath)
 			layer.LaunchEnvironment.Default("BPI_JVM_CACERTS", cacertsPath)
+			layer.LaunchEnvironment.Default("BPI_JVM_VERSION", j.JavaVersion)
 
 			if c, err := count.Classes(layer.Path); err != nil {
 				return fmt.Errorf("unable to count JVM classes\n%w", err)

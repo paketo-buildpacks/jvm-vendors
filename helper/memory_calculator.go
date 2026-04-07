@@ -27,6 +27,7 @@ import (
 
 	"github.com/paketo-buildpacks/libpak/v2/log"
 
+	jvmvendors "github.com/paketo-buildpacks/jvm-vendors"
 	"github.com/paketo-buildpacks/jvm-vendors/calc"
 	"github.com/paketo-buildpacks/jvm-vendors/count"
 )
@@ -217,6 +218,15 @@ func (m MemoryCalculator) Execute() (map[string]string, error) {
 		calculated = append(calculated, mem.Stack.String())
 	}
 	values = append(values, calculated...)
+
+	if c.LowProfile {
+		if jvmVersion, ok := os.LookupEnv("BPI_JVM_VERSION"); ok && jvmvendors.IsJava25OrLater(jvmVersion) {
+			if !strings.Contains(opts, "-XX:+UseCompactObjectHeaders") {
+				values = append(values, "-XX:+UseCompactObjectHeaders")
+				m.Logger.Body("Enabling compact object headers for low-memory Java 25+ container")
+			}
+		}
+	}
 
 	m.Logger.Bodyf("Calculated JVM Memory Configuration: %s (Total Memory: %s, Thread Count: %d, Loaded Class Count: %d, Headroom: %d%%)",
 		strings.Join(calculated, " "), c.TotalMemory, o.ThreadCount.Value, c.LoadedClassCount, c.HeadRoom)
