@@ -107,6 +107,7 @@ func ConfigureJRE(configCtx ConfigJREContext) error {
 	if configCtx.IsBuild {
 		configCtx.Logger.Body("Configuring for Build")
 		configCtx.Layer.BuildEnvironment.Default("JAVA_HOME", configCtx.JavaHome)
+		configCtx.Layer.BuildEnvironment.Default("JRE_HOME", configCtx.JavaHome)
 	}
 
 	if configCtx.IsLaunch {

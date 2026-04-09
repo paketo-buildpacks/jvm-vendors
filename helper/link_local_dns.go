@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2018-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,12 @@ type LinkLocalDNS struct {
 }
 
 func (l LinkLocalDNS) Execute() (map[string]string, error) {
+	// In some cases, the nameservers are empty.
+	// For example, when using the host network, and host '/etc/resolv.conf' file content is empty.
+	if len(l.Config.Servers) == 0 {
+		return nil, nil
+	}
+
 	if !net.ParseIP(l.Config.Servers[0]).IsLinkLocalUnicast() {
 		return nil, nil
 	}
@@ -44,8 +50,6 @@ func (l LinkLocalDNS) Execute() (map[string]string, error) {
 		l.Logger.Bodyf("WARNING: Unable to disable JVM DNS caching disabled in favor of link-local DNS caching because %s is read-only", file)
 		return nil, nil
 	}
-
-	l.Logger.Body("JVM DNS caching disabled in favor of link-local DNS caching")
 
 	f, err := os.OpenFile(file, os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
@@ -60,6 +64,8 @@ networkaddress.cache.negative.ttl=0
 	if err != nil {
 		return nil, fmt.Errorf("unable to write DNS configuration to %s\n%w", file, err)
 	}
+
+	l.Logger.Body("JVM DNS caching disabled in favor of link-local DNS caching")
 
 	return nil, nil
 }
