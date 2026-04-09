@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2018-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,6 @@ func (l LinkLocalDNS) Execute() (map[string]string, error) {
 		return nil, nil
 	}
 
-	l.Logger.Body("JVM DNS caching disabled in favor of link-local DNS caching")
-
 	f, err := os.OpenFile(file, os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open %s\n%w", file, err)
@@ -60,6 +58,8 @@ networkaddress.cache.negative.ttl=0
 	if err != nil {
 		return nil, fmt.Errorf("unable to write DNS configuration to %s\n%w", file, err)
 	}
+
+	l.Logger.Body("JVM DNS caching disabled in favor of link-local DNS caching")
 
 	return nil, nil
 }
