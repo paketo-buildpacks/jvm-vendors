@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2025 the original author or authors.
+ * Copyright 2018-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ func NewBuild(logger log.Logger, buildOpts ...BuildOption) Build {
 }
 
 func (b Build) Build(context libcnb.BuildContext, result *libcnb.BuildResult) ([]libpak.Contributable, error) {
-	var jdkRequired, jreRequired, jreMissing, jreSkipped, jLinkEnabled, nativeImage bool
+	var jdkRequired, jreRequired, jreMissing, jdkMissing, jreSkipped, jLinkEnabled, nativeImage bool
 
 	pr := libpak.PlanEntryResolver{Plan: context.Plan}
 
@@ -113,22 +113,10 @@ func (b Build) Build(context libcnb.BuildContext, result *libcnb.BuildResult) ([
 	}
 	cr.LogConfiguration(b.Logger)
 
-	jvmVersion := NewJVMVersion(b.Logger)
-	v, err := jvmVersion.GetJVMVersion(context.ApplicationPath, cr)
-	if err != nil {
-		return []libpak.Contributable{}, fmt.Errorf("unable to determine jvm version\n%w", err)
-	}
-
 	dr, err := libpak.NewDependencyResolver(bpm, context.StackID)
 	if err != nil {
 		return []libpak.Contributable{}, fmt.Errorf("unable to create dependency resolver\n%w", err)
 	}
-
-	b.DependencyCache, err = libpak.NewDependencyCache(context.Buildpack.Info.ID, context.Buildpack.Info.Version, context.Buildpack.Path, context.Platform.Bindings, b.Logger)
-	if err != nil {
-		return []libpak.Contributable{}, fmt.Errorf("unable to create dependency cache\n%w", err)
-	}
-	b.DependencyCache.Logger = b.Logger
 
 	jvmVendors, err := internal.LoadJvmVendors(&cr)
 	if err != nil {
@@ -140,9 +128,26 @@ func (b Build) Build(context libcnb.BuildContext, result *libcnb.BuildResult) ([
 		jvmVendor = jvmVendors[0]
 	}
 
+	jvmVersion := NewJVMVersion(b.Logger)
+	v, err := jvmVersion.GetJVMVersion(context.ApplicationPath, cr, dr, jvmVendor)
+	if err != nil {
+		return []libpak.Contributable{}, fmt.Errorf("unable to determine jvm version\n%w", err)
+	}
+
+	b.DependencyCache, err = libpak.NewDependencyCache(context.Buildpack.Info.ID, context.Buildpack.Info.Version, context.Buildpack.Path, context.Platform.Bindings, b.Logger)
+	if err != nil {
+		return []libpak.Contributable{}, fmt.Errorf("unable to create dependency cache\n%w", err)
+	}
+	b.DependencyCache.Logger = b.Logger
+
+	jdkMissing = false
 	depJDK, err := dr.Resolve(fmt.Sprintf("jdk-%s", jvmVendor), v)
 	if (jdkRequired && !nativeImage) && err != nil {
-		return []libpak.Contributable{}, fmt.Errorf("unable to find dependency\n%w", err)
+		return []libpak.Contributable{}, fmt.Errorf("unable to find dependency for JDK %s - make sure the buildpack includes the Java version you have requested\n%w", v, err)
+	}
+
+	if libpak.IsNoValidDependencies(err) {
+		jdkMissing = true
 	}
 
 	jreMissing = false
@@ -162,7 +167,7 @@ func (b Build) Build(context libcnb.BuildContext, result *libcnb.BuildResult) ([
 	if nativeImage {
 		depNative, err := dr.Resolve(fmt.Sprintf("native-image-svm-%s", jvmVendor), v)
 		if err != nil {
-			return []libpak.Contributable{}, fmt.Errorf("unable to find dependency\n%w", err)
+			return []libpak.Contributable{}, fmt.Errorf("unable to find dependency for native-image-svm %s - make sure the buildpack includes the Java Native version you have requested\n%w", v, err)
 		}
 		if b.Native.BundledWithJDK {
 			if err = b.contributeJDK(depNative); err != nil {
@@ -196,6 +201,9 @@ func (b Build) Build(context libcnb.BuildContext, result *libcnb.BuildResult) ([
 
 	// use JDK as JRE
 	if jreRequired && (jreSkipped || jreMissing) {
+		if jdkMissing {
+			return []libpak.Contributable{}, fmt.Errorf("unable to find dependency for JRE %s even as a JDK - make sure the buildpack includes the Java version you have requested\n%w", v, err)
+		}
 		b.warnIfJreNotUsed(jreMissing, jreSkipped)
 		if err = b.contributeJDKAsJRE(depJDK, jrePlanEntry, context); err != nil {
 			return []libpak.Contributable{}, fmt.Errorf("unable to contribute JDK as JRE\n%w", err)
@@ -248,7 +256,7 @@ func (b *Build) contributeJDKAsJRE(jdkDep libpak.BuildModuleDependency, jrePlanE
 
 	dt := JDKType
 	if err := b.contributeJRE(jdkDep, context.ApplicationPath, dt, jrePlanEntry.Metadata); err != nil {
-		return fmt.Errorf("unable to contribute JRE\n%w", err)
+		return fmt.Errorf("unable to contribute JDK\n%w", err)
 	}
 	return nil
 }
