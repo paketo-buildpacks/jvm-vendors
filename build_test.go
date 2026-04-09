@@ -237,7 +237,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(contributors[1].Name()).To(Equal("helper"))
 
 		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
-			"active-processor-count",
 			"java-opts",
 			"jvm-heap",
 			"link-local-dns",
@@ -248,6 +247,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			"openssl-certificate-loader",
 			"security-providers-classpath-8",
 			"debug-8",
+			"active-processor-count",
 		}))
 	})
 
@@ -270,7 +270,66 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(contributors[1].Name()).To(Equal("helper"))
 
 		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
+			"java-opts",
+			"jvm-heap",
+			"link-local-dns",
+			"memory-calculator",
+			"security-providers-configurer",
+			"jmx",
+			"jfr",
+			"openssl-certificate-loader",
+			"security-providers-classpath-9",
+			"debug-9",
+			"nmt",
 			"active-processor-count",
+		}))
+	})
+
+	it("contributes active-processor-count before Java 17", func() {
+		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
+		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
+			{
+				"id":      "jre-corretto",
+				"version": "11.0.0",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+		}
+		ctx.StackID = "test-stack-id"
+
+		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
+			"java-opts",
+			"jvm-heap",
+			"link-local-dns",
+			"memory-calculator",
+			"security-providers-configurer",
+			"jmx",
+			"jfr",
+			"openssl-certificate-loader",
+			"security-providers-classpath-9",
+			"debug-9",
+			"nmt",
+			"active-processor-count",
+		}))
+	})
+
+	it("does not contribute active-processor-count with Java 17 and later", func() {
+		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
+		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
+			{
+				"id":      "jre-corretto",
+				"version": "17.0.0",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+		}
+		ctx.StackID = "test-stack-id"
+
+		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
 			"java-opts",
 			"jvm-heap",
 			"link-local-dns",
