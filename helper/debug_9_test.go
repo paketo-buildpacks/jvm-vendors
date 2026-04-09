@@ -39,13 +39,28 @@ func testDebug9(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("$BPL_DEBUG_ENABLED", func() {
+		var fakeIPv6File *os.File
+		var fakeIPv6Path string
+
 		it.Before(func() {
-			Expect(os.Setenv("BPL_DEBUG_ENABLED", "true")).
-				To(Succeed())
+			Expect(os.Setenv("BPL_DEBUG_ENABLED", "true")).To(Succeed())
+
+			fakeIPv6File, fakeIPv6FileErr := os.CreateTemp("", "IPv6Test")
+			Expect(fakeIPv6FileErr).ToNot(HaveOccurred())
+
+			_, err := fakeIPv6File.WriteString("0\n")
+			Expect(err).ToNot(HaveOccurred())
+
+			fakeIPv6Path = fakeIPv6File.Name()
+			d.CustomIPv6CheckPath = fakeIPv6Path
 		})
 
 		it.After(func() {
 			Expect(os.Unsetenv("BPL_DEBUG_ENABLED")).To(Succeed())
+			if fakeIPv6File != nil && fakeIPv6Path != "" {
+				Expect(fakeIPv6File.Close()).To(Succeed())
+				Expect(os.Remove(fakeIPv6Path)).To(Succeed())
+			}
 		})
 
 		it("contributes configuration", func() {
@@ -112,6 +127,42 @@ func testDebug9(t *testing.T, context spec.G, it spec.S) {
 			it("contributes configuration appended to existing $JAVA_TOOL_OPTIONS", func() {
 				Expect(d.Execute()).To(Equal(map[string]string{
 					"JAVA_TOOL_OPTIONS": "test-java-tool-options -agentlib:jdwp=transport=dt_socket,server=y,address=*:8000,suspend=n",
+				}))
+			})
+		})
+
+		context("IPv6 is not present", func() {
+			it.Before(func() {
+				Expect(fakeIPv6Path).NotTo(BeEmpty())
+				d1 := []byte("1\n")
+				Expect(os.WriteFile(fakeIPv6Path, d1, 0600)).To(Succeed())
+			})
+
+			it.After(func() {
+				Expect(fakeIPv6Path).NotTo(BeEmpty())
+				d1 := []byte("0\n")
+				Expect(os.WriteFile(fakeIPv6Path, d1, 0600)).To(Succeed())
+			})
+
+			it("replaces '*' host with IPv4 0.0.0.0", func() {
+				Expect(d.Execute()).To(Equal(map[string]string{
+					"JAVA_TOOL_OPTIONS": "-agentlib:jdwp=transport=dt_socket,server=y,address=0.0.0.0:8000,suspend=n",
+				}))
+			})
+		})
+
+		context("IPv6 kernel module file not there", func() {
+			it.Before(func() {
+				d.CustomIPv6CheckPath = "/does/not/exist"
+			})
+
+			it.After(func() {
+				d.CustomIPv6CheckPath = fakeIPv6Path
+			})
+
+			it("replaces '*' host with IPv4 0.0.0.0", func() {
+				Expect(d.Execute()).To(Equal(map[string]string{
+					"JAVA_TOOL_OPTIONS": "-agentlib:jdwp=transport=dt_socket,server=y,address=0.0.0.0:8000,suspend=n",
 				}))
 			})
 		})
