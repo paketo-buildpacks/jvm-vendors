@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2025 the original author or authors.
+ * Copyright 2018-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package jvmvendors_test
 
 import (
 	"io"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/paketo-buildpacks/libpak/v2"
@@ -71,6 +73,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		}
 	})
 
+	it.After(func() {
+		Expect(os.Unsetenv("BP_JVM_VERSION")).To(Succeed())
+	})
+
 	it("contributes JDK", func() {
 		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jdk"})
 		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
@@ -110,6 +116,109 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(contributors[2].Name()).To(Equal("java-security-properties"))
 	})
 
+	it("contributes available next JRE version when Manifest refers to not available version", func() {
+		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
+		ctx.Buildpack.API = "0.10"
+
+		appPath, err := os.MkdirTemp("", "application")
+		Expect(err).NotTo(HaveOccurred())
+		Expect(prepareAppWithEntry(appPath, "Build-Jdk: 22")).ToNot(HaveOccurred())
+
+		ctx.ApplicationPath = appPath
+		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
+			{
+				"id":      "jre-corretto",
+				"version": "8.0.432",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+			{
+				"id":      "jre-corretto",
+				"version": "23.0.1",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+			{
+				"id":      "jre-corretto",
+				"version": "43.43.43",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+		}
+		ctx.StackID = "test-stack-id"
+
+		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(contributors).To(HaveLen(3))
+		Expect(contributors[0].Name()).To(Equal("jre-corretto"))
+		Expect(contributors[1].Name()).To(Equal("helper"))
+		Expect(contributors[2].Name()).To(Equal("java-security-properties"))
+	})
+
+	it("provides meaningful error message if user requested via sdkmanrc a non available JRE", func() {
+		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
+		ctx.Buildpack.API = "0.10"
+
+		appPath, err := os.MkdirTemp("", "application")
+		Expect(err).NotTo(HaveOccurred())
+		sdkmanrcFile := filepath.Join(appPath, ".sdkmanrc")
+		Expect(os.WriteFile(sdkmanrcFile, []byte(`java=20.0.2-tem`), 0600)).To(Succeed())
+
+		ctx.ApplicationPath = appPath
+		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
+			{
+				"id":      "jre-corretto",
+				"version": "8.0.432",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+			{
+				"id":      "jre-corretto",
+				"version": "23.0.1",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+			{
+				"id":      "jre-corretto",
+				"version": "43.43.43",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+		}
+		ctx.StackID = "test-stack-id"
+
+		_, err = jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("unable to find dependency for JRE 20 even as a JDK - make sure the buildpack includes the Java version you have requested"))
+		Expect(err.Error()).To(ContainSubstring("no valid dependencies for jre-corretto, 20, and test-stack-id in [(jre-corretto, 8.0.432, [test-stack-id]) (jre-corretto, 23.0.1, [test-stack-id]) (jre-corretto, 43.43.43, [test-stack-id])]"))
+	})
+
+	it("provides meaningful error message if user requested via env.var a non available JRE", func() {
+		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
+		ctx.Buildpack.API = "0.10"
+
+		Expect(os.Setenv("BP_JVM_VERSION", "24")).To(Succeed())
+
+		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
+			{
+				"id":      "jre-corretto",
+				"version": "8.0.432",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+			{
+				"id":      "jre-corretto",
+				"version": "23.0.1",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+			{
+				"id":      "jre-corretto",
+				"version": "43.43.43",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+		}
+		ctx.StackID = "test-stack-id"
+
+		_, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("unable to find dependency for JRE 24 even as a JDK - make sure the buildpack includes the Java version you have requested"))
+		Expect(err.Error()).To(ContainSubstring("no valid dependencies for jre-corretto, 24, and test-stack-id in [(jre-corretto, 8.0.432, [test-stack-id]) (jre-corretto, 23.0.1, [test-stack-id]) (jre-corretto, 43.43.43, [test-stack-id])]"))
+	})
+
 	it("contributes security-providers-classpath-8 before Java 9", func() {
 		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
 		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
@@ -128,7 +237,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(contributors[1].Name()).To(Equal("helper"))
 
 		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
-			"active-processor-count",
 			"java-opts",
 			"jvm-heap",
 			"link-local-dns",
@@ -139,6 +247,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			"openssl-certificate-loader",
 			"security-providers-classpath-8",
 			"debug-8",
+			"active-processor-count",
 		}))
 	})
 
@@ -161,7 +270,66 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(contributors[1].Name()).To(Equal("helper"))
 
 		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
+			"java-opts",
+			"jvm-heap",
+			"link-local-dns",
+			"memory-calculator",
+			"security-providers-configurer",
+			"jmx",
+			"jfr",
+			"openssl-certificate-loader",
+			"security-providers-classpath-9",
+			"debug-9",
+			"nmt",
 			"active-processor-count",
+		}))
+	})
+
+	it("contributes active-processor-count before Java 17", func() {
+		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
+		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
+			{
+				"id":      "jre-corretto",
+				"version": "11.0.0",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+		}
+		ctx.StackID = "test-stack-id"
+
+		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
+			"java-opts",
+			"jvm-heap",
+			"link-local-dns",
+			"memory-calculator",
+			"security-providers-configurer",
+			"jmx",
+			"jfr",
+			"openssl-certificate-loader",
+			"security-providers-classpath-9",
+			"debug-9",
+			"nmt",
+			"active-processor-count",
+		}))
+	})
+
+	it("does not contribute active-processor-count with Java 17 and later", func() {
+		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
+		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
+			{
+				"id":      "jre-corretto",
+				"version": "17.0.0",
+				"stacks":  []interface{}{"test-stack-id"},
+			},
+		}
+		ctx.StackID = "test-stack-id"
+
+		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(contributors[1].(libpak.HelperLayerContributor).Names).To(Equal([]string{
 			"java-opts",
 			"jvm-heap",
 			"link-local-dns",

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018-2026 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package jvmvendors
 
 import (
@@ -5,6 +21,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/heroku/color"
@@ -20,7 +37,7 @@ func NewJVMVersion(logger log.Logger) JVMVersion {
 	return JVMVersion{Logger: logger}
 }
 
-func (j JVMVersion) GetJVMVersion(appPath string, cr libpak.ConfigurationResolver) (string, error) {
+func (j JVMVersion) GetJVMVersion(appPath string, cr libpak.ConfigurationResolver, dr libpak.DependencyResolver, vendor string) (string, error) {
 	version, explicit := cr.Resolve("BP_JVM_VERSION")
 	if explicit {
 		f := color.New(color.Faint)
@@ -47,6 +64,7 @@ func (j JVMVersion) GetJVMVersion(appPath string, cr libpak.ConfigurationResolve
 
 	if len(mavenJavaVersion) > 0 {
 		mavenJavaMajorVersion := extractMajorVersion(mavenJavaVersion)
+		retrieveNextAvailableJavaVersionIfMavenVersionNotAvailable(dr, &mavenJavaMajorVersion, vendor)
 		f := color.New(color.Faint)
 		j.Logger.Body(f.Sprintf("Using Java version %s extracted from MANIFEST.MF", mavenJavaMajorVersion))
 		return mavenJavaMajorVersion, nil
@@ -55,6 +73,23 @@ func (j JVMVersion) GetJVMVersion(appPath string, cr libpak.ConfigurationResolve
 	f := color.New(color.Faint)
 	j.Logger.Body(f.Sprintf("Using buildpack default Java version %s", version))
 	return version, nil
+}
+
+func retrieveNextAvailableJavaVersionIfMavenVersionNotAvailable(dr libpak.DependencyResolver, mavenJavaMajorVersion *string, vendor string) {
+	_, jdkErr := dr.Resolve(fmt.Sprintf("jdk-%s", vendor), *mavenJavaMajorVersion)
+	_, jreErr := dr.Resolve(fmt.Sprintf("jre-%s", vendor), *mavenJavaMajorVersion)
+	if libpak.IsNoValidDependencies(jdkErr) && libpak.IsNoValidDependencies(jreErr) {
+		//	the buildpack does not provide the wanted JDK or JRE version - let's check if we can choose a more recent version
+		mavenJavaMajorVersionAsInt, _ := strconv.ParseInt(*mavenJavaMajorVersion, 10, 64)
+		nextVersionToEvaluate := mavenJavaMajorVersionAsInt + 1
+		_, jdkErr := dr.Resolve(fmt.Sprintf("jdk-%s", vendor), strconv.FormatInt(nextVersionToEvaluate, 10))
+		_, jreErr := dr.Resolve(fmt.Sprintf("jre-%s", vendor), strconv.FormatInt(nextVersionToEvaluate, 10))
+		if libpak.IsNoValidDependencies(jdkErr) && libpak.IsNoValidDependencies(jreErr) {
+			// we tried with the next major version, still no Java candidate, we are done trying.
+		} else {
+			*mavenJavaMajorVersion = strconv.FormatInt(nextVersionToEvaluate, 10)
+		}
+	}
 }
 
 func readJavaVersionFromSDKMANRCFile(appPath string) (string, error) {

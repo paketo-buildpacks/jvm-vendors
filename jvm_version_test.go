@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the original author or authors.
+ * Copyright 2018-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ func testJVMVersion(t *testing.T, context spec.G, it spec.S) {
 
 		cr, err := libpak.NewConfigurationResolver(bpm)
 		Expect(err).ToNot(HaveOccurred())
-		version, err := jvmVersion.GetJVMVersion(appPath, cr)
+		version, err := jvmVersion.GetJVMVersion(appPath, cr, libpak.DependencyResolver{}, "corretto")
 		Expect(err).ToNot(HaveOccurred())
 		Expect(version).To(Equal("1.1.1"))
 	})
@@ -88,7 +88,7 @@ func testJVMVersion(t *testing.T, context spec.G, it spec.S) {
 
 			cr, err := libpak.NewConfigurationResolver(bpm)
 			Expect(err).ToNot(HaveOccurred())
-			version, err := jvmVersion.GetJVMVersion(appPath, cr)
+			version, err := jvmVersion.GetJVMVersion(appPath, cr, libpak.DependencyResolver{}, "corretto")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(version).To(Equal("17"))
 		})
@@ -107,7 +107,7 @@ func testJVMVersion(t *testing.T, context spec.G, it spec.S) {
 
 			cr, err := libpak.NewConfigurationResolver(bpm)
 			Expect(err).ToNot(HaveOccurred())
-			version, err := jvmVersion.GetJVMVersion(appPath, cr)
+			version, err := jvmVersion.GetJVMVersion(appPath, cr, libpak.DependencyResolver{}, "corretto")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(version).To(Equal("8"))
 		})
@@ -131,7 +131,7 @@ func testJVMVersion(t *testing.T, context spec.G, it spec.S) {
 
 			cr, err := libpak.NewConfigurationResolver(bpm)
 			Expect(err).ToNot(HaveOccurred())
-			version, err := jvmVersion.GetJVMVersion(appPath, cr)
+			version, err := jvmVersion.GetJVMVersion(appPath, cr, libpak.DependencyResolver{}, "corretto")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(version).To(Equal("17"))
 		})
@@ -153,7 +153,7 @@ func testJVMVersion(t *testing.T, context spec.G, it spec.S) {
 
 			cr, err := libpak.NewConfigurationResolver(bpm)
 			Expect(err).ToNot(HaveOccurred())
-			version, err := jvmVersion.GetJVMVersion(appPath, cr)
+			version, err := jvmVersion.GetJVMVersion(appPath, cr, libpak.DependencyResolver{}, "corretto")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(version).To(Equal("17"))
 		})
@@ -176,7 +176,7 @@ java=11.0.2-tem`), 0600)).To(Succeed())
 
 			cr, err := libpak.NewConfigurationResolver(bpm)
 			Expect(err).ToNot(HaveOccurred())
-			version, err := jvmVersion.GetJVMVersion(appPath, cr)
+			version, err := jvmVersion.GetJVMVersion(appPath, cr, libpak.DependencyResolver{}, "corretto")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(version).To(Equal("17"))
 		})
