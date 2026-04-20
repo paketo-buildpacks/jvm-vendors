@@ -1,6 +1,6 @@
 module github.com/paketo-buildpacks/jvm-vendors
 
-go 1.26.0
+go 1.26
 
 toolchain go1.26.1
 
@@ -10,7 +10,7 @@ require (
 	github.com/buildpacks/libcnb/v2 v2.1.0
 	github.com/heroku/color v0.0.6
 	github.com/magiconair/properties v1.8.10
-	github.com/mattn/go-shellwords v1.0.12
+	github.com/mattn/go-shellwords v1.0.13
 	github.com/miekg/dns v1.1.72
 	github.com/onsi/gomega v1.39.1
 	github.com/paketo-buildpacks/libpak/v2 v2.2.0
