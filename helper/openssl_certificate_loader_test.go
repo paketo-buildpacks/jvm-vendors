@@ -76,11 +76,10 @@ func testOpenSSLCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 
 	context("$BPI_JVM_CACERTS", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BPI_JVM_CACERTS", path)).To(Succeed())
+			t.Setenv("BPI_JVM_CACERTS", path)
 		})
 
 		it.After(func() {
-			Expect(os.Unsetenv("BPI_JVM_CACERTS")).To(Succeed())
 			_ = os.Remove(helper.TmpTrustStore)
 		})
 

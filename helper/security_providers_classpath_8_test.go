@@ -18,7 +18,6 @@ package helper_test
 
 import (
 	"io"
-	"os"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -40,12 +39,7 @@ func testSecurityProvidersClasspath8(t *testing.T, context spec.G, it spec.S) {
 
 	context("$SECURITY_PROVIDERS_CLASSPATH", func() {
 		it.Before(func() {
-			Expect(os.Setenv("SECURITY_PROVIDERS_CLASSPATH", "test-dir-1/test-classpath-1:test-dir-2/test-classpath-2")).
-				To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("SECURITY_PROVIDERS_CLASSPATH")).To(Succeed())
+			t.Setenv("SECURITY_PROVIDERS_CLASSPATH", "test-dir-1/test-classpath-1:test-dir-2/test-classpath-2")
 		})
 
 		it("returns error if $BPI_JVM_EXT_DIR is not set", func() {
@@ -56,11 +50,7 @@ func testSecurityProvidersClasspath8(t *testing.T, context spec.G, it spec.S) {
 
 		context("$BPI_JVM_EXT_DIR", func() {
 			it.Before(func() {
-				Expect(os.Setenv("BPI_JVM_EXT_DIR", "test-bpi-jvm-ext-dir")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("BPI_JVM_EXT_DIR")).To(Succeed())
+				t.Setenv("BPI_JVM_EXT_DIR", "test-bpi-jvm-ext-dir")
 			})
 
 			it("return $JAVA_TOOL_OPTIONS with $SECURITY_PROVIDERS_CLASSPATH only", func() {
@@ -71,11 +61,7 @@ func testSecurityProvidersClasspath8(t *testing.T, context spec.G, it spec.S) {
 
 			context("$JAVA_TOOL_OPTIONS", func() {
 				it.Before(func() {
-					Expect(os.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+					t.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")
 				})
 
 				it("return $JAVA_TOOL_OPTIONS with $SECURITY_PROVIDERS_CLASSPATH included", func() {

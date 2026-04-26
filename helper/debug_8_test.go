@@ -18,7 +18,6 @@ package helper_test
 
 import (
 	"io"
-	"os"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -41,12 +40,7 @@ func testDebug8(t *testing.T, context spec.G, it spec.S) {
 
 	context("$BPL_DEBUG_ENABLED", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BPL_DEBUG_ENABLED", "true")).
-				To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("BPL_DEBUG_ENABLED")).To(Succeed())
+			t.Setenv("BPL_DEBUG_ENABLED", "true")
 		})
 
 		it("contributes configuration", func() {
@@ -57,11 +51,7 @@ func testDebug8(t *testing.T, context spec.G, it spec.S) {
 
 		context("jdwp agent already configured", func() {
 			it.Before(func() {
-				Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-agentlib:jdwp=something")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+				t.Setenv("JAVA_TOOL_OPTIONS", "-agentlib:jdwp=something")
 			})
 
 			it("does not update JAVA_TOOL_OPTIONS", func() {
@@ -71,11 +61,7 @@ func testDebug8(t *testing.T, context spec.G, it spec.S) {
 
 		context("$BPL_DEBUG_PORT", func() {
 			it.Before(func() {
-				Expect(os.Setenv("BPL_DEBUG_PORT", "8001")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("BPL_DEBUG_PORT")).To(Succeed())
+				t.Setenv("BPL_DEBUG_PORT", "8001")
 			})
 
 			it("contributes port configuration from $BPL_DEBUG_PORT", func() {
@@ -87,11 +73,7 @@ func testDebug8(t *testing.T, context spec.G, it spec.S) {
 
 		context("$BPL_DEBUG_SUSPEND", func() {
 			it.Before(func() {
-				Expect(os.Setenv("BPL_DEBUG_SUSPEND", "true")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("BPL_DEBUG_SUSPEND")).To(Succeed())
+				t.Setenv("BPL_DEBUG_SUSPEND", "true")
 			})
 
 			it("contributes suspend configuration from $BPL_DEBUG_SUSPEND", func() {
@@ -103,11 +85,7 @@ func testDebug8(t *testing.T, context spec.G, it spec.S) {
 
 		context("$JAVA_TOOL_OPTIONS", func() {
 			it.Before(func() {
-				Expect(os.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+				t.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")
 			})
 
 			it("contributes configuration appended to existing $JAVA_TOOL_OPTIONS", func() {

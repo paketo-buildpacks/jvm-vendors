@@ -73,10 +73,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		}
 	})
 
-	it.After(func() {
-		Expect(os.Unsetenv("BP_JVM_VERSION")).To(Succeed())
-	})
-
 	it("contributes JDK", func() {
 		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jdk"})
 		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
@@ -192,7 +188,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
 		ctx.Buildpack.API = "0.10"
 
-		Expect(os.Setenv("BP_JVM_VERSION", "24")).To(Succeed())
+		t.Setenv("BP_JVM_VERSION", "24")
 
 		ctx.Buildpack.Metadata["dependencies"] = []map[string]any{
 			{

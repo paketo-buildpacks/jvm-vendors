@@ -49,11 +49,7 @@ func testCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 
 		context("$SSL_CERT_DIR", func() {
 			it.Before(func() {
-				Expect(os.Setenv("SSL_CERT_FILE", "another-file")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("SSL_CERT_FILE")).To(Succeed())
+				t.Setenv("SSL_CERT_FILE", "another-file")
 			})
 
 			it("returns configured file", func() {
@@ -66,12 +62,8 @@ func testCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 
 		context("$SSL_CERT_DIR", func() {
 			it.Before(func() {
-				Expect(os.Setenv("SSL_CERT_DIR",
-					strings.Join([]string{"test-1", "test-2"}, string(filepath.ListSeparator)))).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("SSL_CERT_DIR")).To(Succeed())
+				t.Setenv("SSL_CERT_DIR",
+					strings.Join([]string{"test-1", "test-2"}, string(filepath.ListSeparator)))
 			})
 
 			it("returns configured directories", func() {
