@@ -103,7 +103,7 @@ func testNewManifestFromJAR(t *testing.T, context spec.G, it spec.S) {
 			if mainClass != "" {
 				manifestWriter, err := zipWriter.Create("META-INF/MANIFEST.MF")
 				Expect(err).NotTo(HaveOccurred())
-				_, err = manifestWriter.Write([]byte(fmt.Sprintf("Main-Class: %s", mainClass)))
+				_, err = fmt.Fprintf(manifestWriter, "Main-Class: %s", mainClass)
 				Expect(err).NotTo(HaveOccurred())
 			}
 			Expect(zipWriter.Close()).To(Succeed())

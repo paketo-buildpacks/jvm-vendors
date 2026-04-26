@@ -83,11 +83,11 @@ func testCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 		it.Before(func() {
 			in, err := os.Open(filepath.Join("testdata", "test-keystore.pkcs12"))
 			Expect(err).NotTo(HaveOccurred())
-			defer in.Close()
+			defer func() { _ = in.Close() }()
 
 			out, err := os.CreateTemp("", "certificate-loader")
 			Expect(err).NotTo(HaveOccurred())
-			defer out.Close()
+			defer func() { _ = out.Close() }()
 
 			_, err = io.Copy(out, in)
 			Expect(err).NotTo(HaveOccurred())
@@ -176,11 +176,11 @@ func testCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 		it.Before(func() {
 			in, err := os.Open(filepath.Join("testdata", "test-keystore.jks"))
 			Expect(err).NotTo(HaveOccurred())
-			defer in.Close()
+			defer func() { _ = in.Close() }()
 
 			out, err := os.CreateTemp("", "certificate-loader")
 			Expect(err).NotTo(HaveOccurred())
-			defer out.Close()
+			defer func() { _ = out.Close() }()
 
 			_, err = io.Copy(out, in)
 			Expect(err).NotTo(HaveOccurred())
@@ -220,7 +220,7 @@ func testCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 
 			in, err := os.Open(path)
 			Expect(err).NotTo(HaveOccurred())
-			defer in.Close()
+			defer func() { _ = in.Close() }()
 
 			ks := keystore.New()
 			err = ks.Load(in, []byte("changeit"))
@@ -238,7 +238,7 @@ func testCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 
 			in, err := os.Open(path)
 			Expect(err).NotTo(HaveOccurred())
-			defer in.Close()
+			defer func() { _ = in.Close() }()
 
 			ks := keystore.New()
 			err = ks.Load(in, []byte("changeit"))
@@ -258,7 +258,7 @@ func testCertificateLoader(t *testing.T, context spec.G, it spec.S) {
 
 			in, err := os.Open(path)
 			Expect(err).NotTo(HaveOccurred())
-			defer in.Close()
+			defer func() { _ = in.Close() }()
 
 			ks := keystore.New()
 			err = ks.Load(in, []byte("changeit"))
