@@ -97,15 +97,16 @@ func testNewManifestFromJAR(t *testing.T, context spec.G, it spec.S) {
 
 			archive, err := os.Create(fullPath)
 			Expect(err).NotTo(HaveOccurred())
-			defer archive.Close()
+			defer func() { _ = archive.Close() }()
 			zipWriter := zip.NewWriter(archive)
 
 			if mainClass != "" {
 				manifestWriter, err := zipWriter.Create("META-INF/MANIFEST.MF")
 				Expect(err).NotTo(HaveOccurred())
-				manifestWriter.Write([]byte(fmt.Sprintf("Main-Class: %s", mainClass)))
+				_, err = manifestWriter.Write([]byte(fmt.Sprintf("Main-Class: %s", mainClass)))
+				Expect(err).NotTo(HaveOccurred())
 			}
-			zipWriter.Close()
+			Expect(zipWriter.Close()).To(Succeed())
 
 			return fullPath
 		}

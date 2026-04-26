@@ -63,7 +63,7 @@ func NewJKSKeystore(location, password string) (*JKSKeystore, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to open %s\n%w", location, err)
 	}
-	defer in.Close()
+	defer func() { _ = in.Close() }()
 
 	ks := keystore.New(keystore.WithOrderedAliases())
 	if err := ks.Load(in, []byte(password)); err != nil {
@@ -99,7 +99,7 @@ func (k *JKSKeystore) Write() error {
 	if err != nil {
 		return fmt.Errorf("unable to open %s\n%w", k.location, err)
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
 	if err := k.store.Store(out, []byte(k.password)); err != nil {
 		return fmt.Errorf("unable to encode keystore\n%w", err)
@@ -167,7 +167,7 @@ func (k *PasswordLessPKCS12Keystore) Write() error {
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 	data, err := pkcs12.Passwordless.EncodeTrustStoreEntries(k.entries, "")
 	if err != nil {
 		return err

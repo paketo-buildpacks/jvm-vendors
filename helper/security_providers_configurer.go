@@ -68,10 +68,7 @@ func (s SecurityProvidersConfigurer) Execute() (map[string]string, error) {
 			}
 			i--
 
-			for {
-				if len(providers) > i {
-					break
-				}
+			for len(providers) <= i {
 				providers = append(providers, "")
 			}
 
@@ -85,11 +82,7 @@ func (s SecurityProvidersConfigurer) Execute() (map[string]string, error) {
 	}
 
 	j := 0
-	for {
-		if j >= len(providers) {
-			break
-		}
-
+	for j < len(providers) {
 		if providers[j] != "" {
 			j++
 			continue
@@ -103,14 +96,14 @@ func (s SecurityProvidersConfigurer) Execute() (map[string]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to open file %s\n%w", file, err)
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
 	if _, err := out.WriteString("\n"); err != nil {
 		return nil, fmt.Errorf("unable to write to %s\n%w", file, err)
 	}
 
 	for i, p := range providers {
-		if _, err := out.WriteString(fmt.Sprintf("security.provider.%d=%s\n", i+1, p)); err != nil {
+		if _, err := fmt.Fprintf(out, "security.provider.%d=%s\n", i+1, p); err != nil {
 			return nil, fmt.Errorf("unable to write to %s\n%w", file, err)
 		}
 	}

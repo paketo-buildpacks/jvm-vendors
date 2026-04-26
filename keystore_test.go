@@ -68,7 +68,7 @@ func testKeystore(t *testing.T, context spec.G, it spec.S) {
 			cert, err := os.ReadFile(filepath.Join("testdata", "cert.pem"))
 			Expect(err).ToNot(HaveOccurred())
 			block, _ := pem.Decode(cert)
-			ks.Add("foo", block)
+			Expect(ks.Add("foo", block)).To(Succeed())
 			Expect(ks.Len()).To(Equal(2))
 			err = ks.Write()
 			Expect(err).ToNot(HaveOccurred())

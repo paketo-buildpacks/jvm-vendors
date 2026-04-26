@@ -86,7 +86,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []any{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -105,7 +105,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []any{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -142,7 +142,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []interface{}{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -180,7 +180,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []interface{}{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		_, err = jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).To(HaveOccurred())
@@ -211,7 +211,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []interface{}{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		_, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).To(HaveOccurred())
@@ -228,7 +228,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []any{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -260,7 +260,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []any{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -294,7 +294,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []interface{}{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -324,7 +324,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []interface{}{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -354,7 +354,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []any{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -375,7 +375,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				"stacks":  []any{"test-stack-id"},
 			},
 		}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 		Expect(err).NotTo(HaveOccurred())
@@ -426,7 +426,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				},
 			}
 			ctx.Buildpack.API = "0.10"
-			ctx.StackID = "test-stack-id"
+			ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 			contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard), nativeOptionBundledWithJDK).Build(ctx, &result)
 			Expect(err).NotTo(HaveOccurred())
@@ -461,7 +461,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						"purl":    "pkg:generic/graalvm-svm@21.2.0",
 					},
 				}
-				ctx.StackID = "test-stack-id"
+				ctx.StackID = "test-stack-id" //nolint:staticcheck
 				ctx.Buildpack.API = "0.10"
 
 				contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard), nativeOptionSeparateFromJDK).Build(ctx, &result)
@@ -499,7 +499,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						"purl":    "pkg:generic/graalvm-svm@21.2.0",
 					},
 				}
-				ctx.StackID = "test-stack-id"
+				ctx.StackID = "test-stack-id" //nolint:staticcheck
 				ctx.Buildpack.API = "0.10"
 
 				_, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard), nativeOptionMissingCommand).Build(ctx, &result)
@@ -524,7 +524,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				},
 			}
 			ctx.Buildpack.API = "0.10"
-			ctx.StackID = "test-stack-id"
+			ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 			contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard), nativeOptionBundledWithJDK).Build(ctx, &result)
 			Expect(err).NotTo(HaveOccurred())
@@ -566,7 +566,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					"stacks":  []any{"test-stack-id"},
 				},
 			}
-			ctx.StackID = "test-stack-id"
+			ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 			contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 			Expect(err).NotTo(HaveOccurred())
@@ -596,7 +596,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					"stacks":  []any{"test-stack-id"},
 				},
 			}
-			ctx.StackID = "test-stack-id"
+			ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 			contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 			Expect(err).NotTo(HaveOccurred())
@@ -622,7 +622,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					"stacks":  []any{"test-stack-id"},
 				},
 			}
-			ctx.StackID = "test-stack-id"
+			ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 			contributors, err := jvmvendors.NewBuild(log.NewPaketoLogger(io.Discard)).Build(ctx, &result)
 			Expect(err).NotTo(HaveOccurred())

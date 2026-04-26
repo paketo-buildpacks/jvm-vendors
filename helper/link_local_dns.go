@@ -55,7 +55,7 @@ func (l LinkLocalDNS) Execute() (map[string]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to open %s\n%w", file, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	_, err = f.WriteString(`
 networkaddress.cache.ttl=0
