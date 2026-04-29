@@ -73,11 +73,7 @@ func testJVMVersion(t *testing.T, context spec.G, it spec.S) {
 
 	context("detecting JVM version", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BP_JVM_VERSION", "17")).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("BP_JVM_VERSION")).To(Succeed())
+			t.Setenv("BP_JVM_VERSION", "17")
 		})
 
 		it("from environment variable", func() {
@@ -115,12 +111,8 @@ func testJVMVersion(t *testing.T, context spec.G, it spec.S) {
 
 	context("detecting JVM version", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BP_JVM_VERSION", "17")).To(Succeed())
+			t.Setenv("BP_JVM_VERSION", "17")
 			Expect(prepareAppWithEntry(appPath, "Build-Jdk: 1.8")).ToNot(HaveOccurred())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("BP_JVM_VERSION")).To(Succeed())
 		})
 
 		it("prefers environment variable over manifest", func() {

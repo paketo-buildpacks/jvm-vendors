@@ -75,7 +75,7 @@ func JarClasses(path string) (int, error) {
 				return nil
 			}
 		}
-		defer z.Close()
+		defer func() { _ = z.Close() }()
 
 		for _, f := range z.File {
 			if strings.HasSuffix(f.FileInfo().Name(), ".jar") {
@@ -159,7 +159,7 @@ func nestedJarContents(jarFile *zip.File) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("unable to open nested jar\n%w", err)
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	var b bytes.Buffer
 	// #nosec G110

@@ -146,7 +146,7 @@ func process(path string) (MavenJAR, error) {
 	if err != nil {
 		return MavenJAR{}, fmt.Errorf("unable to open file %s\n%w", path, err)
 	}
-	defer in.Close()
+	defer func() { _ = in.Close() }()
 
 	if _, err := io.Copy(s, in); err != nil {
 		return MavenJAR{}, fmt.Errorf("unable to hash file %s\n%w", path, err)

@@ -76,7 +76,9 @@ func (c *CertificateLoader) Load(path string, password string) error {
 		}
 
 		for i, b := range blocks {
-			ks.Add(fmt.Sprintf("%s-%d", f, i), b)
+			if err := ks.Add(fmt.Sprintf("%s-%d", f, i), b); err != nil {
+				return fmt.Errorf("unable to add certificate %s\n%w", f, err)
+			}
 			added++
 		}
 	}
@@ -129,7 +131,7 @@ func (c *CertificateLoader) Metadata() (map[string]any, error) {
 	if in, err := os.Open(c.CertFile); err != nil && !os.IsNotExist(err) {
 		return nil, fmt.Errorf("unable to open %s\n%w", c.CertFile, err)
 	} else if err == nil {
-		defer in.Close()
+		defer func() { _ = in.Close() }()
 
 		out := sha256.New()
 		if _, err := io.Copy(out, in); err != nil {

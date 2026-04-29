@@ -40,7 +40,7 @@ func NewManifest(applicationPath string) (*properties.Properties, error) {
 	} else if err != nil {
 		return nil, fmt.Errorf("unable to open %s\n%w", file, err)
 	}
-	defer in.Close()
+	defer func() { _ = in.Close() }()
 
 	return loadManifest(in, file)
 }
@@ -53,7 +53,7 @@ func NewManifestFromJAR(jarFilePath string) (*properties.Properties, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to read file %s\n%w", jarFilePath, err)
 	}
-	defer jarFile.Close()
+	defer func() { _ = jarFile.Close() }()
 
 	// look for the MANIFEST
 	manifestFile, err := jarFile.Open("META-INF/MANIFEST.MF")

@@ -113,7 +113,7 @@ func (b Build) Build(context libcnb.BuildContext, result *libcnb.BuildResult) ([
 	}
 	cr.LogConfiguration(b.Logger)
 
-	dr, err := libpak.NewDependencyResolver(bpm, context.StackID)
+	dr, err := libpak.NewDependencyResolver(bpm, context.StackID) //nolint:staticcheck
 	if err != nil {
 		return []libpak.Contributable{}, fmt.Errorf("unable to create dependency resolver\n%w", err)
 	}
@@ -287,7 +287,7 @@ func (b *Build) contributeJLink(configurationResolver libpak.ConfigurationResolv
 }
 
 func (b *Build) contributeNIK(jdkDep libpak.BuildModuleDependency, nativeDep libpak.BuildModuleDependency) error {
-	if !(len(b.Native.CustomCommand) > 0) {
+	if len(b.Native.CustomCommand) == 0 {
 		return fmt.Errorf("unable to create NIK, custom command has not been supplied by buildpack")
 	}
 	nik, err := NewNIK(jdkDep, &nativeDep, b.DependencyCache, b.CertLoader, b.Native.CustomCommand, b.Native.CustomArgs)

@@ -113,7 +113,7 @@ func (b Generate) Generate(context libcnb.GenerateContext) (libcnb.GenerateResul
 	}
 	cr.LogConfiguration(b.Logger)
 
-	dr, err := libpak.NewDependencyResolver(bpm, context.StackID)
+	dr, err := libpak.NewDependencyResolver(bpm, context.StackID) //nolint:staticcheck
 	if err != nil {
 		return libcnb.GenerateResult{}, fmt.Errorf("unable to create dependency resolver\n%w", err)
 	}
@@ -162,7 +162,7 @@ func writeFile(content io.Reader, dirname string, filename string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	_, err = io.Copy(file, content)
 	if err != nil {

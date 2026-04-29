@@ -42,7 +42,7 @@ func (o OpenSSLCertificateLoader) prepareTempTrustStore(trustStore, tempTrustSto
 	if err != nil {
 		return nil, fmt.Errorf("unable to open trust store %s\n%w", trustStore, err)
 	}
-	defer trustStoreFile.Close()
+	defer func() { _ = trustStoreFile.Close() }()
 
 	err = sherpa.CopyFile(trustStoreFile, tempTrustStore)
 	if err != nil {
@@ -61,10 +61,7 @@ func (o OpenSSLCertificateLoader) Execute() (map[string]string, error) {
 		return nil, fmt.Errorf("$BPI_JVM_CACERTS must be set")
 	}
 
-	trustStoreWriteable := true
-	if unix.Access(trustStore, unix.W_OK) != nil {
-		trustStoreWriteable = false
-	}
+	trustStoreWriteable := unix.Access(trustStore, unix.W_OK) == nil
 
 	var opts map[string]string
 	if !trustStoreWriteable {

@@ -90,11 +90,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 	context("$BPI_APPLICATION_PATH", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BPI_APPLICATION_PATH", applicationPath)).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("BPI_APPLICATION_PATH")).To(Succeed())
+			t.Setenv("BPI_APPLICATION_PATH", applicationPath)
 		})
 
 		it("returns error if $BPI_JVM_CLASS_COUNT is not set", func() {
@@ -105,11 +101,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 		context("$BPI_JVM_CLASS_COUNT", func() {
 			it.Before(func() {
-				Expect(os.Setenv("BPI_JVM_CLASS_COUNT", "100")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("BPI_JVM_CLASS_COUNT")).To(Succeed())
+				t.Setenv("BPI_JVM_CLASS_COUNT", "100")
 			})
 
 			it("returns default options", func() {
@@ -122,11 +114,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 				context("set to a static number", func() {
 					context("positive number", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "10")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPL_JVM_CLASS_ADJUSTMENT")).To(Succeed())
+							t.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "10")
 						})
 
 						it("adjusts by a static factor", func() {
@@ -138,11 +126,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("negative number", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "-40")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPL_JVM_CLASS_ADJUSTMENT")).To(Succeed())
+							t.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "-40")
 						})
 
 						it("adjusts by a static factor", func() {
@@ -156,11 +140,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 				context("set to a percentage", func() {
 					context("value above 100%", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "110%")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPL_JVM_CLASS_ADJUSTMENT")).To(Succeed())
+							t.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "110%")
 						})
 
 						it("adjusts by a percentage", func() {
@@ -172,11 +152,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("value between 0 and 100%", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "60%")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPL_JVM_CLASS_ADJUSTMENT")).To(Succeed())
+							t.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "60%")
 						})
 
 						it("adjusts by a percentage", func() {
@@ -188,11 +164,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("negative number", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "-40%")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPL_JVM_CLASS_ADJUSTMENT")).To(Succeed())
+							t.Setenv("BPL_JVM_CLASS_ADJUSTMENT", "-40%")
 						})
 
 						it("fails", func() {
@@ -206,11 +178,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("$BPL_JVM_HEADROOM", func() {
 				it.Before(func() {
-					Expect(os.Setenv("BPL_JVM_HEADROOM", "10")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("BPL_JVM_HEADROOM")).To(Succeed())
+					t.Setenv("BPL_JVM_HEADROOM", "10")
 				})
 
 				it("passes $BPL_JVM_HEADROOM to calculator", func() {
@@ -222,11 +190,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("$BPL_JVM_HEAD_ROOM", func() {
 				it.Before(func() {
-					Expect(os.Setenv("BPL_JVM_HEAD_ROOM", "10")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("BPL_JVM_HEAD_ROOM")).To(Succeed())
+					t.Setenv("BPL_JVM_HEAD_ROOM", "10")
 				})
 
 				it("passes $BPL_JVM_HEAD_ROOM to calculator", func() {
@@ -238,13 +202,8 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("$BPL_JVM_HEADROOM and $BPL_JVM_HEAD_ROOM", func() {
 				it.Before(func() {
-					Expect(os.Setenv("BPL_JVM_HEADROOM", "20")).To(Succeed())
-					Expect(os.Setenv("BPL_JVM_HEAD_ROOM", "10")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("BPL_JVM_HEADROOM")).To(Succeed())
-					Expect(os.Unsetenv("BPL_JVM_HEAD_ROOM")).To(Succeed())
+					t.Setenv("BPL_JVM_HEADROOM", "20")
+					t.Setenv("BPL_JVM_HEAD_ROOM", "10")
 				})
 
 				it("passes $BPL_JVM_HEAD_ROOM to calculator", func() {
@@ -256,11 +215,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("$BPL_JVM_LOADED_CLASS_COUNT", func() {
 				it.Before(func() {
-					Expect(os.Setenv("BPL_JVM_LOADED_CLASS_COUNT", "100")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("BPL_JVM_LOADED_CLASS_COUNT")).To(Succeed())
+					t.Setenv("BPL_JVM_LOADED_CLASS_COUNT", "100")
 				})
 
 				it("passes $BPL_JVM_LOADED_CLASS_COUNT to calculator", func() {
@@ -272,11 +227,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("$BPL_JVM_THREAD_COUNT", func() {
 				it.Before(func() {
-					Expect(os.Setenv("BPL_JVM_THREAD_COUNT", "100")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("BPL_JVM_THREAD_COUNT")).To(Succeed())
+					t.Setenv("BPL_JVM_THREAD_COUNT", "100")
 				})
 
 				it("passes $BPL_JVM_THREAD_COUNT to calculator", func() {
@@ -367,11 +318,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 				context("BPL_LOW_MEMORY_PROFILE_DISABLED=false", func() {
 					it.Before(func() {
-						Expect(os.Setenv("BPL_LOW_MEMORY_PROFILE_DISABLED", "false")).To(Succeed())
-					})
-
-					it.After(func() {
-						Expect(os.Unsetenv("BPL_LOW_MEMORY_PROFILE_DISABLED")).To(Succeed())
+						t.Setenv("BPL_LOW_MEMORY_PROFILE_DISABLED", "false")
 					})
 
 					it("emits a warning even when low profile is enabled", func() {
@@ -411,11 +358,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("$BPL_JVM_THREAD_COUNT set with 256M container", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPL_JVM_THREAD_COUNT", "50")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPL_JVM_THREAD_COUNT")).To(Succeed())
+							t.Setenv("BPL_JVM_THREAD_COUNT", "50")
 						})
 
 						it("respects user thread count, still scales stack and code cache", func() {
@@ -431,11 +374,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("user sets -XX:ReservedCodeCacheSize in $JAVA_TOOL_OPTIONS with 256M container", func() {
 						it.Before(func() {
-							Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-XX:ReservedCodeCacheSize=120M")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+							t.Setenv("JAVA_TOOL_OPTIONS", "-XX:ReservedCodeCacheSize=120M")
 						})
 
 						it("respects user code cache, still scales stack", func() {
@@ -451,11 +390,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("user sets -Xmx in $JAVA_TOOL_OPTIONS", func() {
 						it.Before(func() {
-							Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-Xmx200M")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+							t.Setenv("JAVA_TOOL_OPTIONS", "-Xmx200M")
 						})
 
 						it("emits a warning about -Xmx", func() {
@@ -471,11 +406,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("compact object headers with Java 25+", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPI_JVM_VERSION", "25.0.0")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPI_JVM_VERSION")).To(Succeed())
+							t.Setenv("BPI_JVM_VERSION", "25.0.0")
 						})
 
 						it("appends -XX:+UseCompactObjectHeaders for Java 25+", func() {
@@ -490,11 +421,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 					context("compact object headers with Java 24", func() {
 						it.Before(func() {
-							Expect(os.Setenv("BPI_JVM_VERSION", "24.0.0")).To(Succeed())
-						})
-
-						it.After(func() {
-							Expect(os.Unsetenv("BPI_JVM_VERSION")).To(Succeed())
+							t.Setenv("BPI_JVM_VERSION", "24.0.0")
 						})
 
 						it("does not append -XX:+UseCompactObjectHeaders for Java < 25", func() {
@@ -530,11 +457,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("$JAVA_TOOL_OPTIONS", func() {
 				it.Before(func() {
-					Expect(os.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+					t.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")
 				})
 
 				it("returns default options appended to existing $JAVA_TOOL_OPTIONS", func() {
@@ -546,11 +469,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("$JAVA_TOOL_OPTIONS with agents", func() {
 				it.Before(func() {
-					Expect(os.Setenv("JAVA_TOOL_OPTIONS", fmt.Sprintf("-javaagent:%s", filepath.Join("../count/testdata", "stub-dependency.jar")))).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+					t.Setenv("JAVA_TOOL_OPTIONS", fmt.Sprintf("-javaagent:%s", filepath.Join("../count/testdata", "stub-dependency.jar")))
 				})
 
 				it("counts classes of agent jars supplied via $JAVA_TOOL_OPTIONS", func() {
@@ -563,7 +482,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("skips counting classes if agent jar(s) supplied via $JAVA_TOOL_OPTIONS can't be found", func() {
-					Expect(os.Setenv("JAVA_TOOL_OPTIONS", fmt.Sprintf("-javaagent:!abc -javaagent:%s", filepath.Join("../count/testdata", "stub-dependency.jar")))).To(Succeed())
+					t.Setenv("JAVA_TOOL_OPTIONS", fmt.Sprintf("-javaagent:!abc -javaagent:%s", filepath.Join("../count/testdata", "stub-dependency.jar")))
 					c, err := m.CountAgentClasses(os.Getenv("JAVA_TOOL_OPTIONS"))
 					Expect(err).NotTo(HaveOccurred())
 					Expect(c).To(Equal(2))
@@ -573,7 +492,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("skips counting agent classes if no agent jar(s) are supplied", func() {
-					Expect(os.Setenv("JAVA_TOOL_OPTIONS", "")).To(Succeed())
+					t.Setenv("JAVA_TOOL_OPTIONS", "")
 					c, err := m.CountAgentClasses(os.Getenv("JAVA_TOOL_OPTIONS"))
 					Expect(err).NotTo(HaveOccurred())
 					Expect(c).To(Equal(0))
@@ -583,7 +502,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("does not change Metaspace if it has been user configured", func() {
-					Expect(os.Setenv("JAVA_TOOL_OPTIONS", fmt.Sprintf("-XX:MaxMetaspaceSize=20000K -javaagent:%s", filepath.Join("../count/testdata", "stub-dependency.jar")))).To(Succeed())
+					t.Setenv("JAVA_TOOL_OPTIONS", fmt.Sprintf("-XX:MaxMetaspaceSize=20000K -javaagent:%s", filepath.Join("../count/testdata", "stub-dependency.jar")))
 					c, err := m.CountAgentClasses(os.Getenv("JAVA_TOOL_OPTIONS"))
 					Expect(err).NotTo(HaveOccurred())
 					Expect(c).To(Equal(2))
@@ -595,11 +514,7 @@ func testMemoryCalculator(t *testing.T, context spec.G, it spec.S) {
 
 			context("user configured", func() {
 				it.Before(func() {
-					Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-XX:MaxDirectMemorySize=10M -Xmx522705K -XX:MaxMetaspaceSize=13870K -XX:ReservedCodeCacheSize=240M -Xss1M")).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+					t.Setenv("JAVA_TOOL_OPTIONS", "-XX:MaxDirectMemorySize=10M -Xmx522705K -XX:MaxMetaspaceSize=13870K -XX:ReservedCodeCacheSize=240M -Xss1M")
 				})
 
 				it("returns default options appended to existing $JAVA_TOOL_OPTIONS", func() {

@@ -116,7 +116,7 @@ func testJRE(t *testing.T, context spec.G, it spec.S) {
 
 		in, err := os.Open(filepath.Join(layer.Path, "lib", "security", "cacerts"))
 		Expect(err).NotTo(HaveOccurred())
-		defer in.Close()
+		defer func() { _ = in.Close() }()
 
 		ks := keystore.New()
 		err = ks.Load(in, []byte("changeit"))
@@ -143,7 +143,7 @@ func testJRE(t *testing.T, context spec.G, it spec.S) {
 
 		in, err := os.Open(filepath.Join(layer.Path, "jre", "lib", "security", "cacerts"))
 		Expect(err).NotTo(HaveOccurred())
-		defer in.Close()
+		defer func() { _ = in.Close() }()
 
 		ks := keystore.New()
 		err = ks.Load(in, []byte("changeit"))
@@ -170,7 +170,7 @@ func testJRE(t *testing.T, context spec.G, it spec.S) {
 
 		in, err := os.Open(filepath.Join(layer.Path, "lib", "security", "cacerts"))
 		Expect(err).NotTo(HaveOccurred())
-		defer in.Close()
+		defer func() { _ = in.Close() }()
 
 		ks := keystore.New()
 		err = ks.Load(in, []byte("changeit"))
