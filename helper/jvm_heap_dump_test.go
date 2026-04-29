@@ -52,11 +52,7 @@ func testJVMHeapDump(t *testing.T, context spec.G, it spec.S) {
 
 	context("$BPL_HEAP_DUMP_PATH is set", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BPL_HEAP_DUMP_PATH", HeapDumpPath)).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("BPL_HEAP_DUMP_PATH")).To(Succeed())
+			t.Setenv("BPL_HEAP_DUMP_PATH", HeapDumpPath)
 		})
 
 		context("no $JAVA_TOOL_OPTIONS", func() {
@@ -70,11 +66,7 @@ func testJVMHeapDump(t *testing.T, context spec.G, it spec.S) {
 
 		context("unrelated $JAVA_TOOL_OPTIONS", func() {
 			it.Before(func() {
-				Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-Xmx2G -Xss256k")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+				t.Setenv("JAVA_TOOL_OPTIONS", "-Xmx2G -Xss256k")
 			})
 
 			it("passes through existing options and appends heap dump options", func() {
@@ -87,11 +79,7 @@ func testJVMHeapDump(t *testing.T, context spec.G, it spec.S) {
 
 		context("dump enabled already in $JAVA_TOOL_OPTIONS", func() {
 			it.Before(func() {
-				Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-Xmx2G -Xss256k -XX:+HeapDumpOnOutOfMemoryError")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+				t.Setenv("JAVA_TOOL_OPTIONS", "-Xmx2G -Xss256k -XX:+HeapDumpOnOutOfMemoryError")
 			})
 
 			it("passes through existing options and appends heap dump path option", func() {
@@ -107,11 +95,7 @@ func testJVMHeapDump(t *testing.T, context spec.G, it spec.S) {
 
 			it.Before(func() {
 				expectedArgs = fmt.Sprintf("-Xmx2G -Xss256k -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=%s", HeapDumpPath)
-				Expect(os.Setenv("JAVA_TOOL_OPTIONS", expectedArgs)).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+				t.Setenv("JAVA_TOOL_OPTIONS", expectedArgs)
 			})
 
 			it("passes through existing options and appends heap dump options", func() {

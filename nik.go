@@ -88,7 +88,7 @@ func (n NIK) Contribute(layer *libcnb.Layer) error {
 		if err != nil {
 			return fmt.Errorf("unable to get dependency %s\n%w", n.JDKDependency.ID, err)
 		}
-		defer artifact.Close()
+		defer func() { _ = artifact.Close() }()
 
 		n.Logger.Bodyf("Expanding to %s", layer.Path)
 		if err := crush.Extract(artifact, layer.Path, 1); err != nil {
@@ -119,7 +119,7 @@ func (n NIK) Contribute(layer *libcnb.Layer) error {
 			if err != nil {
 				return fmt.Errorf("unable to get dependency %s\n%w", n.NativeDependency.ID, err)
 			}
-			defer artifact.Close()
+			defer func() { _ = artifact.Close() }()
 
 			n.Logger.Body("Installing substrate VM")
 

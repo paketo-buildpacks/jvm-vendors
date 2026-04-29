@@ -18,7 +18,6 @@ package helper_test
 
 import (
 	"io"
-	"os"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -41,11 +40,7 @@ func testJMX(t *testing.T, context spec.G, it spec.S) {
 
 	context("$BPL_JMX_ENABLED", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BPL_JMX_ENABLED", "true")).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("BPL_JMX_ENABLED")).To(Succeed())
+			t.Setenv("BPL_JMX_ENABLED", "true")
 		})
 
 		it("contributes configuration", func() {
@@ -56,11 +51,7 @@ func testJMX(t *testing.T, context spec.G, it spec.S) {
 
 		context("$BPL_JMX_PORT", func() {
 			it.Before(func() {
-				Expect(os.Setenv("BPL_JMX_PORT", "5001")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("BPL_JMX_PORT")).To(Succeed())
+				t.Setenv("BPL_JMX_PORT", "5001")
 			})
 
 			it("contributes port configuration from $BPL_JMX_PORT", func() {
@@ -72,11 +63,7 @@ func testJMX(t *testing.T, context spec.G, it spec.S) {
 
 		context("$JAVA_TOOL_OPTIONS", func() {
 			it.Before(func() {
-				Expect(os.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+				t.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")
 			})
 
 			it("contributes configuration appended to existing $JAVA_TOOL_OPTIONS", func() {

@@ -58,11 +58,7 @@ func testSecurityProvidersConfigurer(t *testing.T, context spec.G, it spec.S) {
 
 	context("$SECURITY_PROVIDERS", func() {
 		it.Before(func() {
-			Expect(os.Setenv("SECURITY_PROVIDERS", "2|DELTA ECHO 10|FOXTROT")).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("SECURITY_PROVIDERS"))
+			t.Setenv("SECURITY_PROVIDERS", "2|DELTA ECHO 10|FOXTROT")
 		})
 
 		it("returns error if BPI_SECURITY_PROVIDERS is not set", func() {
@@ -73,11 +69,7 @@ func testSecurityProvidersConfigurer(t *testing.T, context spec.G, it spec.S) {
 
 		context("$BPI_JVM_SECURITY_PROVIDERS", func() {
 			it.Before(func() {
-				Expect(os.Setenv("BPI_JVM_SECURITY_PROVIDERS", "3|CHARLIE 1|ALPHA 2|BRAVO")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("BPI_JVM_SECURITY_PROVIDERS"))
+				t.Setenv("BPI_JVM_SECURITY_PROVIDERS", "3|CHARLIE 1|ALPHA 2|BRAVO")
 			})
 
 			it("returns error if $JAVA_SECURITY_PROPERTIES is not set", func() {
@@ -88,11 +80,7 @@ func testSecurityProvidersConfigurer(t *testing.T, context spec.G, it spec.S) {
 
 			context("$JAVA_SECURITY_PROPERTIES", func() {
 				it.Before(func() {
-					Expect(os.Setenv("JAVA_SECURITY_PROPERTIES", path)).To(Succeed())
-				})
-
-				it.After(func() {
-					Expect(os.Unsetenv("JAVA_SECURITY_PROPERTIES"))
+					t.Setenv("JAVA_SECURITY_PROPERTIES", path)
 				})
 
 				it("modifies the security properties file", func() {

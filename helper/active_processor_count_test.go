@@ -19,7 +19,6 @@ package helper_test
 import (
 	"fmt"
 	"io"
-	"os"
 	"runtime"
 	"testing"
 
@@ -43,11 +42,7 @@ func testActiveProcessorCount(t *testing.T, context spec.G, it spec.S) {
 
 	context("$JAVA_TOOL_OPTIONS", func() {
 		it.Before(func() {
-			Expect(os.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+			t.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")
 		})
 
 		it("configures active processor count", func() {
@@ -58,11 +53,7 @@ func testActiveProcessorCount(t *testing.T, context spec.G, it spec.S) {
 
 	context("-XX:ActiveProcessorCount", func() {
 		it.Before(func() {
-			Expect(os.Setenv("JAVA_TOOL_OPTIONS", "-XX:ActiveProcessorCount=0")).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+			t.Setenv("JAVA_TOOL_OPTIONS", "-XX:ActiveProcessorCount=0")
 		})
 
 		it("does not override active processor count", func() {

@@ -52,13 +52,12 @@ func testJLink(t *testing.T, context spec.G, it spec.S) {
 	)
 
 	it.Before(func() {
-		Expect(os.Setenv("BP_JVM_JLINK_ENABLED", "true")).To(Succeed())
+		t.Setenv("BP_JVM_JLINK_ENABLED", "true")
 		ctx.Layers.Path = t.TempDir()
 	})
 
 	it.After(func() {
 		Expect(os.RemoveAll(ctx.Layers.Path)).To(Succeed())
-		Expect(os.Unsetenv("BP_JVM_JLINK_ENABLED")).To(Succeed())
 	})
 
 	it("contributes jlink JRE with default args", func() {

@@ -43,11 +43,11 @@ func testKeystore(t *testing.T, context spec.G, it spec.S) {
 		it.Before(func() {
 			in, err := os.Open(filepath.Join("testdata", "test-keystore.jks"))
 			Expect(err).NotTo(HaveOccurred())
-			defer in.Close()
+			defer func() { _ = in.Close() }()
 
 			out, err := os.CreateTemp("", "certificate-loader")
 			Expect(err).NotTo(HaveOccurred())
-			defer out.Close()
+			defer func() { _ = out.Close() }()
 
 			_, err = io.Copy(out, in)
 			Expect(err).NotTo(HaveOccurred())
@@ -68,7 +68,7 @@ func testKeystore(t *testing.T, context spec.G, it spec.S) {
 			cert, err := os.ReadFile(filepath.Join("testdata", "cert.pem"))
 			Expect(err).ToNot(HaveOccurred())
 			block, _ := pem.Decode(cert)
-			ks.Add("foo", block)
+			Expect(ks.Add("foo", block)).To(Succeed())
 			Expect(ks.Len()).To(Equal(2))
 			err = ks.Write()
 			Expect(err).ToNot(HaveOccurred())
@@ -79,11 +79,11 @@ func testKeystore(t *testing.T, context spec.G, it spec.S) {
 		it.Before(func() {
 			in, err := os.Open(filepath.Join("testdata", "test-keystore.pkcs12"))
 			Expect(err).NotTo(HaveOccurred())
-			defer in.Close()
+			defer func() { _ = in.Close() }()
 
 			out, err := os.CreateTemp("", "certificate-loader")
 			Expect(err).NotTo(HaveOccurred())
-			defer out.Close()
+			defer func() { _ = out.Close() }()
 
 			_, err = io.Copy(out, in)
 			Expect(err).NotTo(HaveOccurred())

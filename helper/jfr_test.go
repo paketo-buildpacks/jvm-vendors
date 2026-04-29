@@ -43,11 +43,7 @@ func testJFR(t *testing.T, context spec.G, it spec.S) {
 
 	context("$BPL_JFR_ENABLED", func() {
 		it.Before(func() {
-			Expect(os.Setenv("BPL_JFR_ENABLED", "true")).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("BPL_JFR_ENABLED")).To(Succeed())
+			t.Setenv("BPL_JFR_ENABLED", "true")
 		})
 
 		it("contributes base JFR configuration", func() {
@@ -57,8 +53,11 @@ func testJFR(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		context("$BPL_JFR_ARGS is set", func() {
+			it.Before(func() {
+				t.Setenv("BPL_JFR_ARGS", "filename=/tmp/test.jfr,name=file,delay=60s,dumponexit=true,duration=10s,maxage=1d,maxsize=1024m,path-to-gc-roots=true,settings=true")
+			})
+
 			it("contributes all arguments to JFR configuration", func() {
-				Expect(os.Setenv("BPL_JFR_ARGS", "filename=/tmp/test.jfr,name=file,delay=60s,dumponexit=true,duration=10s,maxage=1d,maxsize=1024m,path-to-gc-roots=true,settings=true")).To(Succeed())
 				Expect(jfr.Execute()).To(Equal(map[string]string{
 					"JAVA_TOOL_OPTIONS": "-XX:StartFlightRecording=filename=/tmp/test.jfr,name=file,delay=60s,dumponexit=true,duration=10s,maxage=1d,maxsize=1024m,path-to-gc-roots=true,settings=true"}))
 			})
@@ -66,15 +65,11 @@ func testJFR(t *testing.T, context spec.G, it spec.S) {
 
 		context("$JAVA_TOOL_OPTIONS", func() {
 			it.Before(func() {
-				Expect(os.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("JAVA_TOOL_OPTIONS")).To(Succeed())
+				t.Setenv("JAVA_TOOL_OPTIONS", "test-java-tool-options")
 			})
 
 			it("contributes configuration appended to existing $JAVA_TOOL_OPTIONS", func() {
-				Expect(os.Setenv("BPL_JFR_ARGS", "filename=/tmp/test.jfr,name=file")).To(Succeed())
+				t.Setenv("BPL_JFR_ARGS", "filename=/tmp/test.jfr,name=file")
 				Expect(jfr.Execute()).To(Equal(map[string]string{
 					"JAVA_TOOL_OPTIONS": "test-java-tool-options -XX:StartFlightRecording=filename=/tmp/test.jfr,name=file",
 				}))

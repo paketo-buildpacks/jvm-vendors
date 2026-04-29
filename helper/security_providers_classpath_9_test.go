@@ -18,7 +18,6 @@ package helper_test
 
 import (
 	"io"
-	"os"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -40,11 +39,7 @@ func testSecurityProvidersClasspath9(t *testing.T, context spec.G, it spec.S) {
 
 	context("$SECURITY_PROVIDERS_CLASSPATH", func() {
 		it.Before(func() {
-			Expect(os.Setenv("SECURITY_PROVIDERS_CLASSPATH", "test-security-providers-classpath")).To(Succeed())
-		})
-
-		it.After(func() {
-			Expect(os.Unsetenv("SECURITY_PROVIDERS_CLASSPATH")).To(Succeed())
+			t.Setenv("SECURITY_PROVIDERS_CLASSPATH", "test-security-providers-classpath")
 		})
 
 		it("return $CLASSPATH with $SECURITY_PROVIDERS_CLASSPATH only", func() {
@@ -55,11 +50,7 @@ func testSecurityProvidersClasspath9(t *testing.T, context spec.G, it spec.S) {
 
 		context("$CLASSPATH", func() {
 			it.Before(func() {
-				Expect(os.Setenv("CLASSPATH", "test-classpath")).To(Succeed())
-			})
-
-			it.After(func() {
-				Expect(os.Unsetenv("CLASSPATH")).To(Succeed())
+				t.Setenv("CLASSPATH", "test-classpath")
 			})
 
 			it("return $CLASSPATH with $SECURITY_PROVIDERS_CLASSPATH included", func() {

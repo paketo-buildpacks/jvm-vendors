@@ -52,7 +52,7 @@ func testGenerate(t *testing.T, context spec.G, it spec.S) {
 	it("does not invoke generate if no JDK/JRE", func() {
 		ctx.Extension.API = "0.9"
 		ctx.Extension.Metadata = map[string]any{}
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		invoked := false
 		_, err := jvmvendors.NewGenerate(log.NewPaketoLogger(io.Discard), func(ctx jvmvendors.GenerateContentContext) (jvmvendors.GenerateContentResult, error) {
@@ -72,7 +72,7 @@ func testGenerate(t *testing.T, context spec.G, it spec.S) {
 	it("invokes if JDK requested", func() {
 		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jdk"})
 		ctx.Extension.API = "0.9"
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		invoked := false
 		_, err := jvmvendors.NewGenerate(log.NewPaketoLogger(io.Discard), func(ctx jvmvendors.GenerateContentContext) (jvmvendors.GenerateContentResult, error) {
@@ -92,7 +92,7 @@ func testGenerate(t *testing.T, context spec.G, it spec.S) {
 	it("invokes if JRE requested", func() {
 		ctx.Plan.Entries = append(ctx.Plan.Entries, libcnb.BuildpackPlanEntry{Name: "jre", Metadata: LaunchContribution})
 		ctx.Extension.API = "0.9"
-		ctx.StackID = "test-stack-id"
+		ctx.StackID = "test-stack-id" //nolint:staticcheck
 
 		invoked := false
 		_, err := jvmvendors.NewGenerate(log.NewPaketoLogger(io.Discard), func(ctx jvmvendors.GenerateContentContext) (jvmvendors.GenerateContentResult, error) {
