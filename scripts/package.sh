@@ -122,7 +122,7 @@ function buildpackage::create::individual_vendors() {
   buildpack_type="${2}"
   version="${3}"
 
-  util::print::title "Packaging ${buildpack_type}... ${output} - ${version}"
+  util::print::title "Packaging ${buildpack_type}..."
 
   libpak-tools build-jvm-vendors \
       --buildpack-id "paketo-buildpacks/adoptium@${version}" --vendors adoptium \
@@ -145,13 +145,14 @@ function buildpackage::create::single_all_vendors() {
   buildpack_type="${2}"
   version="${3}"
 
-  util::print::title "Packaging ${buildpack_type}... ${output} - ${version}"
+  util::print::title "Packaging ${buildpack_type}..."
 
   libpak-tools build-jvm-vendors \
       --single-buildpack \
       --buildpack-id "paketo-buildpacks/jvm-vendors@${version}" \
       --include-all-vendors \
-      --format file
+      --format file \
+      --buildpack-path .
 }
 
 main "${@:-}"
