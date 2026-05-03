@@ -12,6 +12,21 @@ jobs:
   push:
     name: Push
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        buildpack:
+          - jvm-vendors
+          - adoptium
+          - alibaba-dragonwell
+          - amazon-corretto
+          - azul-zulu
+          - bellsoft-liberica
+          - eclipse-openj9
+          - graalvm
+          - microsoft-openjdk
+          - oracle
+          - sap-machine
+      fail-fast: false
     env:
       GCR_REGISTRY: "gcr.io"
       GCR_PASSWORD: ${{ secrets.GCR_PUSH_BOT_JSON_KEY }}
@@ -34,29 +49,29 @@ jobs:
         echo "tag_full=${FULL_VERSION}" >> "$GITHUB_OUTPUT"
         echo "tag_minor=${MINOR_VERSION}" >> "$GITHUB_OUTPUT"
         echo "tag_major=${MAJOR_VERSION}" >> "$GITHUB_OUTPUT"
-        echo "download_tgz_file_url=$(jq -r '.release.assets[] | select(.name | endswith(".tgz")) | .url' "${GITHUB_EVENT_PATH}")" >> "$GITHUB_OUTPUT"
-        echo "download_cnb_file_url=$(jq -r --arg tag_full "$FULL_VERSION" '.release.assets[] | select(.name | endswith($tag_full + ".cnb")) | .url' "${GITHUB_EVENT_PATH}")" >> "$GITHUB_OUTPUT"
-        echo "download_sha256_file_url=$(jq -r '.release.assets[] | select(.name | endswith("index-digest.sha256")) | .url' "${GITHUB_EVENT_PATH}")" >> "$GITHUB_OUTPUT"
+        echo "download_tgz_file_url=$(jq -r --arg bp "${{ matrix.buildpack }}" '.release.assets[] | select(.name | endswith("-" + $bp + ".tgz")) | .url' "${GITHUB_EVENT_PATH}")" >> "$GITHUB_OUTPUT"
+        echo "download_cnb_file_url=$(jq -r --arg tag_full "$FULL_VERSION" --arg bp "${{ matrix.buildpack }}" '.release.assets[] | select(.name | endswith($tag_full + "-" + $bp + ".cnb")) | .url' "${GITHUB_EVENT_PATH}")" >> "$GITHUB_OUTPUT"
+        echo "download_sha256_file_url=$(jq -r --arg bp "${{ matrix.buildpack }}" '.release.assets[] | select(.name | endswith($bp + "-index-digest.sha256")) | .url' "${GITHUB_EVENT_PATH}")" >> "$GITHUB_OUTPUT"
 
     - name: Download .cnb buildpack
       uses: paketo-buildpacks/github-config/actions/release/download-asset@main
       with:
         url: ${{ steps.event.outputs.download_cnb_file_url }}
-        output: "/github/workspace/buildpackage.cnb"
+        output: "/github/workspace/buildpackage-${{ matrix.buildpack }}.cnb"
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
     - name: Download .tgz buildpack
       uses: paketo-buildpacks/github-config/actions/release/download-asset@main
       with:
         url: ${{ steps.event.outputs.download_tgz_file_url }}
-        output: "/github/workspace/buildpack.tgz"
+        output: "/github/workspace/buildpack-${{ matrix.buildpack }}.tgz"
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
     - name: Download .sha digest
       uses: paketo-buildpacks/github-config/actions/release/download-asset@main
       with:
         url: ${{ steps.event.outputs.download_sha256_file_url }}
-        output: "/github/workspace/index-digest.sha256"
+        output: "/github/workspace/${{ matrix.buildpack }}-index-digest.sha256"
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
     - name: Parse Configs
@@ -81,7 +96,7 @@ jobs:
 
     - name: Validate version
       run: |
-        buidpackTomlVersion=$(sudo skopeo inspect "oci-archive:${GITHUB_WORKSPACE}/buildpackage.cnb" | jq -r '.Labels."io.buildpacks.buildpackage.metadata" | fromjson | .version')
+        buidpackTomlVersion=$(sudo skopeo inspect "oci-archive:${GITHUB_WORKSPACE}/buildpackage-${{ matrix.buildpack }}.cnb" | jq -r '.Labels."io.buildpacks.buildpackage.metadata" | fromjson | .version')
         githubReleaseVersion="${{ steps.event.outputs.tag_full }}"
         if [[ "$buidpackTomlVersion" != "$githubReleaseVersion" ]]; then
           echo "Version in buildpack.toml ($buidpackTomlVersion) and github release ($githubReleaseVersion) are not identical"
@@ -116,24 +131,23 @@ jobs:
     - name: Push to DockerHub
       if: ${{  steps.parse_configs.outputs.push_to_dockerhub == 'true' }}
       id: push
-      env:
-        GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
       run: |
-        IMAGE="${GITHUB_REPOSITORY_OWNER/-/}/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}" # translates 'paketo-buildpacks/bundle-install' to 'paketobuildpacks/bundle-install'
+        POSTFIX="-dev"
+        IMAGE="paketobuildpacks/${{ matrix.buildpack }}${POSTFIX}"
         echo "${DOCKERHUB_PASSWORD}" | sudo skopeo login --username "${DOCKERHUB_USERNAME}" --password-stdin ${DOCKERHUB_REGISTRY}
 
         ./scripts/publish.sh \
-          --archive-path ./buildpack.tgz \
+          --archive-path ./buildpack-${{ matrix.buildpack }}.tgz \
           --buildpack-type ${{ steps.get_buildpack_type.outputs.buildpack_type }} \
           --image-ref "${DOCKERHUB_REGISTRY}/${IMAGE}:${{ steps.event.outputs.tag_full }}"
 
         ## Validate that the image index digest pushed to registry matches with the one on the release notes
         pushed_image_index_digest=$(crane digest "${DOCKERHUB_REGISTRY}/${IMAGE}:${{ steps.event.outputs.tag_full }}" | xargs)
 
-        echo "Index digest from release notes: $(cat ./index-digest.sha256)"
+        echo "Index digest from release notes: $(cat ./${{ matrix.buildpack }}-index-digest.sha256)"
         echo "Index digest pushed to registry: $pushed_image_index_digest"
 
-        if [ "$(cat ./index-digest.sha256)" != "$pushed_image_index_digest" ]; then
+        if [ "$(cat ./${{ matrix.buildpack }}-index-digest.sha256)" != "$pushed_image_index_digest" ]; then
           echo "The image index digest pushed to registry does not match the expected digest from release notes"
           exit 1;
         fi
@@ -149,15 +163,15 @@ jobs:
       run: |
         echo "${GCR_PASSWORD}" | sudo skopeo login --username "${GCR_USERNAME}" --password-stdin "${GCR_REGISTRY}"
 
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/${{ github.repository }}:${{ steps.event.outputs.tag_full }}" --multi-arch all
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/${{ github.repository }}:${{ steps.event.outputs.tag_minor }}" --multi-arch all
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/${{ github.repository }}:${{ steps.event.outputs.tag_major }}" --multi-arch all
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/${{ github.repository }}:latest" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:${{ steps.event.outputs.tag_full }}" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:${{ steps.event.outputs.tag_minor }}" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:${{ steps.event.outputs.tag_major }}" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:latest" --multi-arch all
 
     - name: Register with CNB Registry
       uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:main
       with:
-        id: ${{ github.repository }}
+        id: paketo-buildpacks/${{ matrix.buildpack }}
         version: ${{ steps.event.outputs.tag_full }}
         address: index.docker.io/${{ steps.push.outputs.image }}@${{ steps.push.outputs.digest }}
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
