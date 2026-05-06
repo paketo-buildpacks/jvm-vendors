@@ -136,7 +136,8 @@ function buildpackage::create::individual_vendors() {
       --buildpack-id "paketo-buildpacks/microsoft-openjdk@${version}" --vendors microsoft-openjdk \
       --buildpack-id "paketo-buildpacks/sap-machine@${version}" --vendors sap-machine \
       --format file \
-      --buildpack-path .
+      --buildpack-path . \
+      --output-path "$PWD/build"
 }
 
 function buildpackage::create::single_all_vendors() {
@@ -152,7 +153,8 @@ function buildpackage::create::single_all_vendors() {
       --buildpack-id "paketo-buildpacks/jvm-vendors@${version}" \
       --include-all-vendors \
       --format file \
-      --buildpack-path .
+      --buildpack-path . \
+      --output-path "$PWD/build"
 }
 
 main "${@:-}"
