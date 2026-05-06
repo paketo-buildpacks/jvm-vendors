@@ -168,13 +168,13 @@ jobs:
         sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:${{ steps.event.outputs.tag_major }}" --multi-arch all
         sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:latest" --multi-arch all
 
-    - name: Register with CNB Registry
-      uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:main
-      with:
-        id: paketo-buildpacks/${{ matrix.buildpack }}
-        version: ${{ steps.event.outputs.tag_full }}
-        address: index.docker.io/${{ steps.push.outputs.image }}@${{ steps.push.outputs.digest }}
-        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+    # - name: Register with CNB Registry
+    #   uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:main
+    #   with:
+    #     id: paketo-buildpacks/${{ matrix.buildpack }}-dev
+    #     version: ${{ steps.event.outputs.tag_full }}
+    #     address: index.docker.io/${{ steps.push.outputs.image }}@${{ steps.push.outputs.digest }}
+    #     token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
   failure:
     name: Alert on Failure
