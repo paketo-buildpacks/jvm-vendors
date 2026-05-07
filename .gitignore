@@ -17,4 +17,4 @@ linux/
 dependencies/
 package/
 scratch/
-
+.bin/
