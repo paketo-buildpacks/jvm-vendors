@@ -2,8 +2,8 @@ name: Publish Draft Releases
 
 on:
   workflow_dispatch: {}
-  # schedule:
-  #   - cron: '0 5 * * WED'  # Weekly on Wednesday at 5:00 AM UTC
+  schedule:
+    - cron: '0 5 * * WED'  # Weekly on Wednesday at 5:00 AM UTC
 
 concurrency:
   group: publish-release
