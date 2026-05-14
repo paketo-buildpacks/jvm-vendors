@@ -1,0 +1,151 @@
+// Copyright 2018-2026 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+
+	"github.com/paketo-buildpacks/packit/v2/cargo"
+)
+
+var dragonwellRepoMap = map[int]string{
+	8:  "dragonwell8",
+	11: "dragonwell11",
+	17: "dragonwell17",
+	21: "dragonwell21",
+	25: "dragonwell25",
+}
+
+func generateDragonwell(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
+	majorVersion, err := extractVersionFromConstraint(constraint.Constraint)
+	if err != nil {
+		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
+	}
+
+	repo, ok := dragonwellRepoMap[majorVersion]
+	if !ok {
+		return nil, fmt.Errorf("unsupported Dragonwell major version: %d", majorVersion)
+	}
+
+	release, err := fetchLatestRelease("dragonwell-project", repo)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch Dragonwell release for %s: %w", repo, err)
+	}
+
+	javaVersion := extractDragonwellJavaVersion(release.TagName, majorVersion)
+
+	ch := make(chan *Dependency, len(getSupportedPlatformStackTargets()))
+
+	for _, pt := range getSupportedPlatformStackTargets() {
+		go func(pt PlatformStackTarget) {
+			archPattern := "x64"
+			if pt.arch == "arm64" {
+				archPattern = "aarch64"
+			}
+
+			assetURL := findDragonwellAsset(release.Assets, archPattern)
+			if assetURL == "" {
+				fmt.Printf("Warning: no Dragonwell asset found for %s %s %s\n", id, javaVersion, pt.target)
+				ch <- nil
+				return
+			}
+
+			checksum, err := downloadAndCalculateSHA256(assetURL)
+			if err != nil {
+				fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, javaVersion, pt.target, err)
+				ch <- nil
+				return
+			}
+
+			sourceURL := release.TarballURL
+			sourceChecksum := ""
+			if sourceURL != "" {
+				sc, err := downloadAndCalculateSHA256(sourceURL)
+				if err != nil {
+					fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, javaVersion, err)
+				} else {
+					sourceChecksum = sc
+				}
+			}
+
+			purl := fmt.Sprintf("pkg:generic/alibaba/dragonwell-jdk@%s?arch=%s", javaVersion, pt.arch)
+
+			cpe := generateOracleCPE(javaVersion)
+
+			name := "Alibaba Dragonwell JDK"
+
+			dep := cargo.ConfigMetadataDependency{
+				ID:           id,
+				Name:         name,
+				Version:      javaVersion,
+				URI:          assetURL,
+				SHA256:       checksum,
+				Source:       sourceURL,
+				SourceSHA256: sourceChecksum,
+				Stacks:       pt.stacks,
+				OS:           pt.os,
+				Arch:         pt.arch,
+				CPE:          cpe,
+				PURL:         purl,
+				Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
+			}
+
+			d := createDependency(dep, pt.target)
+			ch <- &d
+		}(pt)
+	}
+
+	var dependencies []Dependency
+	for range getSupportedPlatformStackTargets() {
+		if d := <-ch; d != nil {
+			dependencies = append(dependencies, *d)
+		}
+	}
+
+	return dependencies, nil
+}
+
+func findDragonwellAsset(assets []GitHubAsset, archPattern string) string {
+	for _, asset := range assets {
+		if strings.Contains(asset.Name, archPattern) &&
+			strings.Contains(asset.Name, "_linux") &&
+			strings.HasSuffix(asset.Name, ".tar.gz") &&
+			!strings.HasSuffix(asset.Name, ".tar.gz.sig") &&
+			!strings.HasSuffix(asset.Name, ".tar.gz.json") &&
+			!strings.HasSuffix(asset.Name, ".tar.gz.sha256.txt") {
+			return asset.BrowserDownloadURL
+		}
+	}
+	return ""
+}
+
+func extractDragonwellJavaVersion(tagName string, majorVersion int) string {
+	if majorVersion == 8 {
+		re := regexp.MustCompile(`_jdk8u(\d+)-ga`)
+		matches := re.FindStringSubmatch(tagName)
+		if len(matches) > 1 {
+			return fmt.Sprintf("8.0.%s", matches[1])
+		}
+	} else {
+		re := regexp.MustCompile(`_jdk-(\d+\.\d+\.\d+)-ga`)
+		matches := re.FindStringSubmatch(tagName)
+		if len(matches) > 1 {
+			return matches[1]
+		}
+	}
+	return tagName
+}
