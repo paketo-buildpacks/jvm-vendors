@@ -1,17 +1,3 @@
-# Copyright 2018-2026 the original author or authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 api = "0.10"
 
 [buildpack]
@@ -145,466 +131,1654 @@ api = "0.10"
     name = "JAVA_TOOL_OPTIONS"
 
   [[metadata.configurations]]
-    description = "the default JVM vendor"
     build = true
-    name = "BP_JVM_VENDOR"
     default = ""
+    description = "the default JVM vendor"
+    name = "BP_JVM_VENDOR"
 
   [[metadata.configurations]]
-    description = "the available JVM vendors"
     build = true
-    name = "BP_JVM_VENDORS"
     default = ""
-
-[[metadata.dependency-constraints]]
-id = "jdk-adoptium"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-adoptium"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-adoptium"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-adoptium"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-adoptium"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-adoptium"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-adoptium"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-adoptium"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-adoptium"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-adoptium"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-adoptium"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-adoptium"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-alibaba-dragonwell"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-alibaba-dragonwell"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-alibaba-dragonwell"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-alibaba-dragonwell"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-alibaba-dragonwell"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-amazon-corretto"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-amazon-corretto"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-amazon-corretto"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-amazon-corretto"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-amazon-corretto"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-amazon-corretto"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-azul-zulu"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-azul-zulu"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-azul-zulu"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-azul-zulu"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-azul-zulu"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-azul-zulu"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-azul-zulu"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-azul-zulu"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-azul-zulu"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-azul-zulu"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-azul-zulu"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-azul-zulu"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-bellsoft-liberica"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-bellsoft-liberica"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-bellsoft-liberica"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-bellsoft-liberica"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-bellsoft-liberica"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-bellsoft-liberica"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-bellsoft-liberica"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-bellsoft-liberica"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-bellsoft-liberica"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-bellsoft-liberica"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-bellsoft-liberica"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-bellsoft-liberica"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-bellsoft-liberica"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-bellsoft-liberica"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-bellsoft-liberica"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-bellsoft-liberica"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-bellsoft-liberica"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-bellsoft-liberica"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-eclipse-openj9"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-eclipse-openj9"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-eclipse-openj9"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-eclipse-openj9"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-eclipse-openj9"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-eclipse-openj9"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-eclipse-openj9"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-eclipse-openj9"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-eclipse-openj9"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-eclipse-openj9"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-eclipse-openj9"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-eclipse-openj9"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-graalvm"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-graalvm"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-graalvm"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-graalvm"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-graalvm"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-graalvm"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-oracle"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-oracle"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-oracle"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-oracle"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-oracle"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "native-image-svm-oracle"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-microsoft-openjdk"
-constraint = "^8"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-microsoft-openjdk"
-constraint = "^11"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-microsoft-openjdk"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-microsoft-openjdk"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-microsoft-openjdk"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-sap-machine"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-sap-machine"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-sap-machine"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jdk-sap-machine"
-constraint = "^26"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-sap-machine"
-constraint = "^17"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-sap-machine"
-constraint = "^21"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-sap-machine"
-constraint = "^25"
-patches = 1
-
-[[metadata.dependency-constraints]]
-id = "jre-sap-machine"
-constraint = "^26"
-patches = 1
+    description = "the available JVM vendors"
+    name = "BP_JVM_VENDORS"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "44b1392bd15fed9a0ab6988fdeb42ff6c62d3deddce9e7efcf1dca9a48aabeb2"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@8.0.492?arch=amd64"
+    source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-jdk-sources_8u492b09.tar.gz"
+    uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-jdk-sources_8u492b09.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "f326b0916f947bfda733bbb8aeb52f8a80eb6c493643b077c3350753b4b44ecb"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@8.0.492?arch=arm64"
+    source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-jdk-sources_8u492b09.tar.gz"
+    uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-debugimage_aarch64_linux_hotspot_8u492b09.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "eabe05fb80626ad24db17cf1df137855e77fbacbc83c11aaf243cedd224467de"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@11.0.31?arch=arm64"
+    source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-jdk-sources_11.0.31_11.tar.gz"
+    uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.31_11.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "29166a33c0b51b7ffdc368197619b21e016989294107f0d13ea2f5f283e1ff83"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@11.0.31?arch=amd64"
+    source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-jdk-sources_11.0.31_11.tar.gz"
+    uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-static-libs-glibc_x64_linux_hotspot_11.0.31_11.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "aae834297a87736869745be7c1fca3207ea9167c5824f41c88b0ebb2e3ccb9b1"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@17.0.19?arch=arm64"
+    source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jdk-sources_17.0.19_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.19_10.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "230bd0a6d7b01012a4942be6f4cd8655b5b1c7c7bd3786096d698ab0a7bb5942"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@17.0.19?arch=amd64"
+    source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jdk-sources_17.0.19_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jdk-sources_17.0.19_10.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "8d498ec88e1c1989fab95c6784240ab92d011e29c54d20a3f9c324b13476f9ad"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@21.0.11?arch=arm64"
+    source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jdk-sources_21.0.11_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.11_10.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "f4f6268856672f496a105eef5f77890b7b4e9c9007af747bf8112511e4a06e9b"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@21.0.11?arch=amd64"
+    source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jdk-sources_21.0.11_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-testimage_x64_linux_hotspot_21.0.11_10.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "487ad434d8b121ae3902d5ad9cb830cd8e1f75fefad6e2ba80f89d60e3db95d7"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@25.0.3?arch=amd64"
+    source = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jdk-sources_25.0.3_9.tar.gz"
+    uri = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jre_x64_linux_hotspot_25.0.3_9.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "985509a27c20d50bcc148dacc21f0a2df4c241297061c7d81598e6dac5bed4dc"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@25.0.3?arch=arm64"
+    source = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jdk-sources_25.0.3_9.tar.gz"
+    uri = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-static-libs-glibc_aarch64_linux_hotspot_25.0.3_9.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "1e42e40553851693dd96542d2aaa09c7b9982eac92da1d3db4c0bcd4b32d6576"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@26.0.1?arch=amd64"
+    source = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jdk-sources_26.0.1_8.tar.gz"
+    uri = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jdk-sources_26.0.1_8.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "c442eebe8963894bde43bc5b73d05bc0816f75f17b1d0070111bb14793c5eefb"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@26.0.1?arch=arm64"
+    source = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jdk-sources_26.0.1_8.tar.gz"
+    uri = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jmods_aarch64_linux_hotspot_26.0.1_8.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "44b1392bd15fed9a0ab6988fdeb42ff6c62d3deddce9e7efcf1dca9a48aabeb2"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@8.0.492?arch=amd64"
+    source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-jdk-sources_8u492b09.tar.gz"
+    uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-jdk-sources_8u492b09.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "f326b0916f947bfda733bbb8aeb52f8a80eb6c493643b077c3350753b4b44ecb"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@8.0.492?arch=arm64"
+    source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-jdk-sources_8u492b09.tar.gz"
+    uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u492-b09/OpenJDK8U-debugimage_aarch64_linux_hotspot_8u492b09.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "eabe05fb80626ad24db17cf1df137855e77fbacbc83c11aaf243cedd224467de"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@11.0.31?arch=arm64"
+    source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-jdk-sources_11.0.31_11.tar.gz"
+    uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.31_11.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "29166a33c0b51b7ffdc368197619b21e016989294107f0d13ea2f5f283e1ff83"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@11.0.31?arch=amd64"
+    source = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-jdk-sources_11.0.31_11.tar.gz"
+    uri = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.31%2B11/OpenJDK11U-static-libs-glibc_x64_linux_hotspot_11.0.31_11.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "aae834297a87736869745be7c1fca3207ea9167c5824f41c88b0ebb2e3ccb9b1"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@17.0.19?arch=arm64"
+    source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jdk-sources_17.0.19_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.19_10.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "230bd0a6d7b01012a4942be6f4cd8655b5b1c7c7bd3786096d698ab0a7bb5942"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@17.0.19?arch=amd64"
+    source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jdk-sources_17.0.19_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.19%2B10/OpenJDK17U-jdk-sources_17.0.19_10.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "f4f6268856672f496a105eef5f77890b7b4e9c9007af747bf8112511e4a06e9b"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@21.0.11?arch=amd64"
+    source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jdk-sources_21.0.11_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-testimage_x64_linux_hotspot_21.0.11_10.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "8d498ec88e1c1989fab95c6784240ab92d011e29c54d20a3f9c324b13476f9ad"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@21.0.11?arch=arm64"
+    source = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jdk-sources_21.0.11_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.11_10.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "985509a27c20d50bcc148dacc21f0a2df4c241297061c7d81598e6dac5bed4dc"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@25.0.3?arch=arm64"
+    source = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jdk-sources_25.0.3_9.tar.gz"
+    uri = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-static-libs-glibc_aarch64_linux_hotspot_25.0.3_9.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "487ad434d8b121ae3902d5ad9cb830cd8e1f75fefad6e2ba80f89d60e3db95d7"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@25.0.3?arch=amd64"
+    source = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jdk-sources_25.0.3_9.tar.gz"
+    uri = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jre_x64_linux_hotspot_25.0.3_9.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "1e42e40553851693dd96542d2aaa09c7b9982eac92da1d3db4c0bcd4b32d6576"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@26.0.1?arch=amd64"
+    source = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jdk-sources_26.0.1_8.tar.gz"
+    uri = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jdk-sources_26.0.1_8.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "c442eebe8963894bde43bc5b73d05bc0816f75f17b1d0070111bb14793c5eefb"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@26.0.1?arch=arm64"
+    source = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jdk-sources_26.0.1_8.tar.gz"
+    uri = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jmods_aarch64_linux_hotspot_26.0.1_8.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "da236f15d19d8cabd0a18550eaada878d62173aceff3bdde4df78f8acf122d9c"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update482:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@8.0.482?arch=amd64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell8/tarball/dragonwell-standard-8.28.27_jdk8u482-ga"
+    source-checksum = "492255f986a42017f51dee4315124ad2430990826d5d7e2621f98351afcabe3f"
+    uri = "https://github.com/dragonwell-project/dragonwell8/releases/download/dragonwell-standard-8.28.27_jdk8u482-ga/Alibaba_Dragonwell_Standard_8.28.27_x64_linux.tar.gz"
+    version = "8.0.482"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "8a6740a2826bae55bb312657d2d83cf1b9c4e4c0be983d4180661f171eec138b"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update482:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@8.0.482?arch=arm64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell8/tarball/dragonwell-standard-8.28.27_jdk8u482-ga"
+    source-checksum = "492255f986a42017f51dee4315124ad2430990826d5d7e2621f98351afcabe3f"
+    uri = "https://github.com/dragonwell-project/dragonwell8/releases/download/dragonwell-standard-8.28.27_jdk8u482-ga/Alibaba_Dragonwell_Standard_8.28.27_aarch64_linux.tar.gz"
+    version = "8.0.482"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "454b60fb44a9a5eaa1df6682937ef7d569ec390e466f5a946cb1188038a2a0f6"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.30:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@11.0.30?arch=arm64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell11/tarball/dragonwell-extended-11.0.30.27_jdk-11.0.30-ga"
+    source-checksum = "cfce2d9b09f2d967589b55da145bd1bea7429272317111ae3bdf84f29118e4ef"
+    uri = "https://github.com/dragonwell-project/dragonwell11/releases/download/dragonwell-extended-11.0.30.27_jdk-11.0.30-ga/Alibaba_Dragonwell_Extended_11.0.30.27.7_aarch64_linux.tar.gz"
+    version = "11.0.30"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "d4caf45c32a1f6b9db5be401735aa23181b8000d7f570f480bc8c7fed1c93495"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.30:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@11.0.30?arch=amd64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell11/tarball/dragonwell-extended-11.0.30.27_jdk-11.0.30-ga"
+    source-checksum = "cfce2d9b09f2d967589b55da145bd1bea7429272317111ae3bdf84f29118e4ef"
+    uri = "https://github.com/dragonwell-project/dragonwell11/releases/download/dragonwell-extended-11.0.30.27_jdk-11.0.30-ga/Alibaba_Dragonwell_Extended_11.0.30.27.7_x64_linux.tar.gz"
+    version = "11.0.30"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "f5e02a86676b001af874e53d40a7c40ced261f917546eb58759cd0774d690377"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.18:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@17.0.18?arch=amd64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell17/tarball/dragonwell-standard-17.0.18.0.19+8_jdk-17.0.18-ga"
+    source-checksum = "2a1d86a7acbe976e86a8eb7eb3b7e237ac3ed961e6f7f5c52b2ad0564715d046"
+    uri = "https://github.com/dragonwell-project/dragonwell17/releases/download/dragonwell-standard-17.0.18.0.19%2B8_jdk-17.0.18-ga/Alibaba_Dragonwell_Standard_17.0.18.0.19.8_x64_linux.tar.gz"
+    version = "17.0.18"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "0b96babb82bf2b79564e4186621d69b4195e3ee722c8cb8a05480a6d55a74351"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.18:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@17.0.18?arch=arm64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell17/tarball/dragonwell-standard-17.0.18.0.19+8_jdk-17.0.18-ga"
+    source-checksum = "2a1d86a7acbe976e86a8eb7eb3b7e237ac3ed961e6f7f5c52b2ad0564715d046"
+    uri = "https://github.com/dragonwell-project/dragonwell17/releases/download/dragonwell-standard-17.0.18.0.19%2B8_jdk-17.0.18-ga/Alibaba_Dragonwell_Standard_17.0.18.0.19.8_aarch64_linux.tar.gz"
+    version = "17.0.18"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "de94de33aa08b9e5438df4d433eded93695b751d1287febe75f115062cee9db7"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.10:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@21.0.10?arch=amd64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell21/tarball/dragonwell-standard-21.0.10.0.10+7_jdk-21.0.10-ga"
+    source-checksum = "5ae37356fd748737f5d655460b7040961c6627a7f3be7c90e48eb884b49c2832"
+    uri = "https://github.com/dragonwell-project/dragonwell21/releases/download/dragonwell-standard-21.0.10.0.10%2B7_jdk-21.0.10-ga/Alibaba_Dragonwell_Standard_21.0.10.0.10.7_x64_linux.tar.gz"
+    version = "21.0.10"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "b497db3d46d9ae1822f18431795b41eb8eeeec2bb48a298850fc2a1def8513a6"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.10:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@21.0.10?arch=arm64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell21/tarball/dragonwell-standard-21.0.10.0.10+7_jdk-21.0.10-ga"
+    source-checksum = "5ae37356fd748737f5d655460b7040961c6627a7f3be7c90e48eb884b49c2832"
+    uri = "https://github.com/dragonwell-project/dragonwell21/releases/download/dragonwell-standard-21.0.10.0.10%2B7_jdk-21.0.10-ga/Alibaba_Dragonwell_Standard_21.0.10.0.10.7_aarch64_linux.tar.gz"
+    version = "21.0.10"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "c87b3cc04d7b7cb7949fc11d8d88ab5b5838681e6c01cd39d5133f9a566dec05"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@25.0.3?arch=arm64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell25/tarball/dragonwell-standard-25.0.3.0.3+9_jdk-25.0.3-ga"
+    source-checksum = "b5bd1e44194a9c2c7b2443da6eb765201434f4d35c9e91010b641c18e4f0f55b"
+    uri = "https://github.com/dragonwell-project/dragonwell25/releases/download/dragonwell-standard-25.0.3.0.3%2B9_jdk-25.0.3-ga/Alibaba_Dragonwell_Standard_25.0.3.0.3.9_aarch64_linux.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "c5ff30fc3fb571db7456983443fbf799b10f7abe21eadf5b2ac6317218a28e1b"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-alibaba-dragonwell"
+    os = "linux"
+    purl = "pkg:generic/alibaba/dragonwell-jdk@25.0.3?arch=amd64"
+    source = "https://api.github.com/repos/dragonwell-project/dragonwell25/tarball/dragonwell-standard-25.0.3.0.3+9_jdk-25.0.3-ga"
+    source-checksum = "b5bd1e44194a9c2c7b2443da6eb765201434f4d35c9e91010b641c18e4f0f55b"
+    uri = "https://github.com/dragonwell-project/dragonwell25/releases/download/dragonwell-standard-25.0.3.0.3%2B9_jdk-25.0.3-ga/Alibaba_Dragonwell_Standard_25.0.3.0.3.9_x64_linux.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "b9a74845d1171eabd1482b43a759164efd529cf8317d7edc4484688b459c3a88"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@8.0.492?arch=amd64"
+    source = "https://github.com/corretto/corretto-8/archive/refs/tags/8.492.09.2.tar.gz"
+    source-checksum = "01d7a6087871060902b161c6d72378d0ffc08747a611326eb58037ffcb084af9"
+    uri = "https://corretto.aws/downloads/resources/8.492.09.2/amazon-corretto-8.492.09.2-linux-x64.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "1409bc282d3bdb0826a9cc1fec9704f924264dbde282e2aa1e09027aed5d6df2"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@8.0.492?arch=arm64"
+    source = "https://github.com/corretto/corretto-8/archive/refs/tags/8.492.09.2.tar.gz"
+    source-checksum = "01d7a6087871060902b161c6d72378d0ffc08747a611326eb58037ffcb084af9"
+    uri = "https://corretto.aws/downloads/resources/8.492.09.2/amazon-corretto-8.492.09.2-linux-aarch64.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "70f6ff3668f27d1052f9e26c7a00d601774a556a49e6e9e7faa9d510ae1d0dbe"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@11.0.31?arch=amd64"
+    source = "https://github.com/corretto/corretto-11/archive/refs/tags/11.0.31.11.1.tar.gz"
+    source-checksum = "d6142dc9f4f26cb6d08249675898a21eb1103f963234e4ca4f36538fb37eb1d8"
+    uri = "https://corretto.aws/downloads/resources/11.0.31.11.1/amazon-corretto-11.0.31.11.1-linux-x64.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "8ee5fba821463363dc76a18049e338d12c74752430a743aa405af126a62218da"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@11.0.31?arch=arm64"
+    source = "https://github.com/corretto/corretto-11/archive/refs/tags/11.0.31.11.1.tar.gz"
+    source-checksum = "d6142dc9f4f26cb6d08249675898a21eb1103f963234e4ca4f36538fb37eb1d8"
+    uri = "https://corretto.aws/downloads/resources/11.0.31.11.1/amazon-corretto-11.0.31.11.1-linux-aarch64.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "d0f1b880445691425511c3aa62cb89889f03a71c2a43597a3df174fc01d3f3a0"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@17.0.19?arch=amd64"
+    source = "https://github.com/corretto/corretto-17/archive/refs/tags/17.0.19.10.1.tar.gz"
+    source-checksum = "d67f34cdfebc4374257115e09b8377b86f288aefce3a6e3779b5f304ed6b10aa"
+    uri = "https://corretto.aws/downloads/resources/17.0.19.10.1/amazon-corretto-17.0.19.10.1-linux-x64.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "1b9f75b5a2f740ab3305577858e2fc87dad827b60678d4573234d6357be59fa8"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@17.0.19?arch=arm64"
+    source = "https://github.com/corretto/corretto-17/archive/refs/tags/17.0.19.10.1.tar.gz"
+    source-checksum = "d67f34cdfebc4374257115e09b8377b86f288aefce3a6e3779b5f304ed6b10aa"
+    uri = "https://corretto.aws/downloads/resources/17.0.19.10.1/amazon-corretto-17.0.19.10.1-linux-aarch64.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "bc419602d71d819bce147239fbdc48bfbc900fa1d60693537fb9a22bd6b86475"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@21.0.11?arch=arm64"
+    source = "https://github.com/corretto/corretto-21/archive/refs/tags/21.0.11.10.1.tar.gz"
+    source-checksum = "15a32ad0302fee98248686c85ae757ca65ee9325cca018eee853a093e578cf05"
+    uri = "https://corretto.aws/downloads/resources/21.0.11.10.1/amazon-corretto-21.0.11.10.1-linux-aarch64.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "5b4dc8817df13f88f9bfc434e5d018adb535889ff2fe0ccf758bcebcc216f394"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@21.0.11?arch=amd64"
+    source = "https://github.com/corretto/corretto-21/archive/refs/tags/21.0.11.10.1.tar.gz"
+    source-checksum = "15a32ad0302fee98248686c85ae757ca65ee9325cca018eee853a093e578cf05"
+    uri = "https://corretto.aws/downloads/resources/21.0.11.10.1/amazon-corretto-21.0.11.10.1-linux-x64.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "8b1fd78bbd1f188f3884f580be674727174635252c0d4d6dfa7cd15de51879ce"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@25.0.3?arch=arm64"
+    source = "https://github.com/corretto/corretto-25/archive/refs/tags/25.0.3.9.1.tar.gz"
+    source-checksum = "d0cc7d1a71bcd168a572ac942616191f736214873da68ee153bacf26f8fe13b7"
+    uri = "https://corretto.aws/downloads/resources/25.0.3.9.1/amazon-corretto-25.0.3.9.1-linux-aarch64.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "00486fa402136f8d40512b101c645dd4db9be2b5535171530ad241cd96c1223d"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@25.0.3?arch=amd64"
+    source = "https://github.com/corretto/corretto-25/archive/refs/tags/25.0.3.9.1.tar.gz"
+    source-checksum = "d0cc7d1a71bcd168a572ac942616191f736214873da68ee153bacf26f8fe13b7"
+    uri = "https://corretto.aws/downloads/resources/25.0.3.9.1/amazon-corretto-25.0.3.9.1-linux-x64.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "fb48e424529d5a8edf2293f2ee354fd5db6c2671f0926d1efa033a40e4264144"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@26.0.1?arch=arm64"
+    source = "https://github.com/corretto/corretto-26/archive/refs/tags/26.0.1.8.1.tar.gz"
+    source-checksum = "ac68a7e78077c30f0f29202a842bc13e5b99cbb623253800736f8ecb7c12c3e4"
+    uri = "https://corretto.aws/downloads/resources/26.0.1.8.1/amazon-corretto-26.0.1.8.1-linux-aarch64.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "04a49e8aa45fdc44b6adbd4b423123cec8294ca981517b440d322cfa3a00a8d5"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-amazon-corretto"
+    os = "linux"
+    purl = "pkg:generic/amazon/corretto-jdk@26.0.1?arch=amd64"
+    source = "https://github.com/corretto/corretto-26/archive/refs/tags/26.0.1.8.1.tar.gz"
+    source-checksum = "ac68a7e78077c30f0f29202a842bc13e5b99cbb623253800736f8ecb7c12c3e4"
+    uri = "https://corretto.aws/downloads/resources/26.0.1.8.1/amazon-corretto-26.0.1.8.1-linux-x64.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@8.0.492?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.94.0.17-ca-fx-jdk8.0.492-linux_arm64.deb"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@8.0.492?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.94.0.17-ca-fx-jdk8.0.492-linux.x86_64.rpm"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@11.0.31?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.88.17-ca-fx-jdk11.0.31-linux.x86_64.rpm"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@11.0.31?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.88.17-ca-fx-jdk11.0.31-linux_arm64.deb"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@17.0.19?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.66.19-ca-crac-jdk17.0.19-linux_musl_aarch64.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@17.0.19?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.66.19-ca-crac-jdk17.0.19-linux.x86_64.rpm"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@21.0.11?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.50.19-ca-crac-jdk21.0.11-linux.x86_64.rpm"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@21.0.11?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.50.19-ca-crac-jdk21.0.11-linux_musl_aarch64.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@25.0.3?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.34.17-ca-crac-jdk25.0.3-linux_musl_aarch64.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@25.0.3?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.34.17-ca-crac-jdk25.0.3-linux.x86_64.rpm"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@26.0.1?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu26.30.11-ca-crac-jdk26.0.1-linux.x86_64.rpm"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@26.0.1?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu26.30.11-ca-crac-jdk26.0.1-linux_musl_aarch64.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@8.0.492?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.94.0.17-ca-fx-jre8.0.492-linux_x64.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@8.0.492?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.94.0.17-ca-fx-jre8.0.492-linux_aarch64.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@11.0.31?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.88.17-ca-fx-jre11.0.31-linux_aarch64.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@11.0.31?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.88.17-ca-fx-jre11.0.31-linux_x64.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@17.0.19?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.66.19-ca-crac-jre17.0.19-linux_x64.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@17.0.19?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.66.19-ca-crac-jre17.0.19-linux_aarch64.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@21.0.11?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.50.19-ca-crac-jre21.0.11-linux_x64.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@21.0.11?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.50.19-ca-crac-jre21.0.11-linux_aarch64.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@25.0.3?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.34.17-ca-crac-jre25.0.3-linux_aarch64.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@25.0.3?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.34.17-ca-crac-jre25.0.3-linux_x64.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@26.0.1?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu26.30.11-ca-crac-jre26.0.1-linux_musl_aarch64.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@26.0.1?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu26.30.11-ca-crac-jre26.0.1-linux_x64.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "630234ccb982fc43c998f73cb8e19489ed7f32dee3cac139eedaa35c2709ccec"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@8.0.492?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru8-binaries/tarball/jdk-8.0.492.0"
+    source-checksum = "59c03c6d71064a318700d4577c9e0cb2d47983cdd73a1a13446987d829531ae8"
+    uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk-8.0.492.0/ibm-semeru-open-jdk_aarch64_linux_8.0.492.0.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "d915dd88a5e7771dae953a91e1dd3b9d5d62998284fcfb2b1f12af1ca160f99a"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@8.0.492?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru8-binaries/tarball/jdk-8.0.492.0"
+    source-checksum = "59c03c6d71064a318700d4577c9e0cb2d47983cdd73a1a13446987d829531ae8"
+    uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk-8.0.492.0/ibm-semeru-open-jdk_x64_linux_8.0.492.0.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "617a06fda11f42f948206e69ea7d35854364ca29c30b6794d5b88c31f6733092"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@11.0.31?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru11-binaries/tarball/jdk-11.0.31.0"
+    source-checksum = "e61d8d27346f7ee86cb234a376282dd96f42e2e7e975fbd47ea4595b1c877325"
+    uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.31.0/ibm-semeru-open-jdk_aarch64_linux_11.0.31.0.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "615399de57929ce021014d9292a5525291c17dfb10dd68d524232900b92ac49a"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@11.0.31?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru11-binaries/tarball/jdk-11.0.31.0"
+    source-checksum = "e61d8d27346f7ee86cb234a376282dd96f42e2e7e975fbd47ea4595b1c877325"
+    uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.31.0/ibm-semeru-open-jdk_x64_linux_11.0.31.0.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "f3853bd6acdfbc04dc771a67207e8e600eb6e4d9725f15638f8790fbfd06cd7a"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@17.0.19?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru17-binaries/tarball/jdk-17.0.19.0"
+    source-checksum = "e8c9e6bae53fe6a131c31c0f53d8e7f4b58a71173d9e59cc24df083e7f3a7f7b"
+    uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.19.0/ibm-semeru-open-jdk_aarch64_linux_17.0.19.0.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "1aa7866e60ee3953a313a79d3029a57845cd8e8ce46bcbfe4d89df20880f64c1"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@17.0.19?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru17-binaries/tarball/jdk-17.0.19.0"
+    source-checksum = "e8c9e6bae53fe6a131c31c0f53d8e7f4b58a71173d9e59cc24df083e7f3a7f7b"
+    uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.19.0/ibm-semeru-open-jdk_x64_linux_17.0.19.0.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "eca28e31d7be807c7f6afc974f264a2ec2237e7a0119de81e880b29a34d5a912"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@21.0.11?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru21-binaries/tarball/jdk-21.0.11.0"
+    source-checksum = "ea4dd14175f3a883ff143944e9a6906ec4661aa73f3046882b582a591ce63fac"
+    uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.11.0/ibm-semeru-open-jdk_x64_linux_21.0.11.0.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "492356fd26907eed89a9408b19e572552f53491af331ac9938b0b8c471bc068c"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@21.0.11?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru21-binaries/tarball/jdk-21.0.11.0"
+    source-checksum = "ea4dd14175f3a883ff143944e9a6906ec4661aa73f3046882b582a591ce63fac"
+    uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.11.0/ibm-semeru-open-jdk_aarch64_linux_21.0.11.0.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "71eeef582242239a69a7432722e149785fa9071034dc69c4936c3302757e72e0"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@25.0.3?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru25-binaries/tarball/jdk-25.0.3.0"
+    source-checksum = "016ffa61e5defe72fdef4be713085b3120a83446bb3f64a41fa3e26af3e32f1f"
+    uri = "https://github.com/ibmruntimes/semeru25-binaries/releases/download/jdk-25.0.3.0/ibm-semeru-open-jdk_aarch64_linux_25.0.3.0.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "1f844894d0b48dabbded9f93112752bd31ee0e76544c87742b641a389584fc81"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@25.0.3?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru25-binaries/tarball/jdk-25.0.3.0"
+    source-checksum = "016ffa61e5defe72fdef4be713085b3120a83446bb3f64a41fa3e26af3e32f1f"
+    uri = "https://github.com/ibmruntimes/semeru25-binaries/releases/download/jdk-25.0.3.0/ibm-semeru-open-jdk_x64_linux_25.0.3.0.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "98fe02a30ee4aa709c9bdf8d358205e76b87194e737accf83dc94499973acfc6"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@26.0.1?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru26-binaries/tarball/jdk-26.0.1.0"
+    source-checksum = "89d61d45052dc01486fdd168ddac34b0346f21bbdf18ccf1980ef2ea24dee01a"
+    uri = "https://github.com/ibmruntimes/semeru26-binaries/releases/download/jdk-26.0.1.0/ibm-semeru-open-jdk_aarch64_linux_26.0.1.0.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "3dff964af21b38cf968568832e48a6b4053f3680c685644b7336864570f201f1"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jdk@26.0.1?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru26-binaries/tarball/jdk-26.0.1.0"
+    source-checksum = "89d61d45052dc01486fdd168ddac34b0346f21bbdf18ccf1980ef2ea24dee01a"
+    uri = "https://github.com/ibmruntimes/semeru26-binaries/releases/download/jdk-26.0.1.0/ibm-semeru-open-jdk_x64_linux_26.0.1.0.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "508a88f952f432fa65772d0df61f5e0236a8e92f4dd5b3bb638c2f8d7be157b6"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@8.0.492?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru8-binaries/tarball/jdk-8.0.492.0"
+    source-checksum = "59c03c6d71064a318700d4577c9e0cb2d47983cdd73a1a13446987d829531ae8"
+    uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk-8.0.492.0/ibm-semeru-open-jre_aarch64_linux_8.0.492.0.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "8a29af537e5d9c0814fb08d830afd074da89543a4563316e84cf1563d7f7057f"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@8.0.492?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru8-binaries/tarball/jdk-8.0.492.0"
+    source-checksum = "59c03c6d71064a318700d4577c9e0cb2d47983cdd73a1a13446987d829531ae8"
+    uri = "https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk-8.0.492.0/ibm-semeru-open-jre_x64_linux_8.0.492.0.tar.gz"
+    version = "8.0.492"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "e51820d8cb2f47c57d625943d0d65c0f2d10a06d88d6626fa7fa00fe4c1ecd44"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@11.0.31?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru11-binaries/tarball/jdk-11.0.31.0"
+    source-checksum = "e61d8d27346f7ee86cb234a376282dd96f42e2e7e975fbd47ea4595b1c877325"
+    uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.31.0/ibm-semeru-open-jre_x64_linux_11.0.31.0.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "587138f9b489026d0e9b733f5de5fe061079b59029993f7bf99ae8c79fcbce2d"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.31:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@11.0.31?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru11-binaries/tarball/jdk-11.0.31.0"
+    source-checksum = "e61d8d27346f7ee86cb234a376282dd96f42e2e7e975fbd47ea4595b1c877325"
+    uri = "https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.31.0/ibm-semeru-open-jre_aarch64_linux_11.0.31.0.tar.gz"
+    version = "11.0.31"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "3ce5bd7829e198408dd3e27825f096f79d19438ac1e96bc583a32d9580f1d3a6"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@17.0.19?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru17-binaries/tarball/jdk-17.0.19.0"
+    source-checksum = "e8c9e6bae53fe6a131c31c0f53d8e7f4b58a71173d9e59cc24df083e7f3a7f7b"
+    uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.19.0/ibm-semeru-open-jre_aarch64_linux_17.0.19.0.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "b40a28e68e84461607a5d802fe6ddb7376e4a3d8e477b32bbe5c1cdf5638a7ed"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.19:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@17.0.19?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru17-binaries/tarball/jdk-17.0.19.0"
+    source-checksum = "e8c9e6bae53fe6a131c31c0f53d8e7f4b58a71173d9e59cc24df083e7f3a7f7b"
+    uri = "https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.19.0/ibm-semeru-open-jre_x64_linux_17.0.19.0.tar.gz"
+    version = "17.0.19"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "e456afe03d339eafb72144825d8942229ec80f79f9c05eaebe6798b2a90482ba"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@21.0.11?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru21-binaries/tarball/jdk-21.0.11.0"
+    source-checksum = "ea4dd14175f3a883ff143944e9a6906ec4661aa73f3046882b582a591ce63fac"
+    uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.11.0/ibm-semeru-open-jre_x64_linux_21.0.11.0.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "d52f31e417ea9b56a822025cb7c88d1906c254acf2fb2c792921a04409fccc6e"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@21.0.11?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru21-binaries/tarball/jdk-21.0.11.0"
+    source-checksum = "ea4dd14175f3a883ff143944e9a6906ec4661aa73f3046882b582a591ce63fac"
+    uri = "https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.11.0/ibm-semeru-open-jre_aarch64_linux_21.0.11.0.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "ed82541c3a9f0b45b0e15fcd54ceb62ec970dffc9309d0c27d6fc70ce5d60bbc"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@25.0.3?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru25-binaries/tarball/jdk-25.0.3.0"
+    source-checksum = "016ffa61e5defe72fdef4be713085b3120a83446bb3f64a41fa3e26af3e32f1f"
+    uri = "https://github.com/ibmruntimes/semeru25-binaries/releases/download/jdk-25.0.3.0/ibm-semeru-open-jre_x64_linux_25.0.3.0.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "191941c4353c703daae0111c676dcc9335519bd4cecd72ed8709badf16e35708"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@25.0.3?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru25-binaries/tarball/jdk-25.0.3.0"
+    source-checksum = "016ffa61e5defe72fdef4be713085b3120a83446bb3f64a41fa3e26af3e32f1f"
+    uri = "https://github.com/ibmruntimes/semeru25-binaries/releases/download/jdk-25.0.3.0/ibm-semeru-open-jre_aarch64_linux_25.0.3.0.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "2b2e2188636a3f481be93120969d07317e4993ad0a361e168db6e97328021f24"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@26.0.1?arch=amd64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru26-binaries/tarball/jdk-26.0.1.0"
+    source-checksum = "89d61d45052dc01486fdd168ddac34b0346f21bbdf18ccf1980ef2ea24dee01a"
+    uri = "https://github.com/ibmruntimes/semeru26-binaries/releases/download/jdk-26.0.1.0/ibm-semeru-open-jre_x64_linux_26.0.1.0.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "1e388a8c4282d1a5540395c515124e5e6198c1721d5fa8155b7b7c2c03e688ac"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-eclipse-openj9"
+    os = "linux"
+    purl = "pkg:generic/ibmruntimes/semeru-jre@26.0.1?arch=arm64"
+    source = "https://api.github.com/repos/ibmruntimes/semeru26-binaries/tarball/jdk-26.0.1.0"
+    source-checksum = "89d61d45052dc01486fdd168ddac34b0346f21bbdf18ccf1980ef2ea24dee01a"
+    uri = "https://github.com/ibmruntimes/semeru26-binaries/releases/download/jdk-26.0.1.0/ibm-semeru-open-jre_aarch64_linux_26.0.1.0.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "b4580d9f223d0a4b3a1757e58b18ff4c1db950e67e105fc5cb741457d2384a71"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.2:*:*:*:*:*:*:*"
+    id = "jdk-graalvm"
+    os = "linux"
+    purl = "pkg:generic/graalvm-jdk@25.0.2?arch=arm64"
+    source = "https://api.github.com/repos/graalvm/graalvm-ce-builds/tarball/jdk-25.0.2"
+    source-checksum = "e338ec99b0398118c54ba1cbc0905c1c2b658a525f138e4cb0be7961aaf39626"
+    uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-25.0.2/graalvm-community-jdk-25.0.2_linux-aarch64_bin.tar.gz"
+    version = "25.0.2"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "e0be791c8fda4d03b6b0a0cb824fef3149736170057b3a515252b44419606af0"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.2:*:*:*:*:*:*:*"
+    id = "jdk-graalvm"
+    os = "linux"
+    purl = "pkg:generic/graalvm-jdk@25.0.2?arch=amd64"
+    source = "https://api.github.com/repos/graalvm/graalvm-ce-builds/tarball/jdk-25.0.2"
+    source-checksum = "e338ec99b0398118c54ba1cbc0905c1c2b658a525f138e4cb0be7961aaf39626"
+    uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-25.0.2/graalvm-community-jdk-25.0.2_linux-x64_bin.tar.gz"
+    version = "25.0.2"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "e0be791c8fda4d03b6b0a0cb824fef3149736170057b3a515252b44419606af0"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.2:*:*:*:*:*:*:*"
+    id = "native-image-svm-graalvm"
+    os = "linux"
+    purl = "pkg:generic/graalvm-jdk@25.0.2?arch=amd64"
+    source = "https://api.github.com/repos/graalvm/graalvm-ce-builds/tarball/jdk-25.0.2"
+    source-checksum = "e338ec99b0398118c54ba1cbc0905c1c2b658a525f138e4cb0be7961aaf39626"
+    uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-25.0.2/graalvm-community-jdk-25.0.2_linux-x64_bin.tar.gz"
+    version = "25.0.2"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "b4580d9f223d0a4b3a1757e58b18ff4c1db950e67e105fc5cb741457d2384a71"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.2:*:*:*:*:*:*:*"
+    id = "native-image-svm-graalvm"
+    os = "linux"
+    purl = "pkg:generic/graalvm-jdk@25.0.2?arch=arm64"
+    source = "https://api.github.com/repos/graalvm/graalvm-ce-builds/tarball/jdk-25.0.2"
+    source-checksum = "e338ec99b0398118c54ba1cbc0905c1c2b658a525f138e4cb0be7961aaf39626"
+    uri = "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-25.0.2/graalvm-community-jdk-25.0.2_linux-aarch64_bin.tar.gz"
+    version = "25.0.2"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "e1c25a83f9e2e374c93e0c29cc3d98a947621ae0fefa4a8d932951eb160c47c3"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-oracle"
+    os = "linux"
+    purl = "pkg:generic/oracle-jdk@21.0.11?arch=amd64"
+    uri = "https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "2ebe89cad767abba83fb0b8cedd2d2d9bcbf947315fde78f7263a57a24f43b96"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.11:*:*:*:*:*:*:*"
+    id = "jdk-oracle"
+    os = "linux"
+    purl = "pkg:generic/oracle-jdk@21.0.11?arch=arm64"
+    uri = "https://download.oracle.com/java/21/latest/jdk-21_linux-aarch64_bin.tar.gz"
+    version = "21.0.11"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "593a7dff84fef5733836c3881a9334f966ed7aa54b25c8e3ecc2ed7a883fd89c"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-oracle"
+    os = "linux"
+    purl = "pkg:generic/oracle-jdk@25.0.3?arch=amd64"
+    uri = "https://download.oracle.com/java/25/latest/jdk-25_linux-x64_bin.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "53206480b48dd68301e9267a1db292243e2db9314ad10fee28865b700ae25241"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.3:*:*:*:*:*:*:*"
+    id = "jdk-oracle"
+    os = "linux"
+    purl = "pkg:generic/oracle-jdk@25.0.3?arch=arm64"
+    uri = "https://download.oracle.com/java/25/latest/jdk-25_linux-aarch64_bin.tar.gz"
+    version = "25.0.3"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "03d28f4b4b418b6993fe947a17b937387f87a753076893bdb4e5fcd05e2096aa"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-oracle"
+    os = "linux"
+    purl = "pkg:generic/oracle-jdk@26.0.1?arch=arm64"
+    uri = "https://download.oracle.com/java/26/latest/jdk-26_linux-aarch64_bin.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "389213eea280b09443f7559561f3ffd88f5c5439455e18f63bd06ed7ee0ffdbd"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-oracle"
+    os = "linux"
+    purl = "pkg:generic/oracle-jdk@26.0.1?arch=amd64"
+    uri = "https://download.oracle.com/java/26/latest/jdk-26_linux-x64_bin.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "4422a642da9764419477a80bea1d614391c40b71060f0de1610467d4c70807a0"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-sap-machine"
+    os = "linux"
+    purl = "pkg:generic/sap-machine-jdk@26.0.1?arch=amd64"
+    source = "https://api.github.com/repos/SAP/SapMachine/tarball/sapmachine-26.0.1"
+    source-checksum = "8a0d414188f1286d6a7b65de8d5c73d25b36642385493103d80996eab1c6fcec"
+    uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-26.0.1/sapmachine-jdk-26.0.1_linux-x64_bin.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "842d91f9d65026a37a0095545abd17dec3b0f44211d22838a499b27c2ec0389f"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jdk-sap-machine"
+    os = "linux"
+    purl = "pkg:generic/sap-machine-jdk@26.0.1?arch=arm64"
+    source = "https://api.github.com/repos/SAP/SapMachine/tarball/sapmachine-26.0.1"
+    source-checksum = "8a0d414188f1286d6a7b65de8d5c73d25b36642385493103d80996eab1c6fcec"
+    uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-26.0.1/sapmachine-jdk-26.0.1_linux-aarch64_bin.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "33ad5547cabe60e214883c71d36a3b13bde4fe65aa3aa727849e8f8ff958a1cd"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-sap-machine"
+    os = "linux"
+    purl = "pkg:generic/sap-machine-jre@26.0.1?arch=amd64"
+    source = "https://api.github.com/repos/SAP/SapMachine/tarball/sapmachine-26.0.1"
+    source-checksum = "8a0d414188f1286d6a7b65de8d5c73d25b36642385493103d80996eab1c6fcec"
+    uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-26.0.1/sapmachine-jre-26.0.1_linux-x64_bin.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "56b1883e0f638534ac49e679be5c05e38495a274ca672da9680ec5cf42fba330"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.1:*:*:*:*:*:*:*"
+    id = "jre-sap-machine"
+    os = "linux"
+    purl = "pkg:generic/sap-machine-jre@26.0.1?arch=arm64"
+    source = "https://api.github.com/repos/SAP/SapMachine/tarball/sapmachine-26.0.1"
+    source-checksum = "8a0d414188f1286d6a7b65de8d5c73d25b36642385493103d80996eab1c6fcec"
+    uri = "https://github.com/SAP/SapMachine/releases/download/sapmachine-26.0.1/sapmachine-jre-26.0.1_linux-aarch64_bin.tar.gz"
+    version = "26.0.1"
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jdk-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jdk-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jdk-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jre-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jre-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jre-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jre-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jre-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jre-adoptium"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jdk-alibaba-dragonwell"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jdk-alibaba-dragonwell"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-alibaba-dragonwell"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-alibaba-dragonwell"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-alibaba-dragonwell"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jdk-amazon-corretto"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jdk-amazon-corretto"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-amazon-corretto"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-amazon-corretto"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-amazon-corretto"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jdk-amazon-corretto"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jdk-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jdk-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jdk-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jre-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jre-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jre-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jre-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jre-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jre-azul-zulu"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jdk-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jdk-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jdk-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jre-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jre-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jre-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jre-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jre-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jre-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "native-image-svm-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "native-image-svm-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "native-image-svm-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "native-image-svm-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "native-image-svm-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "native-image-svm-bellsoft-liberica"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jdk-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jdk-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jdk-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jre-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jre-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jre-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jre-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jre-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jre-eclipse-openj9"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-graalvm"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-graalvm"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-graalvm"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "native-image-svm-graalvm"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "native-image-svm-graalvm"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "native-image-svm-graalvm"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-oracle"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-oracle"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jdk-oracle"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "native-image-svm-oracle"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "native-image-svm-oracle"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "native-image-svm-oracle"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^8"
+    id = "jdk-microsoft-openjdk"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^11"
+    id = "jdk-microsoft-openjdk"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-microsoft-openjdk"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-microsoft-openjdk"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-microsoft-openjdk"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jdk-sap-machine"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jdk-sap-machine"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jdk-sap-machine"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jdk-sap-machine"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^17"
+    id = "jre-sap-machine"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^21"
+    id = "jre-sap-machine"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^25"
+    id = "jre-sap-machine"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "^26"
+    id = "jre-sap-machine"
+    patches = 1
 
 [[stacks]]
   id = "*"
