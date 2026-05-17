@@ -50,6 +50,12 @@ func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstr
 	correttoVersion := release.TagName
 	javaVersion := correttoVersionToJavaVersion(correttoVersion, majorVersion)
 
+	sourceURL := fmt.Sprintf(
+		"https://github.com/corretto/%s/archive/refs/tags/%s.tar.gz",
+		repo,
+		correttoVersion,
+	)
+
 	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
@@ -78,17 +84,7 @@ func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstr
 			continue
 		}
 
-		sourceURL := fmt.Sprintf(
-			"https://github.com/corretto/%s/archive/refs/tags/%s.tar.gz",
-			repo,
-			correttoVersion,
-		)
-
-		sourceChecksum, err := downloadAndCalculateSHA256(sourceURL)
-		if err != nil {
-			fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, javaVersion, err)
-			sourceChecksum = ""
-		}
+		sourceChecksum := getSourceChecksum(sourceURL, existing)
 
 		purl := fmt.Sprintf("pkg:generic/amazon/corretto-jdk@%s?arch=%s", javaVersion, pt.arch)
 

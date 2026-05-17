@@ -46,7 +46,9 @@ type FoojayPackage struct {
 	} `json:"links"`
 }
 
-var foojayDistroMap = map[string]string{}
+var foojayDistroMap = map[string]string{
+	"jdk-microsoft-openjdk": "microsoft",
+}
 
 func generateFoojay(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
 	distro, ok := foojayDistroMap[id]

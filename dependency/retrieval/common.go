@@ -39,6 +39,8 @@ var httpClient = &http.Client{
 	},
 }
 
+var sourceChecksumCache = make(map[string]string)
+
 // Convert architecture to various vendor-specific formats
 func toAdoptiumArch(arch string) string {
 	switch arch {
@@ -91,6 +93,33 @@ func getLicenses(existing cargo.ConfigMetadataDependency) []any {
 			URI:  "https://openjdk.java.net/legal/gplv2+ce.html",
 		},
 	}
+}
+
+// Get or compute source checksum, using cache and existing dependencies to avoid re-downloading
+func getSourceChecksum(sourceURL string, existing []cargo.ConfigMetadataDependency) string {
+	if sourceURL == "" {
+		return ""
+	}
+
+	if checksum, ok := sourceChecksumCache[sourceURL]; ok {
+		return checksum
+	}
+
+	for _, dep := range existing {
+		if dep.Source == sourceURL && dep.SourceSHA256 != "" {
+			sourceChecksumCache[sourceURL] = dep.SourceSHA256
+			return dep.SourceSHA256
+		}
+	}
+
+	checksum, err := downloadAndCalculateSHA256(sourceURL)
+	if err != nil {
+		fmt.Printf("Warning: failed to calculate source checksum for %s: %v\n", sourceURL, err)
+		return ""
+	}
+
+	sourceChecksumCache[sourceURL] = checksum
+	return checksum
 }
 
 func extractVersionFromConstraint(constraint string) (int, error) {

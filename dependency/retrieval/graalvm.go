@@ -32,6 +32,9 @@ func generateGraalVM(id string, _ cargo.ConfigMetadataDependencyConstraint, exis
 		return nil, fmt.Errorf("unable to extract version from tag %s", release.TagName)
 	}
 
+	sourceURL := release.TarballURL
+	sourceChecksum := getSourceChecksum(sourceURL, existing)
+
 	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
@@ -57,17 +60,6 @@ func generateGraalVM(id string, _ cargo.ConfigMetadataDependencyConstraint, exis
 		if err != nil {
 			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, extractedVersion, pt.target, err)
 			continue
-		}
-
-		sourceURL := release.TarballURL
-		sourceChecksum := ""
-		if sourceURL != "" {
-			sc, err := downloadAndCalculateSHA256(sourceURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, extractedVersion, err)
-			} else {
-				sourceChecksum = sc
-			}
 		}
 
 		purl := fmt.Sprintf("pkg:generic/graalvm-jdk@%s?arch=%s", extractedVersion, pt.arch)
