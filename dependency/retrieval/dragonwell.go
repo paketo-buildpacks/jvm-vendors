@@ -48,6 +48,9 @@ func generateDragonwell(id string, constraint cargo.ConfigMetadataDependencyCons
 
 	javaVersion := extractDragonwellJavaVersion(release.TagName, majorVersion)
 
+	sourceURL := release.TarballURL
+	sourceChecksum := getSourceChecksum(sourceURL, existing)
+
 	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
@@ -73,17 +76,6 @@ func generateDragonwell(id string, constraint cargo.ConfigMetadataDependencyCons
 		if err != nil {
 			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, javaVersion, pt.target, err)
 			continue
-		}
-
-		sourceURL := release.TarballURL
-		sourceChecksum := ""
-		if sourceURL != "" {
-			sc, err := downloadAndCalculateSHA256(sourceURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, javaVersion, err)
-			} else {
-				sourceChecksum = sc
-			}
 		}
 
 		purl := fmt.Sprintf("pkg:generic/alibaba/dragonwell-jdk@%s?arch=%s", javaVersion, pt.arch)

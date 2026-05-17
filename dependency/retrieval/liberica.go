@@ -49,7 +49,7 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 	case "jre-bellsoft-liberica":
 		bundleType = "jre"
 	case "native-image-svm-bellsoft-liberica":
-		bundleType = "nik"
+		bundleType = "core"
 		product = "nik"
 	}
 
@@ -74,10 +74,10 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 		uriStaticParams := "?bitness=64&os=linux&package-type=tar.gz"
 		sourceURIStaticParams := "?package-type=src.tar.gz"
 
-		uri = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%s",
-			product, uriStaticParams, bundleType, constraint.Constraint)
-		sourceURI = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%s",
-			product, sourceURIStaticParams, "standard", constraint.Constraint)
+		uri = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%d",
+			product, uriStaticParams, bundleType, majorVersion)
+		sourceURI = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%d",
+			product, sourceURIStaticParams, "standard", majorVersion)
 	}
 
 	releases, err := fetchBellsoftReleases(uri)
@@ -113,18 +113,10 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 	}
 
 	sourceURL := ""
-	sourceChecksum := ""
 	if len(sourceReleases) > 0 {
 		sourceURL = sourceReleases[0].DownloadURL
-		if sourceURL != "" {
-			sc, err := downloadAndCalculateSHA256(sourceURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate source checksum for %s: %v\n", id, err)
-			} else {
-				sourceChecksum = sc
-			}
-		}
 	}
+	sourceChecksum := getSourceChecksum(sourceURL, existing)
 
 	var dependencies []Dependency
 	for _, release := range releases {

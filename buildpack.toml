@@ -378,11 +378,6 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^8"
-    id = "native-image-svm-bellsoft-liberica"
-    patches = 1
-
-  [[metadata.dependency-constraints]]
     constraint = "^11"
     id = "native-image-svm-bellsoft-liberica"
     patches = 1

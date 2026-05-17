@@ -45,6 +45,9 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 
 	deprecationDate := calculateSapMachineDeprecationDate(majorVersion)
 
+	sourceURL := release.TarballURL
+	sourceChecksum := getSourceChecksum(sourceURL, existing)
+
 	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
@@ -70,17 +73,6 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 		if err != nil {
 			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, sapVersion, pt.target, err)
 			continue
-		}
-
-		sourceURL := release.TarballURL
-		sourceChecksum := ""
-		if sourceURL != "" {
-			sc, err := downloadAndCalculateSHA256(sourceURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, sapVersion, err)
-			} else {
-				sourceChecksum = sc
-			}
 		}
 
 		purl := fmt.Sprintf("pkg:generic/sap-machine-%s@%s?arch=%s", imageType, sapVersion, pt.arch)
