@@ -45,17 +45,21 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 	bundleType := "jdk"
 	product := "liberica"
 
+	majorVersion, err := extractVersionFromConstraint(constraint.Constraint)
+	if err != nil {
+		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
+	}
+
 	switch id {
 	case "jre-bellsoft-liberica":
 		bundleType = "jre"
 	case "native-image-svm-bellsoft-liberica":
-		bundleType = "core"
+		if majorVersion >= 25 {
+			bundleType = "standard"
+		} else {
+			bundleType = "core"
+		}
 		product = "nik"
-	}
-
-	majorVersion, err := extractVersionFromConstraint(constraint.Constraint)
-	if err != nil {
-		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
 	}
 
 	uri := ""
