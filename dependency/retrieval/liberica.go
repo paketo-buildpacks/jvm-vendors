@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/paketo-buildpacks/packit/v2/cargo"
@@ -33,6 +34,7 @@ type BellsoftRelease struct {
 	UpdateVersion  int    `json:"updateVersion"`
 	BuildVersion   int    `json:"buildVersion"`
 	DownloadURL    string `json:"downloadUrl"`
+	Architecture   string `json:"architecture"`
 	Components     []struct {
 		Version   string `json:"version"`
 		Component string `json:"component"`
@@ -56,123 +58,140 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
 	}
 
-	ch := make(chan *Dependency, len(getSupportedPlatformStackTargets()))
+	uri := ""
+	sourceURI := ""
 
-	for _, pt := range getSupportedPlatformStackTargets() {
-		go func(pt PlatformStackTarget) {
-			arch := pt.arch
-			switch arch {
-			case "arm64":
-				arch = "arm"
-			case "amd64":
-				arch = "x86"
+	switch product {
+	case "liberica":
+		uriStaticParams := "?bitness=64&os=linux&package-type=tar.gz&version-modifier=latest"
+		sourceURIStaticParams := "?package-type=src.tar.gz&version-modifier=latest"
+
+		uri = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&version-feature=%d",
+			product, uriStaticParams, bundleType, majorVersion)
+		sourceURI = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=jdk&version-feature=%d",
+			product, sourceURIStaticParams, majorVersion)
+	case "nik":
+		uriStaticParams := "?bitness=64&os=linux&package-type=tar.gz"
+		sourceURIStaticParams := "?package-type=src.tar.gz"
+
+		uri = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%s",
+			product, uriStaticParams, bundleType, constraint.Constraint)
+		sourceURI = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%s",
+			product, sourceURIStaticParams, "standard", constraint.Constraint)
+	}
+
+	releases, err := fetchBellsoftReleases(uri)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch BellSoft releases for %s %s: %w", id, constraint.Constraint, err)
+	}
+
+	if len(releases) == 0 {
+		return nil, fmt.Errorf("no releases found for %s %s", id, constraint.Constraint)
+	}
+
+	if product == "nik" {
+		// for NIK, the API's "latest" feature does not work
+		// so we fetch all the versions, sort and pick the most recent one on the client side
+		sort.Slice(releases, func(i, j int) bool {
+			if releases[i].FeatureVersion != releases[j].FeatureVersion {
+				return releases[i].FeatureVersion > releases[j].FeatureVersion
 			}
-
-			uri := ""
-			sourceURI := ""
-
-			switch product {
-			case "liberica":
-				uriStaticParams := fmt.Sprintf("?arch=%s&bitness=64&os=linux&package-type=tar.gz&version-modifier=latest", arch)
-				sourceURIStaticParams := "?package-type=src.tar.gz&version-modifier=latest"
-
-				uri = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&version-feature=%d",
-					product, uriStaticParams, bundleType, majorVersion)
-				sourceURI = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=jdk&version-feature=%d",
-					product, sourceURIStaticParams, majorVersion)
-			case "nik":
-				uriStaticParams := fmt.Sprintf("?arch=%s&bitness=64&os=linux&package-type=tar.gz&version-modifier=latest", arch)
-				sourceURIStaticParams := "?package-type=src.tar.gz&version-modifier=latest"
-
-				uri = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%s",
-					product, uriStaticParams, bundleType, constraint.Constraint)
-				sourceURI = fmt.Sprintf("https://api.bell-sw.com/v1/%s/releases%s&bundle-type=%s&component-version=liberica%%40%s",
-					product, sourceURIStaticParams, "standard", constraint.Constraint)
+			if releases[i].InterimVersion != releases[j].InterimVersion {
+				return releases[i].InterimVersion > releases[j].InterimVersion
 			}
+			if releases[i].UpdateVersion != releases[j].UpdateVersion {
+				return releases[i].UpdateVersion > releases[j].UpdateVersion
+			}
+			return releases[i].BuildVersion > releases[j].BuildVersion
+		})
+		releases = releases[:1]
+	}
 
-			releases, err := fetchBellsoftReleases(uri)
+	sourceReleases, err := fetchBellsoftReleases(sourceURI)
+	if err != nil {
+		fmt.Printf("Warning: failed to fetch BellSoft source releases for %s %s: %v\n", id, constraint.Constraint, err)
+	}
+
+	sourceURL := ""
+	sourceChecksum := ""
+	if len(sourceReleases) > 0 {
+		sourceURL = sourceReleases[0].DownloadURL
+		if sourceURL != "" {
+			sc, err := downloadAndCalculateSHA256(sourceURL)
 			if err != nil {
-				fmt.Printf("Warning: failed to fetch BellSoft releases for %s %s %s: %v\n", id, constraint.Constraint, pt.target, err)
-				ch <- nil
-				return
+				fmt.Printf("Warning: failed to calculate source checksum for %s: %v\n", id, err)
+			} else {
+				sourceChecksum = sc
 			}
-
-			if len(releases) == 0 {
-				ch <- nil
-				return
-			}
-
-			release := releases[0]
-			version := fmt.Sprintf("%d.%d.%d-%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion, release.BuildVersion)
-
-			if product == "nik" {
-				version = determineBellsoftNIKVersion(release)
-			}
-
-			checksum, err := downloadAndCalculateSHA256(release.DownloadURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
-				ch <- nil
-				return
-			}
-
-			sourceReleases, err := fetchBellsoftReleases(sourceURI)
-			if err != nil {
-				fmt.Printf("Warning: failed to fetch BellSoft source releases for %s %s: %v\n", id, version, err)
-			}
-
-			sourceURL := ""
-			sourceChecksum := ""
-			if len(sourceReleases) > 0 {
-				sourceURL = sourceReleases[0].DownloadURL
-				if sourceURL != "" {
-					sc, err := downloadAndCalculateSHA256(sourceURL)
-					if err != nil {
-						fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, version, err)
-					} else {
-						sourceChecksum = sc
-					}
-				}
-			}
-
-			purl := fmt.Sprintf("pkg:generic/liberica/openjdk@%s?arch=%s", version, pt.arch)
-			if product == "nik" {
-				purl = fmt.Sprintf("pkg:generic/liberica/native-image@%s?arch=%s", version, pt.arch)
-			}
-
-			cpe := generateOracleCPE(version)
-
-			name := "BellSoft Liberica " + strings.ToUpper(bundleType)
-			if product == "nik" {
-				name = "BellSoft Liberica Native Image"
-			}
-
-			dep := cargo.ConfigMetadataDependency{
-				ID:           id,
-				Name:         name,
-				Version:      version,
-				URI:          release.DownloadURL,
-				SHA256:       checksum,
-				Source:       sourceURL,
-				SourceSHA256: sourceChecksum,
-				Stacks:       pt.stacks,
-				OS:           pt.os,
-				Arch:         pt.arch,
-				CPE:          cpe,
-				PURL:         purl,
-				Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
-			}
-
-			d := createDependency(dep, pt.target)
-			ch <- &d
-		}(pt)
+		}
 	}
 
 	var dependencies []Dependency
-	for range getSupportedPlatformStackTargets() {
-		if d := <-ch; d != nil {
-			dependencies = append(dependencies, *d)
+	for _, release := range releases {
+		arch := release.Architecture
+		switch arch {
+		case "arm":
+			arch = "arm64"
+		case "x86":
+			arch = "amd64"
 		}
+
+		pt := PlatformStackTarget{
+			stacks: supportedStacks,
+			target: fmt.Sprintf("linux-%s", arch),
+			os:     "linux",
+			arch:   arch,
+		}
+
+		version := fmt.Sprintf("%d.%d.%d-%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion, release.BuildVersion)
+
+		if product == "nik" {
+			version = determineBellsoftNIKVersion(release)
+		}
+
+		if existingDep := findExistingDependency(existing, id, release.DownloadURL); existingDep != nil {
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			dependencies = append(dependencies, d)
+			continue
+		}
+
+		checksum, err := downloadAndCalculateSHA256(release.DownloadURL)
+		if err != nil {
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
+			continue
+		}
+
+		purl := fmt.Sprintf("pkg:generic/liberica/openjdk@%s?arch=%s", version, pt.arch)
+		if product == "nik" {
+			purl = fmt.Sprintf("pkg:generic/liberica/native-image@%s?arch=%s", version, pt.arch)
+		}
+
+		cpe := generateOracleCPE(version)
+
+		name := "BellSoft Liberica " + strings.ToUpper(bundleType)
+		if product == "nik" {
+			name = "BellSoft Liberica Native Image"
+		}
+
+		dep := cargo.ConfigMetadataDependency{
+			ID:           id,
+			Name:         name,
+			Version:      version,
+			URI:          release.DownloadURL,
+			SHA256:       checksum,
+			Source:       sourceURL,
+			SourceSHA256: sourceChecksum,
+			Stacks:       pt.stacks,
+			OS:           pt.os,
+			Arch:         pt.arch,
+			CPE:          cpe,
+			PURL:         purl,
+			Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
+		}
+
+		d := createDependency(dep, pt.target)
+		dependencies = append(dependencies, d)
 	}
 
 	return dependencies, nil

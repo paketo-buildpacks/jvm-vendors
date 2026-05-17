@@ -234,7 +234,7 @@ func generateForConstraint(id string, constraint cargo.ConfigMetadataDependencyC
 		return generateGraalVM(id, constraint, existing)
 	case "jdk-eclipse-openj9", "jre-eclipse-openj9":
 		return generateOpenJ9(id, constraint, existing)
-	case "jdk-oracle":
+	case "jdk-oracle", "native-image-svm-oracle":
 		return generateOracle(id, constraint, existing)
 	case "jdk-sap-machine", "jre-sap-machine":
 		return generateSapMachine(id, constraint, existing)
@@ -246,9 +246,9 @@ func generateForConstraint(id string, constraint cargo.ConfigMetadataDependencyC
 	}
 }
 
-func findExistingDependency(existing []cargo.ConfigMetadataDependency, id, version, sha256 string) *cargo.ConfigMetadataDependency {
+func findExistingDependency(existing []cargo.ConfigMetadataDependency, id, uri string) *cargo.ConfigMetadataDependency {
 	for _, dep := range existing {
-		if dep.ID == id && dep.Version == version && dep.Checksum == sha256 {
+		if dep.ID == id && dep.URI == uri {
 			return &dep
 		}
 	}
