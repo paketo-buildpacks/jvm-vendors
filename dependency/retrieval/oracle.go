@@ -35,59 +35,56 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		return nil, fmt.Errorf("failed to fetch Oracle version for Java %d: %w", majorVersion, err)
 	}
 
-	ch := make(chan *Dependency, len(getSupportedPlatformStackTargets()))
+	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
-		go func(pt PlatformStackTarget) {
-			archSuffix := "x64"
-			if pt.arch == "arm64" {
-				archSuffix = "aarch64"
-			}
-
-			assetURL := fmt.Sprintf(
-				"https://download.oracle.com/java/%d/latest/jdk-%d_linux-%s_bin.tar.gz",
-				majorVersion,
-				majorVersion,
-				archSuffix,
-			)
-
-			checksum, err := downloadAndCalculateSHA256(assetURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
-				ch <- nil
-				return
-			}
-
-			purl := fmt.Sprintf("pkg:generic/oracle-jdk@%s?arch=%s", version, pt.arch)
-
-			cpe := generateOracleCPE(version)
-
-			name := "Oracle JDK"
-
-			dep := cargo.ConfigMetadataDependency{
-				ID:           id,
-				Name:         name,
-				Version:      version,
-				URI:          assetURL,
-				SHA256:       checksum,
-				Stacks:       pt.stacks,
-				OS:           pt.os,
-				Arch:         pt.arch,
-				CPE:          cpe,
-				PURL:         purl,
-				Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
-			}
-
-			d := createDependency(dep, pt.target)
-			ch <- &d
-		}(pt)
-	}
-
-	var dependencies []Dependency
-	for range getSupportedPlatformStackTargets() {
-		if d := <-ch; d != nil {
-			dependencies = append(dependencies, *d)
+		archSuffix := "x64"
+		if pt.arch == "arm64" {
+			archSuffix = "aarch64"
 		}
+
+		assetURL := fmt.Sprintf(
+			"https://download.oracle.com/java/%d/latest/jdk-%d_linux-%s_bin.tar.gz",
+			majorVersion,
+			majorVersion,
+			archSuffix,
+		)
+
+		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			dependencies = append(dependencies, d)
+			continue
+		}
+
+		checksum, err := downloadAndCalculateSHA256(assetURL)
+		if err != nil {
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
+			continue
+		}
+
+		purl := fmt.Sprintf("pkg:generic/oracle-jdk@%s?arch=%s", version, pt.arch)
+
+		cpe := generateOracleCPE(version)
+
+		name := "Oracle JDK"
+
+		dep := cargo.ConfigMetadataDependency{
+			ID:           id,
+			Name:         name,
+			Version:      version,
+			URI:          assetURL,
+			SHA256:       checksum,
+			Stacks:       pt.stacks,
+			OS:           pt.os,
+			Arch:         pt.arch,
+			CPE:          cpe,
+			PURL:         purl,
+			Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
+		}
+
+		d := createDependency(dep, pt.target)
+		dependencies = append(dependencies, d)
 	}
 
 	return dependencies, nil

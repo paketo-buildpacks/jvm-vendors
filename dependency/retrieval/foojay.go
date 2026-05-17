@@ -102,7 +102,7 @@ func generateFoojay(id string, constraint cargo.ConfigMetadataDependencyConstrai
 			version = pkg.DistributionVersion
 		}
 
-		if existingDep := findExistingDependency(existing, id, version, pkg.Checksum); existingDep != nil {
+		if existingDep := findExistingDependency(existing, id, downloadURL); existingDep != nil {
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
 			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
 			dependencies = append(dependencies, d)

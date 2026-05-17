@@ -45,73 +45,69 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 
 	deprecationDate := calculateSapMachineDeprecationDate(majorVersion)
 
-	ch := make(chan *Dependency, len(getSupportedPlatformStackTargets()))
+	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
-		go func(pt PlatformStackTarget) {
-			archSuffix := "x64"
-			if pt.arch == "arm64" {
-				archSuffix = "aarch64"
-			}
-
-			assetURL := findSapMachineAsset(release.Assets, imageType, archSuffix)
-			if assetURL == "" {
-				fmt.Printf("Warning: no SapMachine asset found for %s %s %s\n", id, sapVersion, pt.target)
-				ch <- nil
-				return
-			}
-
-			checksum, err := downloadAndCalculateSHA256(assetURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, sapVersion, pt.target, err)
-				ch <- nil
-				return
-			}
-
-			sourceURL := release.TarballURL
-			sourceChecksum := ""
-			if sourceURL != "" {
-				sc, err := downloadAndCalculateSHA256(sourceURL)
-				if err != nil {
-					fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, sapVersion, err)
-				} else {
-					sourceChecksum = sc
-				}
-			}
-
-			purl := fmt.Sprintf("pkg:generic/sap-machine-%s@%s?arch=%s", imageType, sapVersion, pt.arch)
-
-			cpe := generateOracleCPE(sapVersion)
-
-			name := "SapMachine " + strings.ToUpper(imageType)
-
-			dep := cargo.ConfigMetadataDependency{
-				ID:              id,
-				Name:            name,
-				Version:         sapVersion,
-				URI:             assetURL,
-				SHA256:          checksum,
-				Source:          sourceURL,
-				SourceSHA256:    sourceChecksum,
-				Stacks:          pt.stacks,
-				OS:              pt.os,
-				Arch:            pt.arch,
-				CPE:             cpe,
-				PURL:            purl,
-				Licenses:        getLicenses(cargo.ConfigMetadataDependency{}),
-				DeprecationDate: deprecationDate,
-			}
-
-			d := createDependency(dep, pt.target)
-			ch <- &d
-		}(pt)
-	}
-
-	var dependencies []Dependency
-	for range getSupportedPlatformStackTargets() {
-		if d := <-ch; d != nil {
-			dependencies = append(dependencies, *d)
+		archSuffix := "x64"
+		if pt.arch == "arm64" {
+			archSuffix = "aarch64"
 		}
+
+		assetURL := findSapMachineAsset(release.Assets, imageType, archSuffix)
+		if assetURL == "" {
+			fmt.Printf("Warning: no SapMachine asset found for %s %s %s\n", id, sapVersion, pt.target)
+			continue
+		}
+
+		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, sapVersion, pt.target)
+			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			dependencies = append(dependencies, d)
+			continue
+		}
+
+		checksum, err := downloadAndCalculateSHA256(assetURL)
+		if err != nil {
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, sapVersion, pt.target, err)
+			continue
+		}
+
+		sourceURL := release.TarballURL
+		sourceChecksum := ""
+		if sourceURL != "" {
+			sc, err := downloadAndCalculateSHA256(sourceURL)
+			if err != nil {
+				fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, sapVersion, err)
+			} else {
+				sourceChecksum = sc
+			}
+		}
+
+		purl := fmt.Sprintf("pkg:generic/sap-machine-%s@%s?arch=%s", imageType, sapVersion, pt.arch)
+
+		cpe := generateOracleCPE(sapVersion)
+
+		name := "SapMachine " + strings.ToUpper(imageType)
+
+		dep := cargo.ConfigMetadataDependency{
+			ID:              id,
+			Name:            name,
+			Version:         sapVersion,
+			URI:             assetURL,
+			SHA256:          checksum,
+			Source:          sourceURL,
+			SourceSHA256:    sourceChecksum,
+			Stacks:          pt.stacks,
+			OS:              pt.os,
+			Arch:            pt.arch,
+			CPE:             cpe,
+			PURL:            purl,
+			Licenses:        getLicenses(cargo.ConfigMetadataDependency{}),
+			DeprecationDate: deprecationDate,
+		}
+
+		d := createDependency(dep, pt.target)
+		dependencies = append(dependencies, d)
 	}
 
 	return dependencies, nil

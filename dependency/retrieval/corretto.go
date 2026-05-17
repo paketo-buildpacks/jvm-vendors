@@ -50,73 +50,70 @@ func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstr
 	correttoVersion := release.TagName
 	javaVersion := correttoVersionToJavaVersion(correttoVersion, majorVersion)
 
-	ch := make(chan *Dependency, len(getSupportedPlatformStackTargets()))
+	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
-		go func(pt PlatformStackTarget) {
-			archSuffix := "x64"
-			if pt.arch == "arm64" {
-				archSuffix = "aarch64"
-			}
-
-			assetURL := fmt.Sprintf(
-				"https://corretto.aws/downloads/resources/%s/amazon-corretto-%s-linux-%s.tar.gz",
-				correttoVersion,
-				correttoVersion,
-				archSuffix,
-			)
-
-			checksum, err := downloadAndCalculateSHA256(assetURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, javaVersion, pt.target, err)
-				ch <- nil
-				return
-			}
-
-			sourceURL := fmt.Sprintf(
-				"https://github.com/corretto/%s/archive/refs/tags/%s.tar.gz",
-				repo,
-				correttoVersion,
-			)
-
-			sourceChecksum, err := downloadAndCalculateSHA256(sourceURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, javaVersion, err)
-				sourceChecksum = ""
-			}
-
-			purl := fmt.Sprintf("pkg:generic/amazon/corretto-jdk@%s?arch=%s", javaVersion, pt.arch)
-
-			cpe := generateOracleCPE(javaVersion)
-
-			name := "Amazon Corretto JDK"
-
-			dep := cargo.ConfigMetadataDependency{
-				ID:           id,
-				Name:         name,
-				Version:      javaVersion,
-				URI:          assetURL,
-				SHA256:       checksum,
-				Source:       sourceURL,
-				SourceSHA256: sourceChecksum,
-				Stacks:       pt.stacks,
-				OS:           pt.os,
-				Arch:         pt.arch,
-				CPE:          cpe,
-				PURL:         purl,
-				Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
-			}
-
-			d := createDependency(dep, pt.target)
-			ch <- &d
-		}(pt)
-	}
-
-	var dependencies []Dependency
-	for range getSupportedPlatformStackTargets() {
-		if d := <-ch; d != nil {
-			dependencies = append(dependencies, *d)
+		archSuffix := "x64"
+		if pt.arch == "arm64" {
+			archSuffix = "aarch64"
 		}
+
+		assetURL := fmt.Sprintf(
+			"https://corretto.aws/downloads/resources/%s/amazon-corretto-%s-linux-%s.tar.gz",
+			correttoVersion,
+			correttoVersion,
+			archSuffix,
+		)
+
+		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, javaVersion, pt.target)
+			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			dependencies = append(dependencies, d)
+			continue
+		}
+
+		checksum, err := downloadAndCalculateSHA256(assetURL)
+		if err != nil {
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, javaVersion, pt.target, err)
+			continue
+		}
+
+		sourceURL := fmt.Sprintf(
+			"https://github.com/corretto/%s/archive/refs/tags/%s.tar.gz",
+			repo,
+			correttoVersion,
+		)
+
+		sourceChecksum, err := downloadAndCalculateSHA256(sourceURL)
+		if err != nil {
+			fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, javaVersion, err)
+			sourceChecksum = ""
+		}
+
+		purl := fmt.Sprintf("pkg:generic/amazon/corretto-jdk@%s?arch=%s", javaVersion, pt.arch)
+
+		cpe := generateOracleCPE(javaVersion)
+
+		name := "Amazon Corretto JDK"
+
+		dep := cargo.ConfigMetadataDependency{
+			ID:           id,
+			Name:         name,
+			Version:      javaVersion,
+			URI:          assetURL,
+			SHA256:       checksum,
+			Source:       sourceURL,
+			SourceSHA256: sourceChecksum,
+			Stacks:       pt.stacks,
+			OS:           pt.os,
+			Arch:         pt.arch,
+			CPE:          cpe,
+			PURL:         purl,
+			Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
+		}
+
+		d := createDependency(dep, pt.target)
+		dependencies = append(dependencies, d)
 	}
 
 	return dependencies, nil

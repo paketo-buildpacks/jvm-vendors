@@ -87,7 +87,7 @@ func generateZulu(id string, constraint cargo.ConfigMetadataDependencyConstraint
 				return
 			}
 
-			if existingDep := findExistingDependency(existing, id, extractedVersion, pkg.SHA256Hash); existingDep != nil {
+			if existingDep := findExistingDependency(existing, id, pkg.DownloadURL); existingDep != nil {
 				fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
 				d := dependencyFromExisting(existingDep, pt.os, pt.arch)
 				ch <- &d

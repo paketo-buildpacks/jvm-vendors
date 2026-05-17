@@ -109,9 +109,7 @@ func generateAdoptium(id string, constraint cargo.ConfigMetadataDependencyConstr
 				extractedVersion = constraint.Constraint
 			}
 
-			sha256 := binary.Package.Checksum
-
-			if existingDep := findExistingDependency(existing, id, extractedVersion, sha256); existingDep != nil {
+			if existingDep := findExistingDependency(existing, id, binary.Package.Link); existingDep != nil {
 				fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
 				d := dependencyFromExisting(existingDep, pt.os, pt.arch)
 				ch <- &d

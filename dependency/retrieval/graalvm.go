@@ -21,7 +21,7 @@ import (
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 )
 
-func generateGraalVM(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
+func generateGraalVM(id string, _ cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
 	release, err := fetchLatestRelease("graalvm", "graalvm-ce-builds")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch GraalVM release: %w", err)
@@ -32,72 +32,68 @@ func generateGraalVM(id string, constraint cargo.ConfigMetadataDependencyConstra
 		return nil, fmt.Errorf("unable to extract version from tag %s", release.TagName)
 	}
 
-	ch := make(chan *Dependency, len(getSupportedPlatformStackTargets()))
+	var dependencies []Dependency
 
 	for _, pt := range getSupportedPlatformStackTargets() {
-		go func(pt PlatformStackTarget) {
-			archSuffix := "x64"
-			if pt.arch == "arm64" {
-				archSuffix = "aarch64"
-			}
-
-			assetURL := findGraalVMAsset(release.Assets, archSuffix)
-			if assetURL == "" {
-				fmt.Printf("Warning: no GraalVM asset found for %s %s\n", id, pt.target)
-				ch <- nil
-				return
-			}
-
-			checksum, err := downloadAndCalculateSHA256(assetURL)
-			if err != nil {
-				fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, extractedVersion, pt.target, err)
-				ch <- nil
-				return
-			}
-
-			sourceURL := release.TarballURL
-			sourceChecksum := ""
-			if sourceURL != "" {
-				sc, err := downloadAndCalculateSHA256(sourceURL)
-				if err != nil {
-					fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, extractedVersion, err)
-				} else {
-					sourceChecksum = sc
-				}
-			}
-
-			purl := fmt.Sprintf("pkg:generic/graalvm-jdk@%s?arch=%s", extractedVersion, pt.arch)
-
-			cpe := generateOracleCPE(extractedVersion)
-
-			name := "GraalVM JDK"
-
-			dep := cargo.ConfigMetadataDependency{
-				ID:           id,
-				Name:         name,
-				Version:      extractedVersion,
-				URI:          assetURL,
-				SHA256:       checksum,
-				Source:       sourceURL,
-				SourceSHA256: sourceChecksum,
-				Stacks:       pt.stacks,
-				OS:           pt.os,
-				Arch:         pt.arch,
-				CPE:          cpe,
-				PURL:         purl,
-				Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
-			}
-
-			d := createDependency(dep, pt.target)
-			ch <- &d
-		}(pt)
-	}
-
-	var dependencies []Dependency
-	for range getSupportedPlatformStackTargets() {
-		if d := <-ch; d != nil {
-			dependencies = append(dependencies, *d)
+		archSuffix := "x64"
+		if pt.arch == "arm64" {
+			archSuffix = "aarch64"
 		}
+
+		assetURL := findGraalVMAsset(release.Assets, archSuffix)
+		if assetURL == "" {
+			fmt.Printf("Warning: no GraalVM asset found for %s %s\n", id, pt.target)
+			continue
+		}
+
+		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
+			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			dependencies = append(dependencies, d)
+			continue
+		}
+
+		checksum, err := downloadAndCalculateSHA256(assetURL)
+		if err != nil {
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, extractedVersion, pt.target, err)
+			continue
+		}
+
+		sourceURL := release.TarballURL
+		sourceChecksum := ""
+		if sourceURL != "" {
+			sc, err := downloadAndCalculateSHA256(sourceURL)
+			if err != nil {
+				fmt.Printf("Warning: failed to calculate source checksum for %s %s: %v\n", id, extractedVersion, err)
+			} else {
+				sourceChecksum = sc
+			}
+		}
+
+		purl := fmt.Sprintf("pkg:generic/graalvm-jdk@%s?arch=%s", extractedVersion, pt.arch)
+
+		cpe := generateOracleCPE(extractedVersion)
+
+		name := "GraalVM JDK"
+
+		dep := cargo.ConfigMetadataDependency{
+			ID:           id,
+			Name:         name,
+			Version:      extractedVersion,
+			URI:          assetURL,
+			SHA256:       checksum,
+			Source:       sourceURL,
+			SourceSHA256: sourceChecksum,
+			Stacks:       pt.stacks,
+			OS:           pt.os,
+			Arch:         pt.arch,
+			CPE:          cpe,
+			PURL:         purl,
+			Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
+		}
+
+		d := createDependency(dep, pt.target)
+		dependencies = append(dependencies, d)
 	}
 
 	return dependencies, nil
