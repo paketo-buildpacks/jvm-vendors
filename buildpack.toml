@@ -264,6 +264,17 @@ api = "0.10"
     version = "26.0.2"
 
   [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "f5b50aee3fd6abaafdd60618051cccf70bf22c43a20d2907a7a6bc23816371d7"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.2:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@26.0.2?arch=arm64"
+    source = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.2%2B10/OpenJDK26U-jdk-sources_26.0.2_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.2%2B10/OpenJDK26U-sbom_aarch64_linux_hotspot_26.0.2_10.json"
+    version = "26.0.2"
+
+  [[metadata.dependencies]]
     arch = "amd64"
     checksum = "44b1392bd15fed9a0ab6988fdeb42ff6c62d3deddce9e7efcf1dca9a48aabeb2"
     cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update492:*:*:*:*:*:*"
@@ -382,6 +393,17 @@ api = "0.10"
     purl = "pkg:generic/adoptium-jre@26.0.2?arch=amd64"
     source = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.2%2B10/OpenJDK26U-jdk-sources_26.0.2_10.tar.gz"
     uri = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.2%2B10/OpenJDK26U-testimage_x64_linux_hotspot_26.0.2_10.tar.gz"
+    version = "26.0.2"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "f5b50aee3fd6abaafdd60618051cccf70bf22c43a20d2907a7a6bc23816371d7"
+    cpe = "cpe:2.3:a:oracle:jdk:26.0.2:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@26.0.2?arch=arm64"
+    source = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.2%2B10/OpenJDK26U-jdk-sources_26.0.2_10.tar.gz"
+    uri = "https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.2%2B10/OpenJDK26U-sbom_aarch64_linux_hotspot_26.0.2_10.json"
     version = "26.0.2"
 
   [[metadata.dependencies]]
