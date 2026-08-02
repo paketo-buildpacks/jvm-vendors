@@ -28,7 +28,13 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 		imageType = "jre"
 	}
 
-	release, err := fetchLatestRelease("SAP", "SapMachine")
+	majorVersion, err := extractVersionFromConstraint(constraint.Constraint)
+	if err != nil {
+		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
+	}
+
+	release, err := fetchLatestReleaseMatching("SAP", "SapMachine",
+		[]string{fmt.Sprintf("sapmachine-%d.", majorVersion)})
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch SapMachine release: %w", err)
 	}
@@ -36,11 +42,6 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 	sapVersion := extractSapMachineVersion(release.TagName)
 	if sapVersion == "" {
 		return nil, fmt.Errorf("unable to extract version from tag %s", release.TagName)
-	}
-
-	majorVersion, err := extractVersionFromConstraint(constraint.Constraint)
-	if err != nil {
-		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
 	}
 
 	deprecationDate := calculateSapMachineDeprecationDate(majorVersion)
