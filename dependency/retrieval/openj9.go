@@ -160,19 +160,23 @@ func fetchLatestOpenJ9Release(org, repo string) (*GitHubRelease, error) {
 
 func extractSemeruJavaVersion(tagName string, majorVersion int) string {
 	if majorVersion == 8 {
-		if strings.HasPrefix(tagName, "jdk-") {
-			version := strings.TrimPrefix(tagName, "jdk-")
-			parts := strings.Split(version, ".")
-			if len(parts) >= 3 {
-				return fmt.Sprintf("8.0.%s", parts[2])
+		if strings.HasPrefix(tagName, "jdk8u") {
+			version := strings.TrimPrefix(tagName, "jdk8u")
+			if idx := strings.Index(version, "-"); idx > 0 {
+				version = version[:idx]
 			}
+			return fmt.Sprintf("8.0.%s", version)
 		}
 	} else {
 		if strings.HasPrefix(tagName, "jdk-") {
 			version := strings.TrimPrefix(tagName, "jdk-")
 			parts := strings.Split(version, ".")
 			if len(parts) >= 3 {
-				return fmt.Sprintf("%s.%s.%s", parts[0], parts[1], parts[2])
+				patch := parts[2]
+				if idx := strings.IndexAny(patch, "+_"); idx > 0 {
+					patch = patch[:idx]
+				}
+				return fmt.Sprintf("%s.%s.%s", parts[0], parts[1], patch)
 			}
 		}
 	}
