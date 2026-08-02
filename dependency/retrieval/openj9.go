@@ -15,6 +15,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -46,7 +47,7 @@ func generateOpenJ9(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		return nil, fmt.Errorf("unsupported Semeru major version: %d", majorVersion)
 	}
 
-	release, err := fetchLatestRelease("ibmruntimes", repo)
+	release, err := fetchLatestOpenJ9Release("ibmruntimes", repo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch Semeru release for %s: %w", repo, err)
 	}
@@ -125,6 +126,36 @@ func findSemeruAsset(assets []GitHubAsset, imageType, archPattern string) string
 		}
 	}
 	return ""
+}
+
+func fetchLatestOpenJ9Release(org, repo string) (*GitHubRelease, error) {
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases?per_page=100", org, repo)
+
+	resp, err := httpClient.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("GitHub API returned status %d", resp.StatusCode)
+	}
+
+	var releases []GitHubRelease
+	if err := json.NewDecoder(resp.Body).Decode(&releases); err != nil {
+		return nil, fmt.Errorf("unable to decode payload: %w", err)
+	}
+
+	for _, release := range releases {
+		if release.Prerelease {
+			continue
+		}
+		if strings.Contains(release.TagName, "_openj9") {
+			return &release, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no OpenJ9 release found in %s/%s", org, repo)
 }
 
 func extractSemeruJavaVersion(tagName string, majorVersion int) string {
