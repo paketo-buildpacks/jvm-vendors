@@ -52,9 +52,9 @@ func generateOpenJ9(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		return nil, fmt.Errorf("failed to fetch Semeru release for %s: %w", repo, err)
 	}
 
-	javaVersion := extractSemeruJavaVersion(release.TagName, majorVersion)
+	javaVersion := extractSemeruJavaVersionFromRelease(release, majorVersion)
 	if javaVersion == "" {
-		return nil, fmt.Errorf("unable to extract Java version from tag %s", release.TagName)
+		return nil, fmt.Errorf("unable to extract Java version from release %s", release.TagName)
 	}
 
 	sourceURL := release.TarballURL
@@ -156,6 +156,51 @@ func fetchLatestOpenJ9Release(org, repo string) (*GitHubRelease, error) {
 	}
 
 	return nil, fmt.Errorf("no OpenJ9 release found in %s/%s", org, repo)
+}
+
+func extractSemeruJavaVersionFromRelease(release *GitHubRelease, majorVersion int) string {
+	for _, asset := range release.Assets {
+		if !strings.Contains(asset.Name, "jdk") {
+			continue
+		}
+		if !strings.HasSuffix(asset.Name, ".tar.gz") {
+			continue
+		}
+		version := extractSemeruJavaVersionFromName(asset.Name, majorVersion)
+		if version != "" {
+			return version
+		}
+	}
+	return extractSemeruJavaVersion(release.TagName, majorVersion)
+}
+
+func extractSemeruJavaVersionFromName(name string, majorVersion int) string {
+	parts := strings.Split(name, "_")
+	for _, part := range parts {
+		if part == "linux" {
+			continue
+		}
+		if majorVersion == 8 && strings.HasPrefix(part, "8u") {
+			version := strings.TrimPrefix(part, "8u")
+			if idx := strings.Index(version, "b"); idx > 0 {
+				return fmt.Sprintf("8.0.%s", version[:idx])
+			}
+			return fmt.Sprintf("8.0.%s", version)
+		}
+		if strings.HasPrefix(part, fmt.Sprintf("%d.", majorVersion)) && majorVersion != 8 {
+			version := part
+			if idx := strings.Index(version, ".0."); idx < 0 {
+				if idx := strings.Index(version, ".0"); idx > 0 {
+					version = version[:idx]
+				}
+			}
+			segs := strings.Split(version, ".")
+			if len(segs) >= 3 {
+				return fmt.Sprintf("%s.%s.%s", segs[0], segs[1], segs[2])
+			}
+		}
+	}
+	return ""
 }
 
 func extractSemeruJavaVersion(tagName string, majorVersion int) string {
