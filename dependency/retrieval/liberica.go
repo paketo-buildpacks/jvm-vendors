@@ -139,7 +139,7 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 			arch:   arch,
 		}
 
-		version := fmt.Sprintf("%d.%d.%d-%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion, release.BuildVersion)
+		version := fmt.Sprintf("%d.%d.%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion)
 
 		if product == "nik" {
 			version = determineBellsoftNIKVersion(release)
