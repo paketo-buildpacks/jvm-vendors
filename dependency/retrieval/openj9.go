@@ -156,6 +156,12 @@ func extractSemeruJavaVersionFromName(name string, majorVersion int) string {
 			}
 			return fmt.Sprintf("8.0.%s", version)
 		}
+		if majorVersion == 8 && strings.HasPrefix(part, "8.") {
+			segs := strings.Split(part, ".")
+			if len(segs) >= 3 {
+				return fmt.Sprintf("8.0.%s", segs[2])
+			}
+		}
 		if strings.HasPrefix(part, fmt.Sprintf("%d.", majorVersion)) && majorVersion != 8 {
 			version := part
 			if idx := strings.Index(version, ".0."); idx < 0 {
@@ -180,6 +186,13 @@ func extractSemeruJavaVersion(tagName string, majorVersion int) string {
 				version = version[:idx]
 			}
 			return fmt.Sprintf("8.0.%s", version)
+		}
+		if strings.HasPrefix(tagName, "jdk-8.") {
+			version := strings.TrimPrefix(tagName, "jdk-")
+			parts := strings.Split(version, ".")
+			if len(parts) >= 3 {
+				return fmt.Sprintf("8.0.%s", parts[2])
+			}
 		}
 	} else {
 		if strings.HasPrefix(tagName, "jdk-") {
