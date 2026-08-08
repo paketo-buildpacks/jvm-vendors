@@ -51,6 +51,9 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		)
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
+			existingDep.Version = version
+			existingDep.CPE = generateOracleCPE(version)
+			existingDep.PURL = fmt.Sprintf("pkg:generic/oracle-jdk@%s?arch=%s", version, pt.arch)
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
 			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
 			dependencies = append(dependencies, d)

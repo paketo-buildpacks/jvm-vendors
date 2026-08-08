@@ -21,8 +21,15 @@ import (
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 )
 
-func generateGraalVM(id string, _ cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
-	release, err := fetchLatestRelease("graalvm", "graalvm-ce-builds")
+func generateGraalVM(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
+	majorVersion, err := extractVersionFromConstraint(constraint.Constraint)
+	if err != nil {
+		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
+	}
+
+	majorStr := fmt.Sprintf("%d", majorVersion)
+	release, err := fetchLatestReleaseMatching("graalvm", "graalvm-ce-builds",
+		[]string{fmt.Sprintf("jdk-%s.", majorStr), fmt.Sprintf("graal-%s.", majorStr)})
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch GraalVM release: %w", err)
 	}
@@ -105,6 +112,9 @@ func findGraalVMAsset(assets []GitHubAsset, archPattern string) string {
 func extractGraalVMVersion(tagName string) string {
 	if strings.HasPrefix(tagName, "jdk-") {
 		return strings.TrimPrefix(tagName, "jdk-")
+	}
+	if strings.HasPrefix(tagName, "graal-") {
+		return strings.TrimPrefix(tagName, "graal-")
 	}
 	return ""
 }

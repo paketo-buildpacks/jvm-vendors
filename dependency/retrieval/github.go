@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // GitHubAsset represents a release asset from the GitHub API
@@ -54,4 +55,36 @@ func fetchLatestRelease(org, repo string) (*GitHubRelease, error) {
 	}
 
 	return &release, nil
+}
+
+func fetchLatestReleaseMatching(org, repo string, tagPrefixes []string) (*GitHubRelease, error) {
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases?per_page=100", org, repo)
+
+	resp, err := httpClient.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("GitHub API returned status %d", resp.StatusCode)
+	}
+
+	var releases []GitHubRelease
+	if err := json.NewDecoder(resp.Body).Decode(&releases); err != nil {
+		return nil, fmt.Errorf("unable to decode payload: %w", err)
+	}
+
+	for _, release := range releases {
+		if release.Prerelease {
+			continue
+		}
+		for _, prefix := range tagPrefixes {
+			if strings.HasPrefix(release.TagName, prefix) {
+				return &release, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf("no release found matching prefixes %v in %s/%s", tagPrefixes, org, repo)
 }
