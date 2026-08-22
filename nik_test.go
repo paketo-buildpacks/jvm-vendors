@@ -59,9 +59,9 @@ func testNIK(t *testing.T, context spec.G, it spec.S) {
 	it("contributes JDK without NIK", func() {
 		executor.On("Execute", mock.Anything).Return(nil)
 		dep := libpak.BuildModuleDependency{
-			Version: "11.0.0",
-			URI:     "https://localhost/stub-jdk-11.tar.gz",
-			SHA256:  "e40a6ddb7d74d78a6d5557380160a174b1273813db1caf9b1f7bcbfe1578e818",
+			Version:  "11.0.0",
+			URI:      "https://localhost/stub-jdk-11.tar.gz",
+			Checksum: "sha256:e40a6ddb7d74d78a6d5557380160a174b1273813db1caf9b1f7bcbfe1578e818",
 		}
 		dc := libpak.DependencyCache{CachePath: "testdata", Logger: log.NewDiscardLogger()}
 
@@ -89,13 +89,13 @@ func testNIK(t *testing.T, context spec.G, it spec.S) {
 		executor.On("Execute", mock.Anything).Return(nil)
 
 		jdkDep := libpak.BuildModuleDependency{
-			Version: "11.0.0",
-			URI:     "https://localhost/stub-jdk-11.tar.gz",
-			SHA256:  "e40a6ddb7d74d78a6d5557380160a174b1273813db1caf9b1f7bcbfe1578e818",
+			Version:  "11.0.0",
+			URI:      "https://localhost/stub-jdk-11.tar.gz",
+			Checksum: "sha256:e40a6ddb7d74d78a6d5557380160a174b1273813db1caf9b1f7bcbfe1578e818",
 		}
 		niDep := &libpak.BuildModuleDependency{
-			URI:    "https://localhost/stub-native-image.jar",
-			SHA256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+			URI:      "https://localhost/stub-native-image.jar",
+			Checksum: "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
 		}
 		dc := libpak.DependencyCache{CachePath: "testdata", Logger: log.NewDiscardLogger()}
 
@@ -118,9 +118,9 @@ func testNIK(t *testing.T, context spec.G, it spec.S) {
 
 	it("updates before Java 9 certificates", func() {
 		dep := libpak.BuildModuleDependency{
-			Version: "8.0.0",
-			URI:     "https://localhost/stub-jdk-8.tar.gz",
-			SHA256:  "6860fb9a9a66817ec285fac64c342b678b0810656b1f2413f063911a8bde6447",
+			Version:  "8.0.0",
+			URI:      "https://localhost/stub-jdk-8.tar.gz",
+			Checksum: "sha256:6860fb9a9a66817ec285fac64c342b678b0810656b1f2413f063911a8bde6447",
 		}
 		dc := libpak.DependencyCache{CachePath: "testdata", Logger: log.NewDiscardLogger()}
 
@@ -146,9 +146,9 @@ func testNIK(t *testing.T, context spec.G, it spec.S) {
 
 	it("updates after Java 9 certificates", func() {
 		dep := libpak.BuildModuleDependency{
-			Version: "11.0.0",
-			URI:     "https://localhost/stub-jdk-11.tar.gz",
-			SHA256:  "e40a6ddb7d74d78a6d5557380160a174b1273813db1caf9b1f7bcbfe1578e818",
+			Version:  "11.0.0",
+			URI:      "https://localhost/stub-jdk-11.tar.gz",
+			Checksum: "sha256:e40a6ddb7d74d78a6d5557380160a174b1273813db1caf9b1f7bcbfe1578e818",
 		}
 		dc := libpak.DependencyCache{CachePath: "testdata", Logger: log.NewDiscardLogger()}
 
