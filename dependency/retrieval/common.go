@@ -157,10 +157,19 @@ func adoptiumVersionToSemver(version string) string {
 
 	// Java 11+: 11.0.25+9 -> 11.0.25, 26.0.1-8 -> 26.0.1
 	if before, _, ok := strings.Cut(version, "+"); ok {
-		return before
+		version = before
 	}
 	if before, _, ok := strings.Cut(version, "-"); ok {
-		return before
+		version = before
+	}
+
+	return truncateToSemver(version)
+}
+
+func truncateToSemver(version string) string {
+	parts := strings.Split(version, ".")
+	if len(parts) > 3 {
+		return strings.Join(parts[:3], ".")
 	}
 	return version
 }

@@ -86,9 +86,9 @@ func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstr
 
 		sourceChecksum := getSourceChecksum(sourceURL, existing)
 
-		purl := fmt.Sprintf("pkg:generic/amazon/corretto-jdk@%s?arch=%s", javaVersion, pt.arch)
+		purl := fmt.Sprintf("pkg:generic/amazon/corretto-jdk@%s?arch=%s", correttoVersion, pt.arch)
 
-		cpe := generateOracleCPE(javaVersion)
+		cpe := generateOracleCPE(correttoVersion)
 
 		name := "Amazon Corretto JDK"
 

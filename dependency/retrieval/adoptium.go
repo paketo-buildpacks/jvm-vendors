@@ -104,26 +104,27 @@ func generateAdoptium(id string, constraint cargo.ConfigMetadataDependencyConstr
 
 			binary := assets[0].Binaries[0]
 
-			extractedVersion := adoptiumVersionToSemver(assets[0].VersionData.Semver)
-			if extractedVersion == "" {
-				extractedVersion = constraint.Constraint
-			}
+rawVersion := assets[0].VersionData.Semver
+		extractedVersion := adoptiumVersionToSemver(rawVersion)
+		if extractedVersion == "" {
+			extractedVersion = constraint.Constraint
+		}
 
-			if existingDep := findExistingDependency(existing, id, binary.Package.Link); existingDep != nil {
-				fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
-				d := dependencyFromExisting(existingDep, pt.os, pt.arch)
-				ch <- &d
-				return
-			}
+		if existingDep := findExistingDependency(existing, id, binary.Package.Link); existingDep != nil {
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
+			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			ch <- &d
+			return
+		}
 
-			purl := fmt.Sprintf("pkg:generic/adoptium-%s@%s?arch=%s", imageType, extractedVersion, pt.arch)
+		purl := fmt.Sprintf("pkg:generic/adoptium-%s@%s?arch=%s", imageType, rawVersion, pt.arch)
 
-			cpe := generateOracleCPE(extractedVersion)
+		cpe := generateOracleCPE(rawVersion)
 
-			dep := cargo.ConfigMetadataDependency{
-				ID:           id,
-				Name:         "Adoptium " + strings.ToUpper(imageType),
-				Version:      extractedVersion,
+		dep := cargo.ConfigMetadataDependency{
+			ID:           id,
+			Name:         "Adoptium " + strings.ToUpper(imageType),
+			Version:      extractedVersion,
 				URI:          binary.Package.Link,
 				SHA256:       binary.Package.Checksum,
 				Source:       assets[0].Source.Link,

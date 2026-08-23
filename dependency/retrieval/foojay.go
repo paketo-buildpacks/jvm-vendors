@@ -99,10 +99,11 @@ func generateFoojay(id string, constraint cargo.ConfigMetadataDependencyConstrai
 			continue
 		}
 
-		version := pkg.JavaVersion
-		if version == "" {
-			version = pkg.DistributionVersion
+		rawVersion := pkg.JavaVersion
+		if rawVersion == "" {
+			rawVersion = pkg.DistributionVersion
 		}
+		version := truncateToSemver(rawVersion)
 
 		if existingDep := findExistingDependency(existing, id, downloadURL); existingDep != nil {
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
@@ -111,9 +112,9 @@ func generateFoojay(id string, constraint cargo.ConfigMetadataDependencyConstrai
 			continue
 		}
 
-		purl := fmt.Sprintf("pkg:generic/%s/openjdk@%s?arch=%s", distro, version, pt.arch)
+		purl := fmt.Sprintf("pkg:generic/%s/openjdk@%s?arch=%s", distro, rawVersion, pt.arch)
 
-		cpe := generateOracleCPE(version)
+		cpe := generateOracleCPE(rawVersion)
 
 		name := cases.Title(language.English).String(distro) + " OpenJDK"
 

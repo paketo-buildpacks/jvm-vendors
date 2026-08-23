@@ -132,48 +132,52 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 			arch = "amd64"
 		}
 
-		pt := PlatformStackTarget{
-			stacks: supportedStacks,
-			target: fmt.Sprintf("linux-%s", arch),
-			os:     "linux",
-			arch:   arch,
-		}
+pt := PlatformStackTarget{
+		stacks: supportedStacks,
+		target: fmt.Sprintf("linux-%s", arch),
+		os:     "linux",
+		arch:   arch,
+	}
 
-		version := fmt.Sprintf("%d.%d.%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion)
+	rawVersion := fmt.Sprintf("%d.%d.%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion)
+	version := truncateToSemver(rawVersion)
 
-		if product == "nik" {
-			version = determineBellsoftNIKVersion(release)
-		}
+	var fullVersion string
+	if product == "nik" {
+		version, fullVersion = determineBellsoftNIKVersion(release)
+	} else {
+		fullVersion = rawVersion
+	}
 
-		if existingDep := findExistingDependency(existing, id, release.DownloadURL); existingDep != nil {
-			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
-			dependencies = append(dependencies, d)
-			continue
-		}
+	if existingDep := findExistingDependency(existing, id, release.DownloadURL); existingDep != nil {
+		fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+		d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+		dependencies = append(dependencies, d)
+		continue
+	}
 
-		checksum, err := downloadAndCalculateSHA256(release.DownloadURL)
-		if err != nil {
-			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
-			continue
-		}
+	checksum, err := downloadAndCalculateSHA256(release.DownloadURL)
+	if err != nil {
+		fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
+		continue
+	}
 
-		purl := fmt.Sprintf("pkg:generic/liberica/openjdk@%s?arch=%s", version, pt.arch)
-		if product == "nik" {
-			purl = fmt.Sprintf("pkg:generic/liberica/native-image@%s?arch=%s", version, pt.arch)
-		}
+	purl := fmt.Sprintf("pkg:generic/liberica/openjdk@%s?arch=%s", fullVersion, pt.arch)
+	if product == "nik" {
+		purl = fmt.Sprintf("pkg:generic/liberica/native-image@%s?arch=%s", fullVersion, pt.arch)
+	}
 
-		cpe := generateOracleCPE(version)
+	cpe := generateOracleCPE(fullVersion)
 
-		name := "BellSoft Liberica " + strings.ToUpper(bundleType)
-		if product == "nik" {
-			name = "BellSoft Liberica Native Image"
-		}
+	name := "BellSoft Liberica " + strings.ToUpper(bundleType)
+	if product == "nik" {
+		name = "BellSoft Liberica Native Image"
+	}
 
-		dep := cargo.ConfigMetadataDependency{
-			ID:           id,
-			Name:         name,
-			Version:      version,
+	dep := cargo.ConfigMetadataDependency{
+		ID:           id,
+		Name:         name,
+		Version:      version,
 			URI:          release.DownloadURL,
 			SHA256:       checksum,
 			Source:       sourceURL,
@@ -231,16 +235,17 @@ func downloadAndCalculateSHA256(url string) (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
-func determineBellsoftNIKVersion(r BellsoftRelease) string {
+func determineBellsoftNIKVersion(r BellsoftRelease) (string, string) {
 	componentVersion, err := retrieveBellsoftComponentVersionFor(r, "liberica")
 	if err != nil {
 		panic(err)
 	}
 
+	rawVersion := componentVersion
 	if v, err := normalizeVersion(componentVersion); err != nil {
 		panic(err)
 	} else {
-		return v
+		return v, rawVersion
 	}
 }
 
@@ -262,5 +267,6 @@ func normalizeVersion(version string) (string, error) {
 	}
 
 	version = strings.ReplaceAll(version, "+", "-")
-	return version, nil
+
+	return truncateToSemver(version), nil
 }

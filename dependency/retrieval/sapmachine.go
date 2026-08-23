@@ -39,10 +39,12 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 		return nil, fmt.Errorf("failed to fetch SapMachine release: %w", err)
 	}
 
-	sapVersion := extractSapMachineVersion(release.TagName)
-	if sapVersion == "" {
+	rawSapVersion := extractSapMachineVersion(release.TagName)
+	if rawSapVersion == "" {
 		return nil, fmt.Errorf("unable to extract version from tag %s", release.TagName)
 	}
+
+	sapVersion := truncateToSemver(rawSapVersion)
 
 	deprecationDate := calculateSapMachineDeprecationDate(majorVersion)
 
@@ -76,9 +78,9 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 			continue
 		}
 
-		purl := fmt.Sprintf("pkg:generic/sap-machine-%s@%s?arch=%s", imageType, sapVersion, pt.arch)
+		purl := fmt.Sprintf("pkg:generic/sap-machine-%s@%s?arch=%s", imageType, rawSapVersion, pt.arch)
 
-		cpe := generateOracleCPE(sapVersion)
+		cpe := generateOracleCPE(rawSapVersion)
 
 		name := "SapMachine " + strings.ToUpper(imageType)
 
@@ -118,7 +120,7 @@ func findSapMachineAsset(assets []GitHubAsset, imageType, archPattern string) st
 }
 
 func extractSapMachineVersion(tagName string) string {
-	return strings.TrimPrefix(tagName, "sapmachine-")
+	return truncateToSemver(strings.TrimPrefix(tagName, "sapmachine-"))
 }
 
 func calculateSapMachineDeprecationDate(majorVersion int) *time.Time {
