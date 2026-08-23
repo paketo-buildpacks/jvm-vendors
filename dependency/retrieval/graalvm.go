@@ -34,10 +34,12 @@ func generateGraalVM(id string, constraint cargo.ConfigMetadataDependencyConstra
 		return nil, fmt.Errorf("failed to fetch GraalVM release: %w", err)
 	}
 
-	extractedVersion := extractGraalVMVersion(release.TagName)
-	if extractedVersion == "" {
+	rawVersion := extractGraalVMVersion(release.TagName)
+	if rawVersion == "" {
 		return nil, fmt.Errorf("unable to extract version from tag %s", release.TagName)
 	}
+
+	extractedVersion := truncateToSemver(rawVersion)
 
 	sourceURL := release.TarballURL
 	sourceChecksum := getSourceChecksum(sourceURL, existing)
@@ -69,9 +71,9 @@ func generateGraalVM(id string, constraint cargo.ConfigMetadataDependencyConstra
 			continue
 		}
 
-		purl := fmt.Sprintf("pkg:generic/graalvm-jdk@%s?arch=%s", extractedVersion, pt.arch)
+		purl := fmt.Sprintf("pkg:generic/graalvm-jdk@%s?arch=%s", rawVersion, pt.arch)
 
-		cpe := generateOracleCPE(extractedVersion)
+		cpe := generateOracleCPE(rawVersion)
 
 		name := "GraalVM JDK"
 
@@ -111,10 +113,10 @@ func findGraalVMAsset(assets []GitHubAsset, archPattern string) string {
 
 func extractGraalVMVersion(tagName string) string {
 	if strings.HasPrefix(tagName, "jdk-") {
-		return strings.TrimPrefix(tagName, "jdk-")
+		return truncateToSemver(strings.TrimPrefix(tagName, "jdk-"))
 	}
 	if strings.HasPrefix(tagName, "graal-") {
-		return strings.TrimPrefix(tagName, "graal-")
+		return truncateToSemver(strings.TrimPrefix(tagName, "graal-"))
 	}
 	return ""
 }
