@@ -9,8 +9,8 @@ require (
 	github.com/heroku/color v0.0.6
 	github.com/magiconair/properties v1.18.11
 	github.com/mattn/go-shellwords v1.0.14
-	github.com/miekg/dns v1.1.72
-	github.com/onsi/gomega v1.42.1
+	github.com/miekg/dns v1.1.73
+	github.com/onsi/gomega v1.43.0
 	github.com/paketo-buildpacks/libpak/v2 v2.2.0
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/sclevine/spec v1.4.0
@@ -32,9 +32,6 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.55.0 // indirect
-	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
-	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
-	golang.org/x/tools v0.49.0 // indirect
 )
