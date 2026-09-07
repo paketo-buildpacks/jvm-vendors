@@ -7,6 +7,7 @@ on:
     - completed
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
         repo: ${{ github.repository }}
         run_id: ${{ github.event.workflow_run.id }}
         workspace: "/github/workspace"
-        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
     - id: pr-data
       run: |
         echo "author=$(cat event.json | jq -r '.pull_request.user.login')" >> "$GITHUB_OUTPUT"
