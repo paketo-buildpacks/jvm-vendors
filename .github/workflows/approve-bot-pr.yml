@@ -57,6 +57,8 @@ jobs:
     - name: Checkout
       if: steps.human-commits.outputs.human_commits == 'false' && steps.unverified-commits.outputs.unverified_commits == 'false'
       uses: actions/checkout@v7
+      with:
+        persist-credentials: false
 
     - name: Approve
       if: steps.human-commits.outputs.human_commits == 'false' && steps.unverified-commits.outputs.unverified_commits == 'false'
@@ -68,6 +70,7 @@ jobs:
     - name: Enable Auto-Merge
       if: steps.human-commits.outputs.human_commits == 'false' && steps.unverified-commits.outputs.unverified_commits == 'false'
       run: |
-        gh pr merge ${{ needs.download.outputs.pr-number }} --auto --rebase
+        gh pr merge "${PR_NUMBER}" --auto --rebase
       env:
+        PR_NUMBER: ${{ needs.download.outputs.pr-number }}
         GITHUB_TOKEN: ${{ secrets.PAKETO_BOT_REVIEWER_GITHUB_TOKEN }}
