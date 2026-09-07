@@ -6,6 +6,9 @@ on:
     types:
     - completed
 
+permissions:
+  contents: read
+
 jobs:
   download:
     name: Download PR Artifact
@@ -38,7 +41,7 @@ jobs:
       id: unverified-commits
       uses: paketo-buildpacks/github-config/actions/pull-request/check-unverified-commits@main
       with:
-        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         repo: ${{ github.repository }}
         number: ${{ needs.download.outputs.pr-number }}
 
@@ -46,7 +49,7 @@ jobs:
       id: human-commits
       uses: paketo-buildpacks/github-config/actions/pull-request/check-human-commits@main
       with:
-        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         repo: ${{ github.repository }}
         number: ${{ needs.download.outputs.pr-number }}
 
