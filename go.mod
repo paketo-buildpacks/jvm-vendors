@@ -7,10 +7,10 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/buildpacks/libcnb/v2 v2.1.0
 	github.com/heroku/color v0.0.6
-	github.com/magiconair/properties v1.18.11
-	github.com/mattn/go-shellwords v1.0.14
+	github.com/magiconair/properties v1.18.12
+	github.com/mattn/go-shellwords v1.0.15
 	github.com/miekg/dns v1.1.73
-	github.com/onsi/gomega v1.43.0
+	github.com/onsi/gomega v1.43.1
 	github.com/paketo-buildpacks/libpak/v2 v2.2.0
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/sclevine/spec v1.4.0
@@ -31,7 +31,7 @@ require (
 	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/crypto v0.56.0 // indirect
-	golang.org/x/net v0.58.0 // indirect
+	golang.org/x/crypto v0.57.0 // indirect
+	golang.org/x/net v0.59.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
 )
