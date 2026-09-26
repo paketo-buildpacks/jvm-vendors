@@ -128,7 +128,7 @@ func extractVersionFromConstraint(constraint string) (int, error) {
 		return -1, fmt.Errorf("unable to parse constraint %s: %w", constraint, err)
 	}
 
-	supportedVersions := []int{8, 11, 17, 21, 23, 25, 26}
+	supportedVersions := []int{8, 11, 17, 21, 25, 26, 27}
 
 	for _, major := range supportedVersions {
 		testVersion := semver.New(uint64(major), 0, 0, "", "")
