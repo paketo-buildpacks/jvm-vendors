@@ -45,17 +45,27 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 			archSuffix = "aarch64"
 		}
 
+		// native-image-svm-oracle must resolve to Oracle GraalVM, which bundles the
+		// native-image tool; the plain Oracle JDK does not ship it.
 		assetURL := fmt.Sprintf(
 			"https://download.oracle.com/java/%d/latest/jdk-%d_linux-%s_bin.tar.gz",
 			majorVersion,
 			majorVersion,
 			archSuffix,
 		)
+		if id == "native-image-svm-oracle" {
+			assetURL = fmt.Sprintf(
+				"https://download.oracle.com/graalvm/%d/latest/graalvm-jdk-%d_linux-%s_bin.tar.gz",
+				majorVersion,
+				majorVersion,
+				archSuffix,
+			)
+		}
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
 			existingDep.Version = version
 			existingDep.CPE = generateOracleCPE(rawVersion)
-			existingDep.PURL = fmt.Sprintf("pkg:generic/oracle-jdk@%s?arch=%s", rawVersion, pt.arch)
+			existingDep.PURL = fmt.Sprintf("pkg:generic/%s@%s?arch=%s", purlName(id), rawVersion, pt.arch)
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
 			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
@@ -68,24 +78,27 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 			continue
 		}
 
-		purl := fmt.Sprintf("pkg:generic/oracle-jdk@%s?arch=%s", rawVersion, pt.arch)
+		purl := fmt.Sprintf("pkg:generic/%s@%s?arch=%s", purlName(id), rawVersion, pt.arch)
 
 		cpe := generateOracleCPE(rawVersion)
 
 		name := "Oracle JDK"
+		if id == "native-image-svm-oracle" {
+			name = "Oracle GraalVM"
+		}
 
 		dep := cargo.ConfigMetadataDependency{
-			ID:           id,
-			Name:         name,
-			Version:      version,
-			URI:          assetURL,
-			SHA256:       checksum,
-			Stacks:       pt.stacks,
-			OS:           pt.os,
-			Arch:         pt.arch,
-			CPE:          cpe,
-			PURL:         purl,
-			Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
+			ID:       id,
+			Name:     name,
+			Version:  version,
+			URI:      assetURL,
+			SHA256:   checksum,
+			Stacks:   pt.stacks,
+			OS:       pt.os,
+			Arch:     pt.arch,
+			CPE:      cpe,
+			PURL:     purl,
+			Licenses: getLicenses(cargo.ConfigMetadataDependency{}),
 		}
 
 		d := createDependency(dep, pt.target)
@@ -130,4 +143,11 @@ func fetchOracleVersion(majorVersion int) (string, error) {
 	}
 
 	return truncateToSemver(strings.TrimSpace(matches[1])), nil
+}
+
+func purlName(id string) string {
+	if id == "native-image-svm-oracle" {
+		return "graalvm-jdk"
+	}
+	return "oracle-jdk"
 }
