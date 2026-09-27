@@ -21,7 +21,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/paketo-buildpacks/packit/v2/cargo"
@@ -94,21 +96,24 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 	}
 
 	if product == "nik" {
-		// for NIK, the API's "latest" feature does not work
-		// so we fetch all the versions, sort and pick the most recent one on the client side
-		sort.Slice(releases, func(i, j int) bool {
-			if releases[i].FeatureVersion != releases[j].FeatureVersion {
-				return releases[i].FeatureVersion > releases[j].FeatureVersion
-			}
-			if releases[i].InterimVersion != releases[j].InterimVersion {
-				return releases[i].InterimVersion > releases[j].InterimVersion
-			}
-			if releases[i].UpdateVersion != releases[j].UpdateVersion {
-				return releases[i].UpdateVersion > releases[j].UpdateVersion
-			}
-			return releases[i].BuildVersion > releases[j].BuildVersion
+		// for NIK, the API's "latest" feature does not work, so we sort client side.
+		// The release-level version fields are not populated for NIK, so order by the
+		// liberica component version instead - the version this dependency is published under.
+		sort.SliceStable(releases, func(i, j int) bool {
+			return compareBellsoftComponentVersion(releases[i], releases[j]) > 0
 		})
-		releases = releases[:1]
+		// keep the newest release for each architecture; truncating to a single
+		// element here would silently drop every architecture but one
+		newestPerArch := make([]BellsoftRelease, 0, len(releases))
+		seenArch := make(map[string]bool, len(releases))
+		for _, release := range releases {
+			if seenArch[release.Architecture] {
+				continue
+			}
+			seenArch[release.Architecture] = true
+			newestPerArch = append(newestPerArch, release)
+		}
+		releases = newestPerArch
 	}
 
 	sourceReleases, err := fetchBellsoftReleases(sourceURI)
@@ -132,52 +137,52 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 			arch = "amd64"
 		}
 
-pt := PlatformStackTarget{
-		stacks: supportedStacks,
-		target: fmt.Sprintf("linux-%s", arch),
-		os:     "linux",
-		arch:   arch,
-	}
+		pt := PlatformStackTarget{
+			stacks: supportedStacks,
+			target: fmt.Sprintf("linux-%s", arch),
+			os:     "linux",
+			arch:   arch,
+		}
 
-	rawVersion := fmt.Sprintf("%d.%d.%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion)
-	version := truncateToSemver(rawVersion)
+		rawVersion := fmt.Sprintf("%d.%d.%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion)
+		version := truncateToSemver(rawVersion)
 
-	var fullVersion string
-	if product == "nik" {
-		version, fullVersion = determineBellsoftNIKVersion(release)
-	} else {
-		fullVersion = rawVersion
-	}
+		var fullVersion string
+		if product == "nik" {
+			version, fullVersion = determineBellsoftNIKVersion(release)
+		} else {
+			fullVersion = rawVersion
+		}
 
-	if existingDep := findExistingDependency(existing, id, release.DownloadURL); existingDep != nil {
-		fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
-		d := dependencyFromExisting(existingDep, pt.os, pt.arch)
-		dependencies = append(dependencies, d)
-		continue
-	}
+		if existingDep := findExistingDependency(existing, id, release.DownloadURL); existingDep != nil {
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			dependencies = append(dependencies, d)
+			continue
+		}
 
-	checksum, err := downloadAndCalculateSHA256(release.DownloadURL)
-	if err != nil {
-		fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
-		continue
-	}
+		checksum, err := downloadAndCalculateSHA256(release.DownloadURL)
+		if err != nil {
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
+			continue
+		}
 
-	purl := fmt.Sprintf("pkg:generic/liberica/openjdk@%s?arch=%s", fullVersion, pt.arch)
-	if product == "nik" {
-		purl = fmt.Sprintf("pkg:generic/liberica/native-image@%s?arch=%s", fullVersion, pt.arch)
-	}
+		purl := fmt.Sprintf("pkg:generic/liberica/openjdk@%s?arch=%s", fullVersion, pt.arch)
+		if product == "nik" {
+			purl = fmt.Sprintf("pkg:generic/liberica/native-image@%s?arch=%s", fullVersion, pt.arch)
+		}
 
-	cpe := generateOracleCPE(fullVersion)
+		cpe := generateOracleCPE(fullVersion)
 
-	name := "BellSoft Liberica " + strings.ToUpper(bundleType)
-	if product == "nik" {
-		name = "BellSoft Liberica Native Image"
-	}
+		name := "BellSoft Liberica " + strings.ToUpper(bundleType)
+		if product == "nik" {
+			name = "BellSoft Liberica Native Image"
+		}
 
-	dep := cargo.ConfigMetadataDependency{
-		ID:           id,
-		Name:         name,
-		Version:      version,
+		dep := cargo.ConfigMetadataDependency{
+			ID:           id,
+			Name:         name,
+			Version:      version,
 			URI:          release.DownloadURL,
 			SHA256:       checksum,
 			Source:       sourceURL,
@@ -266,7 +271,69 @@ func normalizeVersion(version string) (string, error) {
 		return fmt.Sprintf("8.0.%s", matches[2]), nil
 	}
 
-	version = strings.ReplaceAll(version, "+", "-")
+	// drop the build number: "11.0.21+10" must not become "11.0.21-10", which
+	// semver reads as a prerelease and excludes from "^11" constraint matching,
+	// so the dependency never makes it into buildpack.toml
+	if i := strings.Index(version, "+"); i != -1 {
+		version = version[:i]
+	}
 
 	return truncateToSemver(version), nil
+}
+
+var versionNumberPattern = regexp.MustCompile(`\d+`)
+
+// bellsoftComponentVersionParts returns the comparable numeric parts of a release's
+// liberica component version: the version core padded to four fields, followed by the
+// build number. "21+37" -> [21, 0, 0, 0, 37] and "21.0.12+2" -> [21, 0, 12, 0, 2].
+//
+// The core must be padded before the build number is appended, otherwise a GA release
+// such as "21+37" compares its build number against the interim field of "21.0.12+2"
+// and wrongly sorts ahead of it.
+func bellsoftComponentVersionParts(r BellsoftRelease) []int {
+	version, err := retrieveBellsoftComponentVersionFor(r, "liberica")
+	if err != nil {
+		return nil
+	}
+
+	core, build, _ := strings.Cut(version, "+")
+
+	parts := make([]int, 0, 5)
+	for _, field := range versionNumberPattern.FindAllString(core, -1) {
+		number, err := strconv.Atoi(field)
+		if err != nil {
+			return nil
+		}
+		parts = append(parts, number)
+	}
+
+	for len(parts) < 4 {
+		parts = append(parts, 0)
+	}
+
+	buildNumber := 0
+	if fields := versionNumberPattern.FindAllString(build, -1); len(fields) > 0 {
+		if number, err := strconv.Atoi(fields[0]); err == nil {
+			buildNumber = number
+		}
+	}
+
+	return append(parts, buildNumber)
+}
+
+// compareBellsoftComponentVersion orders two releases by their liberica component
+// version, returning a positive number when a is newer than b.
+func compareBellsoftComponentVersion(a, b BellsoftRelease) int {
+	aParts, bParts := bellsoftComponentVersionParts(a), bellsoftComponentVersionParts(b)
+
+	for i := 0; i < len(aParts) && i < len(bParts); i++ {
+		if aParts[i] != bParts[i] {
+			if aParts[i] > bParts[i] {
+				return 1
+			}
+			return -1
+		}
+	}
+
+	return len(aParts) - len(bParts)
 }
