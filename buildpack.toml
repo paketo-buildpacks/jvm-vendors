@@ -115,7 +115,7 @@ api = "0.10"
 
   [[metadata.configurations]]
     build = true
-    default = "17"
+    default = "21"
     description = "the Java version"
     name = "BP_JVM_VERSION"
 
@@ -2122,7 +2122,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jdk-adoptium"
     patches = 1
 
@@ -2152,7 +2152,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jre-adoptium"
     patches = 1
 
@@ -2207,7 +2207,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jdk-amazon-corretto"
     patches = 1
 
@@ -2237,7 +2237,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jdk-azul-zulu"
     patches = 1
 
@@ -2267,7 +2267,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jre-azul-zulu"
     patches = 1
 
@@ -2377,7 +2377,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jdk-eclipse-openj9"
     patches = 1
 
@@ -2407,7 +2407,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jre-eclipse-openj9"
     patches = 1
 
@@ -2452,7 +2452,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jdk-oracle"
     patches = 1
 
@@ -2467,7 +2467,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "native-image-svm-oracle"
     patches = 1
 
@@ -2512,7 +2512,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jdk-sap-machine"
     patches = 1
 
@@ -2532,7 +2532,7 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^26"
+    constraint = "^27"
     id = "jre-sap-machine"
     patches = 1
 
