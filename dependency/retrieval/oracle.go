@@ -24,6 +24,8 @@ import (
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 )
 
+const nativeImageSVMOracleID = "native-image-svm-oracle"
+
 func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
 	majorVersion, err := extractVersionFromConstraint(constraint.Constraint)
 	if err != nil {
@@ -51,11 +53,23 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 			majorVersion,
 			archSuffix,
 		)
+		name := "Oracle JDK"
+		purlName := "oracle-jdk"
+		if id == nativeImageSVMOracleID {
+			assetURL = fmt.Sprintf(
+				"https://download.oracle.com/graalvm/%d/latest/graalvm-jdk-%d_linux-%s_bin.tar.gz",
+				majorVersion,
+				majorVersion,
+				archSuffix,
+			)
+			name = "Oracle GraalVM"
+			purlName = "graalvm-jdk"
+		}
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
 			existingDep.Version = version
 			existingDep.CPE = generateOracleCPE(rawVersion)
-			existingDep.PURL = fmt.Sprintf("pkg:generic/oracle-jdk@%s?arch=%s", rawVersion, pt.arch)
+			existingDep.PURL = fmt.Sprintf("pkg:generic/%s@%s?arch=%s", purlName, rawVersion, pt.arch)
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
 			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
@@ -68,24 +82,22 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 			continue
 		}
 
-		purl := fmt.Sprintf("pkg:generic/oracle-jdk@%s?arch=%s", rawVersion, pt.arch)
+		purl := fmt.Sprintf("pkg:generic/%s@%s?arch=%s", purlName, rawVersion, pt.arch)
 
 		cpe := generateOracleCPE(rawVersion)
 
-		name := "Oracle JDK"
-
 		dep := cargo.ConfigMetadataDependency{
-			ID:           id,
-			Name:         name,
-			Version:      version,
-			URI:          assetURL,
-			SHA256:       checksum,
-			Stacks:       pt.stacks,
-			OS:           pt.os,
-			Arch:         pt.arch,
-			CPE:          cpe,
-			PURL:         purl,
-			Licenses:     getLicenses(cargo.ConfigMetadataDependency{}),
+			ID:       id,
+			Name:     name,
+			Version:  version,
+			URI:      assetURL,
+			SHA256:   checksum,
+			Stacks:   pt.stacks,
+			OS:       pt.os,
+			Arch:     pt.arch,
+			CPE:      cpe,
+			PURL:     purl,
+			Licenses: getLicenses(cargo.ConfigMetadataDependency{}),
 		}
 
 		d := createDependency(dep, pt.target)
