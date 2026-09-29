@@ -28,7 +28,7 @@ var correttoRepoMap = map[int]string{
 	21: "corretto-21",
 	23: "corretto-23",
 	25: "corretto-25",
-	26: "corretto-26",
+	27: "corretto-27",
 }
 
 func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
