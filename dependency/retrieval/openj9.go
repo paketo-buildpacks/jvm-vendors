@@ -27,7 +27,6 @@ var semeruRepoMap = map[int]string{
 	17: "semeru17-binaries",
 	21: "semeru21-binaries",
 	25: "semeru25-binaries",
-	26: "semeru26-binaries",
 	27: "semeru27-binaries",
 }
 

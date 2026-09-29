@@ -128,7 +128,7 @@ func extractVersionFromConstraint(constraint string) (int, error) {
 		return -1, fmt.Errorf("unable to parse constraint %s: %w", constraint, err)
 	}
 
-	supportedVersions := []int{8, 11, 17, 21, 25, 26, 27}
+	supportedVersions := []int{8, 11, 17, 21, 25, 27}
 
 	for _, major := range supportedVersions {
 		testVersion := semver.New(uint64(major), 0, 0, "", "")
@@ -146,7 +146,7 @@ var (
 
 // Convert adoptium version format to semver
 func adoptiumVersionToSemver(version string) string {
-	// Handle formats like "8u432-b06" or "jdk-11.0.25+9" or "26.0.1-8"
+	// Handle formats like "8u432-b06" or "jdk-11.0.25+9" or "27.0.1-8"
 	version = strings.TrimPrefix(version, "jdk")
 	version = strings.TrimPrefix(version, "-")
 
@@ -155,7 +155,7 @@ func adoptiumVersionToSemver(version string) string {
 		return fmt.Sprintf("8.0.%s", matches[2])
 	}
 
-	// Java 11+: 11.0.25+9 -> 11.0.25, 26.0.1-8 -> 26.0.1
+	// Java 11+: 11.0.25+9 -> 11.0.25, 27.0.1-8 -> 27.0.1
 	if before, _, ok := strings.Cut(version, "+"); ok {
 		version = before
 	}
