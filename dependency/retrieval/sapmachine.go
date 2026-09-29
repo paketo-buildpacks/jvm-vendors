@@ -33,8 +33,13 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 		return nil, fmt.Errorf("unable to extract version from constraint %s: %w", constraint.Constraint, err)
 	}
 
+	// the initial GA of a feature release is tagged without a patch component
+	// (e.g. "sapmachine-27"), later ones carry it (e.g. "sapmachine-27.0.1")
 	release, err := fetchLatestReleaseMatching("SAP", "SapMachine",
-		[]string{fmt.Sprintf("sapmachine-%d.", majorVersion)})
+		[]string{
+			fmt.Sprintf("sapmachine-%d.", majorVersion),
+			fmt.Sprintf("sapmachine-%d", majorVersion),
+		})
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch SapMachine release: %w", err)
 	}

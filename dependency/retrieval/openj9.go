@@ -28,6 +28,7 @@ var semeruRepoMap = map[int]string{
 	21: "semeru21-binaries",
 	25: "semeru25-binaries",
 	26: "semeru26-binaries",
+	27: "semeru27-binaries",
 }
 
 func generateOpenJ9(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
