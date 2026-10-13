@@ -15,7 +15,7 @@ require (
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/sclevine/spec v1.4.0
 	github.com/stretchr/testify v1.12.1
-	golang.org/x/sys v0.48.0
+	golang.org/x/sys v0.49.0
 	software.sslmate.com/src/go-pkcs12 v0.7.3
 )
 
@@ -25,7 +25,7 @@ require (
 	github.com/creack/pty v1.1.24 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/h2non/filetype v1.1.3 // indirect
-	github.com/mattn/go-colorable v0.1.15 // indirect
+	github.com/mattn/go-colorable v0.1.16 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
