@@ -243,25 +243,14 @@ api = "0.10"
 
   [[metadata.dependencies]]
     arch = "amd64"
-    checksum = "5288fe90529005042bbe708f2d8a633a611850e3c3e6763ee40deb60be1eae19"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
+    checksum = "00045b139b85ca34b948fd2b7f4e2bb344bda7a94d4223b50a917b30bfa618bb"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
     id = "jdk-adoptium"
     os = "linux"
-    purl = "pkg:generic/adoptium-jdk@27.0.0+35?arch=amd64"
-    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-jdk-sources_27_35.tar.gz"
-    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-sbom_x64_linux_hotspot_27_35.json"
-    version = "27.0.0"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    checksum = "0357d267b75d00dc834b4d20e6de05289d65db84fae789fa3b455dbc27a65dfa"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
-    id = "jdk-adoptium"
-    os = "linux"
-    purl = "pkg:generic/adoptium-jdk@27.0.0+35?arch=arm64"
-    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-jdk-sources_27_35.tar.gz"
-    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-sbom_aarch64_linux_hotspot_27_35.json"
-    version = "27.0.0"
+    purl = "pkg:generic/adoptium-jdk@27.0.1+0?arch=amd64"
+    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-jdk-sources_27.0.1.0.2_1.tar.gz"
+    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-testimage_x64_linux_hotspot_27.0.1.0.2_1.tar.gz"
+    version = "27.0.1"
 
   [[metadata.dependencies]]
     arch = "amd64"
@@ -363,26 +352,15 @@ api = "0.10"
     version = "25.0.5"
 
   [[metadata.dependencies]]
-    arch = "arm64"
-    checksum = "0357d267b75d00dc834b4d20e6de05289d65db84fae789fa3b455dbc27a65dfa"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
-    id = "jre-adoptium"
-    os = "linux"
-    purl = "pkg:generic/adoptium-jre@27.0.0+35?arch=arm64"
-    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-jdk-sources_27_35.tar.gz"
-    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-sbom_aarch64_linux_hotspot_27_35.json"
-    version = "27.0.0"
-
-  [[metadata.dependencies]]
     arch = "amd64"
-    checksum = "5288fe90529005042bbe708f2d8a633a611850e3c3e6763ee40deb60be1eae19"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
+    checksum = "00045b139b85ca34b948fd2b7f4e2bb344bda7a94d4223b50a917b30bfa618bb"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
     id = "jre-adoptium"
     os = "linux"
-    purl = "pkg:generic/adoptium-jre@27.0.0+35?arch=amd64"
-    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-jdk-sources_27_35.tar.gz"
-    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27%2B35/OpenJDK27U-sbom_x64_linux_hotspot_27_35.json"
-    version = "27.0.0"
+    purl = "pkg:generic/adoptium-jre@27.0.1+0?arch=amd64"
+    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-jdk-sources_27.0.1.0.2_1.tar.gz"
+    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-testimage_x64_linux_hotspot_27.0.1.0.2_1.tar.gz"
+    version = "27.0.1"
 
   [[metadata.dependencies]]
     arch = "amd64"
@@ -650,243 +628,243 @@ api = "0.10"
 
   [[metadata.dependencies]]
     arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update504:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@8.0.504?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu8.96.0.205-ca-fx-jdk8.0.504-linux.x86_64.rpm"
-    version = "8.0.504"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update504:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@8.0.504?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu8.96.0.205-ca-fx-jdk8.0.504-linux_arm64.deb"
-    version = "8.0.504"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:11.0.32:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@11.0.32?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu11.90.205-ca-fx-jdk11.0.32.1-linux_arm64.deb"
-    version = "11.0.32"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:11.0.32:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@11.0.32?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu11.90.205-ca-fx-jdk11.0.32.1-linux.x86_64.rpm"
-    version = "11.0.32"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:17.0.20:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@17.0.20?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu17.68.203-ca-crac-jdk17.0.20.1-linux_arm64.deb"
-    version = "17.0.20"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:17.0.20:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@17.0.20?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu17.68.203-ca-crac-jdk17.0.20.1-linux.x86_64.rpm"
-    version = "17.0.20"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:21.0.12:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@21.0.12?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu21.52.203-ca-crac-jdk21.0.12.1-linux_musl_aarch64.tar.gz"
-    version = "21.0.12"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:21.0.12:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@21.0.12?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu21.52.203-ca-crac-jdk21.0.12.1-linux.x86_64.rpm"
-    version = "21.0.12"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:25.0.4:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@25.0.4?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu25.36.205-ca-crac-jdk25.0.4.1-linux.x86_64.rpm"
-    version = "25.0.4"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:25.0.4:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@25.0.4?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu25.36.205-ca-crac-jdk25.0.4.1-linux_musl_aarch64.tar.gz"
-    version = "25.0.4"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@27.0.0?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu27.28.103-ca-fx-jdk27.0.0-linux_arm64.deb"
-    version = "27.0.0"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
-    id = "jdk-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jdk@27.0.0?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu27.28.103-ca-fx-jdk27.0.0-linux.x86_64.rpm"
-    version = "27.0.0"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update504:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@8.0.504?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu8.96.0.205-ca-fx-jre8.0.504-linux_aarch64.tar.gz"
-    version = "8.0.504"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update504:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@8.0.504?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu8.96.0.205-ca-fx-jre8.0.504-linux_x64.tar.gz"
-    version = "8.0.504"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:11.0.32:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@11.0.32?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu11.90.205-ca-fx-jre11.0.32.1-linux_aarch64.tar.gz"
-    version = "11.0.32"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:11.0.32:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@11.0.32?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu11.90.205-ca-fx-jre11.0.32.1-linux_x64.tar.gz"
-    version = "11.0.32"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:17.0.20:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@17.0.20?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu17.68.203-ca-crac-jre17.0.20.1-linux_x64.tar.gz"
-    version = "17.0.20"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:17.0.20:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@17.0.20?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu17.68.203-ca-crac-jre17.0.20.1-linux_aarch64.tar.gz"
-    version = "17.0.20"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:21.0.12:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@21.0.12?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu21.52.203-ca-crac-jre21.0.12.1-linux_aarch64.tar.gz"
-    version = "21.0.12"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:21.0.12:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@21.0.12?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu21.52.203-ca-crac-jre21.0.12.1-linux_x64.tar.gz"
-    version = "21.0.12"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:25.0.4:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@25.0.4?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu25.36.205-ca-crac-jre25.0.4.1-linux_x64.tar.gz"
-    version = "25.0.4"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:25.0.4:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@25.0.4?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu25.36.205-ca-crac-jre25.0.4.1-linux_aarch64.tar.gz"
-    version = "25.0.4"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@27.0.0?arch=arm64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu27.28.103-ca-fx-jre27.0.0-linux_aarch64.tar.gz"
-    version = "27.0.0"
-
-  [[metadata.dependencies]]
-    arch = "amd64"
-    cpe = "cpe:2.3:a:oracle:jdk:27.0.0:*:*:*:*:*:*:*"
-    id = "jre-azul-zulu"
-    os = "linux"
-    purl = "pkg:generic/azul-zulu-jre@27.0.0?arch=amd64"
-    uri = "https://cdn.azul.com/zulu/bin/zulu27.28.103-ca-fx-jre27.0.0-linux_x64.tar.gz"
-    version = "27.0.0"
-
-  [[metadata.dependencies]]
-    arch = "arm64"
-    checksum = "ddaf6eaa844b7418d9e0dd6349236278c78e35bc847ac5d899f42beada4998f1"
     cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update512:*:*:*:*:*:*"
-    id = "jdk-bellsoft-liberica"
+    id = "jdk-azul-zulu"
     os = "linux"
-    purl = "pkg:generic/liberica/openjdk@8.0.512?arch=arm64"
-    source = "https://github.com/bell-sw/Liberica/releases/download/8u504+1/bellsoft-jdk8u504+1-src.tar.gz"
-    source-checksum = "037fe8766504a21ed4727599ca5c8af4988232082352d9c596dc2898049f2c42"
-    uri = "https://github.com/bell-sw/Liberica/releases/download/8u512+11/bellsoft-jdk8u512+11-linux-aarch64.tar.gz"
+    purl = "pkg:generic/azul-zulu-jdk@8.0.512?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.98.0.107-ca-jdk8.0.512-linux.x86_64.rpm"
+    version = "8.0.512"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update512:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@8.0.512?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.98.0.107-ca-jdk8.0.512-linux_arm64.deb"
     version = "8.0.512"
 
   [[metadata.dependencies]]
     arch = "amd64"
-    checksum = "afe974bc7ef64dce58669a49a44bc2a73ed20a34d6e142066a9d26e8b84bef75"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.33:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@11.0.33?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.92.109-ca-jdk11.0.33-linux.x86_64.rpm"
+    version = "11.0.33"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.33:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@11.0.33?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.92.109-ca-jdk11.0.33-linux_arm64.deb"
+    version = "11.0.33"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.21:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@17.0.21?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.70.111-ca-jdk17.0.21-linux_arm64.deb"
+    version = "17.0.21"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.21:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@17.0.21?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.70.111-ca-jdk17.0.21-linux.x86_64.rpm"
+    version = "17.0.21"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.13:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@21.0.13?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.54.107-ca-jdk21.0.13-linux_arm64.deb"
+    version = "21.0.13"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.13:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@21.0.13?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.54.107-ca-jdk21.0.13-linux.x86_64.rpm"
+    version = "21.0.13"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.5:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@25.0.5?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.38.107-ca-jdk25.0.5-linux.x86_64.rpm"
+    version = "25.0.5"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.5:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@25.0.5?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.38.107-ca-jdk25.0.5-linux_arm64.deb"
+    version = "25.0.5"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@27.0.1?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-linux.x86_64.rpm"
+    version = "27.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
+    id = "jdk-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jdk@27.0.1?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jdk27.0.1-linux_arm64.deb"
+    version = "27.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
     cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update512:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@8.0.512?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.98.0.107-ca-jre8.0.512-linux_arm64.deb"
+    version = "8.0.512"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update512:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@8.0.512?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu8.98.0.107-ca-jre8.0.512-linux.x86_64.rpm"
+    version = "8.0.512"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.33:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@11.0.33?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.92.109-ca-jre11.0.33-linux_arm64.deb"
+    version = "11.0.33"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:11.0.33:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@11.0.33?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu11.92.109-ca-jre11.0.33-linux.x86_64.rpm"
+    version = "11.0.33"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.21:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@17.0.21?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.70.111-ca-jre17.0.21-linux_arm64.deb"
+    version = "17.0.21"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.21:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@17.0.21?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu17.70.111-ca-jre17.0.21-linux.x86_64.rpm"
+    version = "17.0.21"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.13:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@21.0.13?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.54.107-ca-jre21.0.13-linux.x86_64.rpm"
+    version = "21.0.13"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:21.0.13:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@21.0.13?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu21.54.107-ca-jre21.0.13-linux_arm64.deb"
+    version = "21.0.13"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.5:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@25.0.5?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.38.107-ca-jre25.0.5-linux_arm64.deb"
+    version = "25.0.5"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:25.0.5:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@25.0.5?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu25.38.107-ca-jre25.0.5-linux.x86_64.rpm"
+    version = "25.0.5"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@27.0.1?arch=arm64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jre27.0.1-linux_arm64.deb"
+    version = "27.0.1"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
+    id = "jre-azul-zulu"
+    os = "linux"
+    purl = "pkg:generic/azul-zulu-jre@27.0.1?arch=amd64"
+    uri = "https://cdn.azul.com/zulu/bin/zulu27.30.107-ca-jre27.0.1-linux.x86_64.rpm"
+    version = "27.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "0b674cceac04d35aa83340ae276a08291475143982b7c25385163d6cc9c962fc"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update513:*:*:*:*:*:*"
     id = "jdk-bellsoft-liberica"
     os = "linux"
-    purl = "pkg:generic/liberica/openjdk@8.0.512?arch=amd64"
-    source = "https://github.com/bell-sw/Liberica/releases/download/8u504+1/bellsoft-jdk8u504+1-src.tar.gz"
-    source-checksum = "037fe8766504a21ed4727599ca5c8af4988232082352d9c596dc2898049f2c42"
-    uri = "https://github.com/bell-sw/Liberica/releases/download/8u512+11/bellsoft-jdk8u512+11-linux-amd64.tar.gz"
-    version = "8.0.512"
+    purl = "pkg:generic/liberica/openjdk@8.0.513?arch=arm64"
+    source = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jdk8u513+5-src.tar.gz"
+    source-checksum = "a00d95e6263c1d376fec4d50a5577bec8e036aa41ab4d23ab63692dce985a29e"
+    uri = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jdk8u513+5-linux-aarch64.tar.gz"
+    version = "8.0.513"
+
+  [[metadata.dependencies]]
+    arch = "amd64"
+    checksum = "c8860c7a997d6e284b561d6d6787a6012563f30d6c85ab0212470af9ec5ef5d4"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update513:*:*:*:*:*:*"
+    id = "jdk-bellsoft-liberica"
+    os = "linux"
+    purl = "pkg:generic/liberica/openjdk@8.0.513?arch=amd64"
+    source = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jdk8u513+5-src.tar.gz"
+    source-checksum = "a00d95e6263c1d376fec4d50a5577bec8e036aa41ab4d23ab63692dce985a29e"
+    uri = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jdk8u513+5-linux-amd64.tar.gz"
+    version = "8.0.513"
 
   [[metadata.dependencies]]
     arch = "arm64"
@@ -1010,27 +988,27 @@ api = "0.10"
 
   [[metadata.dependencies]]
     arch = "arm64"
-    checksum = "d752c90d901dd425c685e24fbdf56e99ff7306338d466798d98db3a3d64d76ff"
-    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update512:*:*:*:*:*:*"
+    checksum = "576c6bc6163dff9c7090412a57d851bb5e8b4c0523c6119500d120bae342347a"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update513:*:*:*:*:*:*"
     id = "jre-bellsoft-liberica"
     os = "linux"
-    purl = "pkg:generic/liberica/openjdk@8.0.512?arch=arm64"
-    source = "https://github.com/bell-sw/Liberica/releases/download/8u504+1/bellsoft-jdk8u504+1-src.tar.gz"
-    source-checksum = "037fe8766504a21ed4727599ca5c8af4988232082352d9c596dc2898049f2c42"
-    uri = "https://github.com/bell-sw/Liberica/releases/download/8u512+11/bellsoft-jre8u512+11-linux-aarch64.tar.gz"
-    version = "8.0.512"
+    purl = "pkg:generic/liberica/openjdk@8.0.513?arch=arm64"
+    source = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jdk8u513+5-src.tar.gz"
+    source-checksum = "a00d95e6263c1d376fec4d50a5577bec8e036aa41ab4d23ab63692dce985a29e"
+    uri = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jre8u513+5-linux-aarch64.tar.gz"
+    version = "8.0.513"
 
   [[metadata.dependencies]]
     arch = "amd64"
-    checksum = "238239e724dbbd56d8343e1f4b50d915913f9535172e88136cac184b2723aa06"
-    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update512:*:*:*:*:*:*"
+    checksum = "4778b4cf8e2182a38971ce145fee5f9cb92bff5161d6430238a5f3769c96ed1e"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update513:*:*:*:*:*:*"
     id = "jre-bellsoft-liberica"
     os = "linux"
-    purl = "pkg:generic/liberica/openjdk@8.0.512?arch=amd64"
-    source = "https://github.com/bell-sw/Liberica/releases/download/8u504+1/bellsoft-jdk8u504+1-src.tar.gz"
-    source-checksum = "037fe8766504a21ed4727599ca5c8af4988232082352d9c596dc2898049f2c42"
-    uri = "https://github.com/bell-sw/Liberica/releases/download/8u512+11/bellsoft-jre8u512+11-linux-amd64.tar.gz"
-    version = "8.0.512"
+    purl = "pkg:generic/liberica/openjdk@8.0.513?arch=amd64"
+    source = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jdk8u513+5-src.tar.gz"
+    source-checksum = "a00d95e6263c1d376fec4d50a5577bec8e036aa41ab4d23ab63692dce985a29e"
+    uri = "https://github.com/bell-sw/Liberica/releases/download/8u513+5/bellsoft-jre8u513+5-linux-amd64.tar.gz"
+    version = "8.0.513"
 
   [[metadata.dependencies]]
     arch = "arm64"
