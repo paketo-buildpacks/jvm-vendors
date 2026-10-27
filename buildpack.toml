@@ -198,6 +198,17 @@ api = "0.10"
     version = "17.0.21"
 
   [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "1114f09d6174f54270c3117410b5e4022b43ebc0b43b751af08b927c55ed7bb5"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.21:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@17.0.21+9?arch=arm64"
+    source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jdk-sources_17.0.21_9.tar.gz"
+    uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.21_9.tar.gz"
+    version = "17.0.21"
+
+  [[metadata.dependencies]]
     arch = "amd64"
     checksum = "4f3d2b1a9b0b94529a7f7f44e80a332a3b6ba2c94e0647f42707b9f1d84bd717"
     cpe = "cpe:2.3:a:oracle:jdk:21.0.13:*:*:*:*:*:*:*"
@@ -305,6 +316,17 @@ api = "0.10"
     purl = "pkg:generic/adoptium-jre@17.0.21+9?arch=amd64"
     source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jdk-sources_17.0.21_9.tar.gz"
     uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-static-libs-glibc_x64_linux_hotspot_17.0.21_9.tar.gz"
+    version = "17.0.21"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "1114f09d6174f54270c3117410b5e4022b43ebc0b43b751af08b927c55ed7bb5"
+    cpe = "cpe:2.3:a:oracle:jdk:17.0.21:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@17.0.21+9?arch=arm64"
+    source = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jdk-sources_17.0.21_9.tar.gz"
+    uri = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jre_aarch64_linux_hotspot_17.0.21_9.tar.gz"
     version = "17.0.21"
 
   [[metadata.dependencies]]
