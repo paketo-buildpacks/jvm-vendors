@@ -365,6 +365,7 @@ jobs:
         uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@main
         with:
           branch: automation/dependencies/update-from-metadata
+          token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
       - name: Open Pull Request
         if: ${{ steps.commit.outputs.commit_sha != '' }}
