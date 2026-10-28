@@ -5,27 +5,42 @@ on:
     types:
     - published
 
+concurrency:
+  group: push-buildpackage
+  cancel-in-progress: false
+
 env:
   REGISTRIES_FILENAME: "registries.json"
 
+permissions:
+  contents: read
+
 jobs:
+  prepare:
+    name: Read Buildpack List
+    runs-on: ubuntu-24.04
+    outputs:
+      buildpacks: ${{ steps.config.outputs.buildpacks }}
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Read Multi-Implementation Config
+      id: config
+      run: |
+        test -f multi-implementation.json
+        echo "buildpacks=$(jq -c '[.buildpacks[].name]' multi-implementation.json)" >> "$GITHUB_OUTPUT"
+
   push:
     name: Push
     runs-on: ubuntu-24.04
+    needs: prepare
     strategy:
       matrix:
-        buildpack:
-          - jvm-vendors
-          - adoptium
-          - alibaba-dragonwell
-          - amazon-corretto
-          - azul-zulu
-          - bellsoft-liberica
-          - eclipse-openj9
-          - graalvm
-          - microsoft-openjdk
-          - oracle
-          - sap-machine
+        buildpack: ${{ fromJSON(needs.prepare.outputs.buildpacks) }}
       fail-fast: false
     env:
       GCR_REGISTRY: "gcr.io"
@@ -38,7 +53,9 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Parse Event
       id: event
@@ -129,11 +146,16 @@ jobs:
 
     - uses: buildpacks/github-actions/setup-tools@v5.11.0
     - name: Push to DockerHub
-      if: ${{  steps.parse_configs.outputs.push_to_dockerhub == 'true' }}
+      if: ${{ steps.parse_configs.outputs.push_to_dockerhub == 'true' }}
       id: push
       run: |
-        POSTFIX="-dev"
-        IMAGE="paketobuildpacks/${{ matrix.buildpack }}${POSTFIX}"
+        IMAGE_NAME="$(jq -r --arg bp "${{ matrix.buildpack }}" '.buildpacks[] | select(.name == $bp) | .image' multi-implementation.json)"
+        if [[ -z "${IMAGE_NAME}" || "${IMAGE_NAME}" == "null" ]]; then
+          echo "No image configured for ${{ matrix.buildpack }} in multi-implementation.json"
+          exit 1
+        fi
+
+        IMAGE="paketobuildpacks/${IMAGE_NAME}"
         echo "${DOCKERHUB_PASSWORD}" | sudo skopeo login --username "${DOCKERHUB_USERNAME}" --password-stdin ${DOCKERHUB_REGISTRY}
 
         ./scripts/publish.sh \
@@ -156,6 +178,7 @@ jobs:
         sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${IMAGE}:${{ steps.event.outputs.tag_full }}" "docker://${DOCKERHUB_REGISTRY}/${IMAGE}:${{ steps.event.outputs.tag_major }}" --multi-arch all
         sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${IMAGE}:${{ steps.event.outputs.tag_full }}" "docker://${DOCKERHUB_REGISTRY}/${IMAGE}:latest" --multi-arch all
         echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+        echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
         echo "digest=$pushed_image_index_digest" >> "$GITHUB_OUTPUT"
 
     - name: Push to GCR
@@ -163,15 +186,15 @@ jobs:
       run: |
         echo "${GCR_PASSWORD}" | sudo skopeo login --username "${GCR_USERNAME}" --password-stdin "${GCR_REGISTRY}"
 
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:${{ steps.event.outputs.tag_full }}" --multi-arch all
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:${{ steps.event.outputs.tag_minor }}" --multi-arch all
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:${{ steps.event.outputs.tag_major }}" --multi-arch all
-        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ matrix.buildpack }}-dev:latest" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ steps.push.outputs.image_name }}:${{ steps.event.outputs.tag_full }}" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ steps.push.outputs.image_name }}:${{ steps.event.outputs.tag_minor }}" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ steps.push.outputs.image_name }}:${{ steps.event.outputs.tag_major }}" --multi-arch all
+        sudo skopeo copy "docker://${DOCKERHUB_REGISTRY}/${{ steps.push.outputs.image }}" "docker://${GCR_REGISTRY}/paketo-buildpacks/${{ steps.push.outputs.image_name }}:latest" --multi-arch all
 
     # - name: Register with CNB Registry
     #   uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:main
     #   with:
-    #     id: paketo-buildpacks/${{ matrix.buildpack }}-dev
+    #     id: paketo-buildpacks/${{ steps.push.outputs.image_name }}
     #     version: ${{ steps.event.outputs.tag_full }}
     #     address: index.docker.io/${{ steps.push.outputs.image }}@${{ steps.push.outputs.digest }}
     #     token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
@@ -179,8 +202,11 @@ jobs:
   failure:
     name: Alert on Failure
     runs-on: ubuntu-24.04
-    needs: [push]
-    if: ${{ always() && needs.push.result == 'failure' }}
+    needs: [prepare, push]
+    if: ${{ always() && (needs.prepare.result == 'failure' || needs.push.result == 'failure') }}
+    permissions:
+      contents: read
+      issues: write
     steps:
     - name: File Failure Alert Issue
       uses: paketo-buildpacks/github-config/actions/issue/file@main
