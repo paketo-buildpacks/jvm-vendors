@@ -12,7 +12,12 @@ on:
         description: 'Version of the release to cut (e.g. 1.2.3)'
         required: false
 
-concurrency: release
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   unit:
@@ -20,20 +25,28 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       builders: ${{ steps.builders.outputs.builders }}
+      integration: ${{ steps.config.outputs.integration }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
     - name: Setup Go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: go.mod
     - name: Run Unit Tests
       run: ./scripts/unit.sh
+    - name: Read Multi-Implementation Config
+      id: config
+      run: |
+        test -f multi-implementation.json
+        echo "integration=$(jq -r '.integration // false' multi-implementation.json)" >> "$GITHUB_OUTPUT"
     - name: Get builders from integration.json
       id: builders
       run: |
-        source "${{ github.workspace }}/scripts/.util/builders.sh"
-        builders="$(util::builders::list "${{ github.workspace }}/integration.json")"
+        source "${GITHUB_WORKSPACE}/scripts/.util/builders.sh"
+        builders="$(util::builders::list "${GITHUB_WORKSPACE}/integration.json")"
         printf "Output: %s\n" "${builders}"
         printf "builders=%s\n" "${builders}" >> "$GITHUB_OUTPUT"
 
@@ -41,15 +54,17 @@ jobs:
     name: Integration Tests
     runs-on: ubuntu-24.04
     needs: unit
-    strategy:
-      matrix:
-        builder: ${{ fromJSON(needs.unit.outputs.builders) }}
-      fail-fast: false  # don't cancel all test jobs when one fails
+    if: ${{ needs.unit.outputs.integration == 'true' }}
+    permissions:
+      contents: read
+      packages: read # pull builder images for integration tests
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
     - name: Setup Go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: go.mod
     - name: Free Disk Space
@@ -71,28 +86,46 @@ jobs:
         sudo systemctl restart docker
 
     - name: Run Integration Tests
-      run: ./scripts/integration.sh --builder ${{ matrix.builder }} --token ${{ github.token }}
       env:
-        TMPDIR: "${{ runner.temp }}"
-        GIT_TOKEN: ${{ github.token }}
+        BUILDERS: ${{ needs.unit.outputs.builders }}
+      run: |
+        for builder in $(jq -r '.[]' <<< "${BUILDERS}"); do
+          ./scripts/integration.sh --builder "${builder}" --token "${{ github.token }}"
+        done
 
   release-prep:
     name: Release Prep
     runs-on: ubuntu-24.04
-    needs: integration
+    needs: [unit, integration]
+    if: ${{ always() && needs.unit.result == 'success' && (needs.integration.result == 'success' || needs.integration.result == 'skipped') }}
+    permissions:
+      contents: write # reset the draft release
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       buildpack_type: ${{ steps.get_buildpack_type.outputs.buildpack_type }}
+      buildpacks: ${{ steps.config.outputs.buildpacks }}
+      combined: ${{ steps.config.outputs.combined }}
+      components: ${{ steps.config.outputs.components }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
+        persist-credentials: false
         fetch-tags: true
 
     - name: Setup Go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: go.mod
+
+    - name: Read Multi-Implementation Config
+      id: config
+      run: |
+        test -f multi-implementation.json
+        combined="$(jq -r '.combined' multi-implementation.json)"
+        echo "combined=${combined}" >> "$GITHUB_OUTPUT"
+        echo "buildpacks=$(jq -c '[.buildpacks[].name]' multi-implementation.json)" >> "$GITHUB_OUTPUT"
+        echo "components=$(jq -c --arg combined "${combined}" '[.buildpacks[].name | select(. != $combined)]' multi-implementation.json)" >> "$GITHUB_OUTPUT"
 
     - name: Reset Draft Release
       id: reset
@@ -132,7 +165,7 @@ jobs:
       run: ./scripts/package.sh --version "${{ steps.tag.outputs.tag }}"
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: build-artifacts
         path: build/
@@ -144,38 +177,30 @@ jobs:
     needs: release-prep
     services:
       registry:
-        image: registry:3
+        image: registry:3@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8
         ports:
           - 5000:5000
     strategy:
       matrix:
-        buildpack:
-          - jvm-vendors
-          - adoptium
-          - alibaba-dragonwell
-          - amazon-corretto
-          - azul-zulu
-          - bellsoft-liberica
-          - eclipse-openj9
-          - graalvm
-          - microsoft-openjdk
-          - oracle
-          - sap-machine
+        buildpack: ${{ fromJSON(needs.release-prep.outputs.buildpacks) }}
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Download build artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
       with:
         name: build-artifacts
         path: build/
 
-    # For jvm-vendors: use the full action which appends a Changes section (PR list since last release)
+    # Use the full action for the combined buildpack so the release notes include
+    # the Changes section (PR list since the last release).
     - name: Create Release Notes
       id: create-release-notes
-      if: matrix.buildpack == 'jvm-vendors'
+      if: matrix.buildpack == needs.release-prep.outputs.combined
       uses: paketo-buildpacks/github-config/actions/release/notes@main
       with:
         repo: ${{ github.repository }}
@@ -184,14 +209,15 @@ jobs:
         buildpackage_path: build/${{ matrix.buildpack }}.cnb
 
     - name: Write Release Notes to file
-      if: matrix.buildpack == 'jvm-vendors'
+      if: matrix.buildpack == needs.release-prep.outputs.combined
       run: |
         printf '${{ steps.create-release-notes.outputs.release_body }}' > ./release_notes_raw
 
-    # For individual vendors: run jam summarize directly — no Changes section, which would be
-    # identical across all vendors and would otherwise be duplicated 10 times in the final notes
-    - name: Summarize Vendor Release Notes
-      if: matrix.buildpack != 'jvm-vendors'
+    # For the component buildpacks, run jam summarize directly. The Changes
+    # section would be identical for every component and would otherwise be
+    # duplicated in the final release notes.
+    - name: Summarize Component Release Notes
+      if: matrix.buildpack != needs.release-prep.outputs.combined
       run: |
         jam_version="$(curl "https://api.github.com/repos/paketo-buildpacks/jam/releases/latest" \
           --fail-with-body --show-error \
@@ -231,7 +257,7 @@ jobs:
         printf '${{ steps.image_digest.outputs.digest }}' > ./${{ matrix.buildpack }}-index-digest.sha256
 
     - name: Upload release notes artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: release-notes-${{ matrix.buildpack }}
         path: |
@@ -243,27 +269,34 @@ jobs:
     name: Release
     runs-on: ubuntu-24.04
     needs: [release-prep, generate-notes]
+    permissions:
+      contents: write # create and update the draft release
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Download build artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
       with:
         name: build-artifacts
         path: build/
 
     - name: Download all release notes artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
       with:
         pattern: release-notes-*
         merge-multiple: true
         path: ./release-notes/
 
     - name: Assemble Release Notes
+      env:
+        COMBINED: ${{ needs.release-prep.outputs.combined }}
+        COMPONENTS: ${{ needs.release-prep.outputs.components }}
       run: |
-        cat ./release-notes/release_notes_jvm-vendors > ./release_notes
-        for buildpack in adoptium alibaba-dragonwell amazon-corretto azul-zulu bellsoft-liberica eclipse-openj9 graalvm microsoft-openjdk oracle sap-machine; do
+        cat "./release-notes/release_notes_${COMBINED}" > ./release_notes
+        for buildpack in $(jq -r '.[]' <<< "${COMPONENTS}"); do
           printf "\n\n---\n\n" >> ./release_notes
           cat "./release-notes/release_notes_${buildpack}" >> ./release_notes
         done
@@ -313,7 +346,10 @@ jobs:
     name: Alert on Failure
     runs-on: ubuntu-24.04
     needs: [unit, integration, release-prep, generate-notes, release]
-    if: ${{ always() && needs.unit.result == 'failure' || needs.integration.result == 'failure' || needs.release-prep.result == 'failure' || needs.generate-notes.result == 'failure' || needs.release.result == 'failure' }}
+    if: ${{ always() && (needs.unit.result == 'failure' || needs.integration.result == 'failure' || needs.release-prep.result == 'failure' || needs.generate-notes.result == 'failure' || needs.release.result == 'failure') }}
+    permissions:
+      contents: read
+      issues: write
     steps:
     - name: File Failure Alert Issue
       uses: paketo-buildpacks/github-config/actions/issue/file@main
@@ -326,4 +362,4 @@ jobs:
         issue_body: |
           Create Draft Release workflow [failed](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}).
         comment_body: |
-           Another failure occurred: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+          Another failure occurred: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}

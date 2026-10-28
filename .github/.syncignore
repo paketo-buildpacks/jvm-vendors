@@ -1,4 +1,1 @@
 CODEOWNERS
-workflows/create-draft-release.yml
-workflows/push-buildpackage.yml
-workflows/update-dependencies-from-metadata.yml

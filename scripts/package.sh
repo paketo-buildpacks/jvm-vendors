@@ -6,6 +6,7 @@ set -o pipefail
 readonly ROOT_DIR="$(cd "$(dirname "${0}")/.." && pwd)"
 readonly BIN_DIR="${ROOT_DIR}/.bin"
 readonly BUILD_DIR="${ROOT_DIR}/build"
+readonly CONFIG="${ROOT_DIR}/multi-implementation.json"
 
 # shellcheck source=SCRIPTDIR/.util/tools.sh
 source "${ROOT_DIR}/scripts/.util/tools.sh"
@@ -60,6 +61,10 @@ function main {
     output="${BUILD_DIR}/buildpackage.cnb"
   fi
 
+  if [[ ! -f "${CONFIG}" ]]; then
+    util::print::error "cannot package: ${CONFIG} does not exist"
+  fi
+
   repo::prepare
 
   tools::install "${token}"
@@ -69,20 +74,24 @@ function main {
     buildpack_type=extension
   fi
 
-  buildpackage::create::individual_vendors "${output}" "${buildpack_type}" "${version}"
-  buildpackage::create::single_all_vendors "${output}" "${buildpack_type}" "${version}"
+  buildpackage::create::individual "${version}" "${buildpack_type}"
+  buildpackage::create::combined "${version}" "${buildpack_type}"
 }
 
 function usage() {
   cat <<-USAGE
 package.sh --version <version> [OPTIONS]
 
-Packages a buildpack or an extension into a buildpackage .cnb file.
+Packages the combined buildpack and one buildpack per component into
+buildpackage .cnb files.
+
+The components and the libpak-tools command are read from
+${ROOT_DIR}/multi-implementation.json.
 
 OPTIONS
   --help               -h            prints the command usage
   --version <version>  -v <version>  specifies the version number to use when packaging a buildpack or an extension
-  --output <output>    -o <output>   location to output the packaged buildpackage or extension artifact (default: ${ROOT_DIR}/build/buildpackage.cnb)
+  --output <output>    -o <output>   location to output the packaged buildpackage or extension artifact (unused)
   --token <token>                    Token used to download assets from GitHub (e.g. jam, pack, etc) (optional)
 USAGE
 }
@@ -116,45 +125,53 @@ function tools::install() {
   fi
 }
 
-function buildpackage::create::individual_vendors() {
-  local output version
-  output="${1}"
+function buildpackage::create::individual() {
+  local version buildpack_type combined command artifact_flag
+  version="${1}"
   buildpack_type="${2}"
-  version="${3}"
+
+  combined="$(jq -r '.combined' "${CONFIG}")"
+  command="$(jq -r '."libpak-tools".command' "${CONFIG}")"
+  artifact_flag="$(jq -r '."libpak-tools"."artifact-flag"' "${CONFIG}")"
 
   util::print::title "Packaging ${buildpack_type}..."
 
-  libpak-tools build-jvm-vendors \
-      --buildpack-id "paketo-buildpacks/adoptium@${version}" --vendors adoptium \
-      --buildpack-id "paketo-buildpacks/alibaba-dragonwell@${version}" --vendors alibaba-dragonwell \
-      --buildpack-id "paketo-buildpacks/amazon-corretto@${version}" --vendors amazon-corretto \
-      --buildpack-id "paketo-buildpacks/azul-zulu@${version}" --vendors azul-zulu \
-      --buildpack-id "paketo-buildpacks/bellsoft-liberica@${version}" --vendors bellsoft-liberica \
-      --buildpack-id "paketo-buildpacks/eclipse-openj9@${version}" --vendors eclipse-openj9 \
-      --buildpack-id "paketo-buildpacks/graalvm@${version}" --vendors graalvm \
-      --buildpack-id "paketo-buildpacks/oracle@${version}" --vendors oracle \
-      --buildpack-id "paketo-buildpacks/microsoft-openjdk@${version}" --vendors microsoft-openjdk \
-      --buildpack-id "paketo-buildpacks/sap-machine@${version}" --vendors sap-machine \
-      --format file \
-      --buildpack-path . \
-      --output-path "$PWD/build"
+  local args=()
+  while IFS= read -r name; do
+    args+=(
+      --buildpack-id "paketo-buildpacks/${name}@${version}"
+      "--${artifact_flag}" "${name}"
+    )
+  done < <(jq -r --arg combined "${combined}" '.buildpacks[].name | select(. != $combined)' "${CONFIG}")
+
+  if [[ ${#args[@]} -eq 0 ]]; then
+    util::print::error "no component buildpacks configured in ${CONFIG}"
+  fi
+
+  libpak-tools "${command}" "${args[@]}" \
+    --format file \
+    --buildpack-path . \
+    --output-path "${BUILD_DIR}"
 }
 
-function buildpackage::create::single_all_vendors() {
-  local output version
-  output="${1}"
+function buildpackage::create::combined() {
+  local version buildpack_type combined command include_all_flag
+  version="${1}"
   buildpack_type="${2}"
-  version="${3}"
+
+  combined="$(jq -r '.combined' "${CONFIG}")"
+  command="$(jq -r '."libpak-tools".command' "${CONFIG}")"
+  include_all_flag="$(jq -r '."libpak-tools"."include-all-flag"' "${CONFIG}")"
 
   util::print::title "Packaging ${buildpack_type}..."
 
-  libpak-tools build-jvm-vendors \
-      --single-buildpack \
-      --buildpack-id "paketo-buildpacks/jvm-vendors@${version}" \
-      --include-all-vendors \
-      --format file \
-      --buildpack-path . \
-      --output-path "$PWD/build"
+  libpak-tools "${command}" \
+    --single-buildpack \
+    --buildpack-id "paketo-buildpacks/${combined}@${version}" \
+    "--${include_all_flag}" \
+    --format file \
+    --buildpack-path . \
+    --output-path "${BUILD_DIR}"
 }
 
 main "${@:-}"
