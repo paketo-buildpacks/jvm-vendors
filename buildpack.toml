@@ -264,6 +264,17 @@ api = "0.10"
     version = "27.0.1"
 
   [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "5ddacf925244a00b60cac828b61ff2f67a68cd32b8dfe5cee1405e333b4589e5"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@27.0.1+0?arch=arm64"
+    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-jdk-sources_27.0.1.0.2_1.tar.gz"
+    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-jdk_aarch64_linux_hotspot_27.0.1.0.2_1.tar.gz"
+    version = "27.0.1"
+
+  [[metadata.dependencies]]
     arch = "amd64"
     checksum = "86cd14f299616dddca13268cc2fa794eb4d28fc732dedaad8c5b8a3078e5d3c9"
     cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update504:*:*:*:*:*:*"
@@ -382,6 +393,17 @@ api = "0.10"
     purl = "pkg:generic/adoptium-jre@27.0.1+0?arch=amd64"
     source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-jdk-sources_27.0.1.0.2_1.tar.gz"
     uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-testimage_x64_linux_hotspot_27.0.1.0.2_1.tar.gz"
+    version = "27.0.1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "5ddacf925244a00b60cac828b61ff2f67a68cd32b8dfe5cee1405e333b4589e5"
+    cpe = "cpe:2.3:a:oracle:jdk:27.0.1:*:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@27.0.1+0?arch=arm64"
+    source = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-jdk-sources_27.0.1.0.2_1.tar.gz"
+    uri = "https://github.com/adoptium/temurin27-binaries/releases/download/jdk-27.0.1.0.2%2B1/OpenJDK27U-jdk_aarch64_linux_hotspot_27.0.1.0.2_1.tar.gz"
     version = "27.0.1"
 
   [[metadata.dependencies]]
