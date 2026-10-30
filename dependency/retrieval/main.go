@@ -158,7 +158,11 @@ func main() {
 	}
 
 	// Convert to output format
-	output := convertToOutputFormat(allDependencies)
+	output, err := convertToOutputFormat(allDependencies)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error converting dependencies to output format: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Write output
 	outFile, err := os.Create(outputPath)
@@ -255,10 +259,13 @@ func findExistingDependency(existing []cargo.ConfigMetadataDependency, id, uri s
 	return nil
 }
 
-func convertToOutputFormat(deps []Dependency) []OutputMetadata {
+func convertToOutputFormat(deps []Dependency) ([]OutputMetadata, error) {
 	var output []OutputMetadata
 	for _, dep := range deps {
-		os, arch := parseTarget(dep.Target)
+		os, arch, err := parseTarget(dep.Target)
+		if err != nil {
+			return nil, err
+		}
 
 		output = append(output, OutputMetadata{
 			ID:             dep.ID,
@@ -274,17 +281,19 @@ func convertToOutputFormat(deps []Dependency) []OutputMetadata {
 			PURL:           dep.PURL,
 		})
 	}
-	return output
+	return output, nil
 }
 
-func parseTarget(target string) (os, arch string) {
+func parseTarget(target string) (os, arch string, err error) {
 	switch target {
 	case "linux-amd64":
-		return "linux", "amd64"
+		return "linux", "amd64", nil
 	case "linux-arm64":
-		return "linux", "arm64"
+		return "linux", "arm64", nil
+	case "linux-ppc64le":
+		return "linux", "ppc64le", nil
 	}
-	return "linux", "amd64"
+	return "", "", fmt.Errorf("unsupported target %q", target)
 }
 
 func createDependency(dep cargo.ConfigMetadataDependency, targetName string) Dependency {
@@ -294,12 +303,12 @@ func createDependency(dep cargo.ConfigMetadataDependency, targetName string) Dep
 	}
 }
 
-func dependencyFromExisting(existing *cargo.ConfigMetadataDependency, os, arch string) Dependency {
+func dependencyFromExisting(existing *cargo.ConfigMetadataDependency, version, os, arch string) Dependency {
 	return Dependency{
 		ConfigMetadataDependency: cargo.ConfigMetadataDependency{
 			ID:           existing.ID,
 			Name:         existing.Name,
-			Version:      existing.Version,
+			Version:      version,
 			URI:          existing.URI,
 			SHA256:       existing.SHA256,
 			Source:       existing.Source,

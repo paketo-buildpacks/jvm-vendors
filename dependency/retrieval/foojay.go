@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"golang.org/x/text/cases"
@@ -103,11 +104,17 @@ func generateFoojay(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		if rawVersion == "" {
 			rawVersion = pkg.DistributionVersion
 		}
-		version := truncateToSemver(rawVersion)
+
+		// Prefer the distribution version, which carries the vendor build (e.g.
+		// 21.0.13.0.2 -> 21.0.13+0.2), so rebuilds are not treated as duplicates.
+		version := vendorVersionToSemver(rawVersion)
+		if pkg.DistributionVersion != "" && strings.HasPrefix(pkg.DistributionVersion, rawVersion) {
+			version = vendorVersionToSemver(pkg.DistributionVersion)
+		}
 
 		if existingDep := findExistingDependency(existing, id, downloadURL); existingDep != nil {
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			d := dependencyFromExisting(existingDep, version, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}

@@ -87,9 +87,16 @@ func generateZulu(id string, constraint cargo.ConfigMetadataDependencyConstraint
 				return
 			}
 
+			// Zulu republishes a Java version with a new OpenJDK build number, so
+			// keep it as build metadata rather than dropping it.
+			version := extractedVersion
+			if pkg.OpenJDKBuildNumber > 0 {
+				version = withBuildMetadata(extractedVersion, fmt.Sprintf("%d", pkg.OpenJDKBuildNumber))
+			}
+
 			if existingDep := findExistingDependency(existing, id, pkg.DownloadURL); existingDep != nil {
-				fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
-				d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+				fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+				d := dependencyFromExisting(existingDep, version, pt.os, pt.arch)
 				ch <- &d
 				return
 			}
@@ -101,7 +108,7 @@ func generateZulu(id string, constraint cargo.ConfigMetadataDependencyConstraint
 			dep := cargo.ConfigMetadataDependency{
 				ID:       id,
 				Name:     "Azul Zulu " + strings.ToUpper(imageType),
-				Version:  extractedVersion,
+				Version:  version,
 				URI:      pkg.DownloadURL,
 				SHA256:   pkg.SHA256Hash,
 				Stacks:   pt.stacks,

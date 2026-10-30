@@ -49,7 +49,9 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 		return nil, fmt.Errorf("unable to extract version from tag %s", release.TagName)
 	}
 
-	sapVersion := truncateToSemver(rawSapVersion)
+	// keep the SapMachine build (e.g. 21.0.13.0.3 -> 21.0.13+0.3) so that a
+	// rebuild of the same Java version is not treated as a duplicate
+	sapVersion := vendorVersionToSemver(rawSapVersion)
 
 	deprecationDate := calculateSapMachineDeprecationDate(majorVersion)
 
@@ -72,7 +74,7 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, sapVersion, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			d := dependencyFromExisting(existingDep, sapVersion, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}
@@ -125,7 +127,7 @@ func findSapMachineAsset(assets []GitHubAsset, imageType, archPattern string) st
 }
 
 func extractSapMachineVersion(tagName string) string {
-	return truncateToSemver(strings.TrimPrefix(tagName, "sapmachine-"))
+	return strings.TrimPrefix(tagName, "sapmachine-")
 }
 
 func calculateSapMachineDeprecationDate(majorVersion int) *time.Time {

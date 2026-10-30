@@ -39,7 +39,7 @@ func generateGraalVM(id string, constraint cargo.ConfigMetadataDependencyConstra
 		return nil, fmt.Errorf("unable to extract version from tag %s", release.TagName)
 	}
 
-	extractedVersion := truncateToSemver(rawVersion)
+	extractedVersion := vendorVersionToSemver(rawVersion)
 
 	sourceURL := release.TarballURL
 	sourceChecksum := getSourceChecksum(sourceURL, existing)
@@ -60,7 +60,7 @@ func generateGraalVM(id string, constraint cargo.ConfigMetadataDependencyConstra
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			d := dependencyFromExisting(existingDep, extractedVersion, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}
@@ -113,10 +113,10 @@ func findGraalVMAsset(assets []GitHubAsset, archPattern string) string {
 
 func extractGraalVMVersion(tagName string) string {
 	if strings.HasPrefix(tagName, "jdk-") {
-		return truncateToSemver(strings.TrimPrefix(tagName, "jdk-"))
+		return strings.TrimPrefix(tagName, "jdk-")
 	}
 	if strings.HasPrefix(tagName, "graal-") {
-		return truncateToSemver(strings.TrimPrefix(tagName, "graal-"))
+		return strings.TrimPrefix(tagName, "graal-")
 	}
 	return ""
 }

@@ -142,6 +142,10 @@ func extractVersionFromConstraint(constraint string) (int, error) {
 // Regex patterns
 var (
 	java8Pattern = regexp.MustCompile(`^(\d+)u(\d+)`)
+
+	// buildMetadataSeparators matches everything that is not allowed in a semver
+	// build metadata identifier.
+	buildMetadataSeparators = regexp.MustCompile(`[^0-9A-Za-z-]+`)
 )
 
 // Convert adoptium version format to semver
@@ -155,21 +159,75 @@ func adoptiumVersionToSemver(version string) string {
 		return fmt.Sprintf("8.0.%s", matches[2])
 	}
 
-	// Java 11+: 11.0.25+9 -> 11.0.25, 27.0.1-8 -> 27.0.1
-	if before, _, ok := strings.Cut(version, "+"); ok {
-		version = before
-	}
-	if before, _, ok := strings.Cut(version, "-"); ok {
-		version = before
+	// Java 11+: 27.0.1-8 -> 27.0.1+8. The trailing component is a build number, so
+	// it is preserved as build metadata rather than dropped.
+	if core, build, ok := strings.Cut(version, "-"); ok {
+		version = core + "+" + build
 	}
 
-	return truncateToSemver(version)
+	return vendorVersionToSemver(version)
 }
 
-func truncateToSemver(version string) string {
-	parts := strings.Split(version, ".")
-	if len(parts) > 3 {
-		return strings.Join(parts[:3], ".")
+// withBuildMetadata attaches the given components to version as semver build
+// metadata, e.g. withBuildMetadata("21.0.13", "0", "11") -> "21.0.13+0.11".
+// Components are split on characters that are not valid in a build metadata
+// identifier and empty parts are dropped.
+//
+// Build metadata is ignored when versions are compared, so recording a vendor's
+// build/revision this way keeps rebuilds of the same Java version distinct
+// without changing how dependencies sort.
+func withBuildMetadata(version string, components ...string) string {
+	var identifiers []string
+	for _, component := range components {
+		for _, identifier := range buildMetadataSeparators.Split(component, -1) {
+			if identifier != "" {
+				identifiers = append(identifiers, normalizeBuildIdentifier(identifier))
+			}
+		}
 	}
-	return version
+
+	if len(identifiers) == 0 {
+		return version
+	}
+
+	return version + "+" + strings.Join(identifiers, ".")
+}
+
+// normalizeBuildIdentifier strips leading zeroes from purely numeric build
+// components, so that Corretto's "09" is recorded as "9".
+func normalizeBuildIdentifier(identifier string) string {
+	for _, r := range identifier {
+		if r < '0' || r > '9' {
+			return identifier
+		}
+	}
+
+	trimmed := strings.TrimLeft(identifier, "0")
+	if trimmed == "" {
+		return "0"
+	}
+
+	return trimmed
+}
+
+// vendorVersionToSemver converts a version as published by a vendor into a
+// semver compliant version. The major.minor.patch core is kept and anything the
+// vendor appends beyond it, either additional numeric components or a trailing
+// "+build", is retained as build metadata.
+//
+//	21.0.13.0.11 -> 21.0.13+0.11
+//	25.4.4.1.1   -> 25.4.4+1.1
+//	17.0.21+9    -> 17.0.21+9
+func vendorVersionToSemver(rawVersion string) string {
+	core, build, _ := strings.Cut(rawVersion, "+")
+
+	parts := strings.Split(core, ".")
+	if len(parts) > 3 {
+		core = strings.Join(parts[:3], ".")
+		parts = parts[3:]
+	} else {
+		parts = nil
+	}
+
+	return withBuildMetadata(core, append(parts, build)...)
 }
