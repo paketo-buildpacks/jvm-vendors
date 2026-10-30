@@ -2413,11 +2413,6 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^27"
-    id = "native-image-svm-oracle"
-    patches = 1
-
-  [[metadata.dependency-constraints]]
     constraint = "^8"
     id = "jdk-microsoft-openjdk"
     patches = 1

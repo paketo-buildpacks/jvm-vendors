@@ -68,7 +68,10 @@ func generateSapMachine(id string, constraint cargo.ConfigMetadataDependencyCons
 
 		assetURL := findSapMachineAsset(release.Assets, imageType, archSuffix)
 		if assetURL == "" {
-			fmt.Printf("Warning: no SapMachine asset found for %s %s %s\n", id, sapVersion, pt.target)
+			// SapMachine does not publish every platform for every release (e.g.
+			// there are no linux-arm64 archives for Java 17), so this is expected
+			// rather than a failure.
+			fmt.Printf("  Skipping %s %s: no SapMachine archive published for this platform\n", id, pt.target)
 			continue
 		}
 

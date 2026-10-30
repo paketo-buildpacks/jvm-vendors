@@ -18,8 +18,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 )
+
+// githubToken is optional. Setting GITHUB_TOKEN raises the GitHub API rate limit
+// from 60 requests per hour to 5,000, which the retrieval can otherwise exceed.
+var githubToken = os.Getenv("GITHUB_TOKEN")
+
+func githubGet(url string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if githubToken != "" {
+		req.Header.Set("Authorization", "Bearer "+githubToken)
+	}
+
+	return httpClient.Do(req)
+}
 
 // GitHubAsset represents a release asset from the GitHub API
 type GitHubAsset struct {
@@ -39,7 +57,7 @@ type GitHubRelease struct {
 func fetchLatestRelease(org, repo string) (*GitHubRelease, error) {
 	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", org, repo)
 
-	resp, err := httpClient.Get(url)
+	resp, err := githubGet(url)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get %s: %w", url, err)
 	}
@@ -60,7 +78,7 @@ func fetchLatestRelease(org, repo string) (*GitHubRelease, error) {
 func fetchLatestReleaseMatching(org, repo string, tagPrefixes []string) (*GitHubRelease, error) {
 	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases?per_page=100", org, repo)
 
-	resp, err := httpClient.Get(url)
+	resp, err := githubGet(url)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get %s: %w", url, err)
 	}

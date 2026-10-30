@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/paketo-buildpacks/packit/v2/cargo"
 )
 
 func TestUnitVendorVersionToSemver(t *testing.T) {
@@ -162,6 +163,60 @@ func TestUnitDragonwellVersion(t *testing.T) {
 	}
 }
 
+func TestUnitNormalizeFoojayArch(t *testing.T) {
+	for _, tc := range []struct {
+		in     string
+		want   string
+		wantOK bool
+	}{
+		{in: "x64", want: "amd64", wantOK: true},
+		{in: "amd64", want: "amd64", wantOK: true},
+		{in: "aarch64", want: "arm64", wantOK: true},
+		{in: "arm64", want: "arm64", wantOK: true},
+		{in: "ppc64le", wantOK: false},
+		{in: "", wantOK: false},
+	} {
+		got, ok := normalizeFoojayArch(tc.in)
+		if ok != tc.wantOK || got != tc.want {
+			t.Errorf("normalizeFoojayArch(%q) = %q/%v, want %q/%v", tc.in, got, ok, tc.want, tc.wantOK)
+		}
+	}
+}
+
+func TestUnitNewerFoojayPackage(t *testing.T) {
+	newer := FoojayPackage{JavaVersion: "25.0.5"}
+	older := FoojayPackage{JavaVersion: "25.0.4.1"}
+
+	if !newerFoojayPackage(newer, older) {
+		t.Error("expected 25.0.5 to be newer than 25.0.4.1")
+	}
+	if newerFoojayPackage(older, newer) {
+		t.Error("expected 25.0.4.1 not to be newer than 25.0.5")
+	}
+}
+
+func TestUnitFindAzulPackage(t *testing.T) {
+	packages := []AzulPackage{
+		{Name: "zulu21.54.109-ca-jdk21.0.13.0.3-linux.x86_64.rpm"},
+		{Name: "zulu21.54.109-ca-jdk21.0.13.0.3-linux_x64.zip"},
+		{Name: "zulu21.54.109-ca-jre21.0.13.0.3-linux_x64.tar.gz"},
+		{Name: "zulu21.54.109-ca-jdk21.0.13.0.3-linux_musl_x64.tar.gz"},
+		{Name: "zulu21.54.109-ca-jdk21.0.13.0.3-linux_x64.tar.gz"},
+	}
+
+	pkg, ok := findAzulPackage(packages, "jdk")
+	if !ok {
+		t.Fatal("expected to find a jdk tar.gz package")
+	}
+	if pkg.Name != "zulu21.54.109-ca-jdk21.0.13.0.3-linux_x64.tar.gz" {
+		t.Errorf("findAzulPackage returned %q", pkg.Name)
+	}
+
+	if _, ok := findAzulPackage(packages, "jre"); !ok {
+		t.Error("expected to find a jre tar.gz package")
+	}
+}
+
 func TestUnitParseTarget(t *testing.T) {
 	for _, tc := range []struct {
 		target   string
@@ -192,6 +247,36 @@ func TestUnitParseTarget(t *testing.T) {
 				t.Errorf("parseTarget(%q) = %q/%q, want %q/%q", tc.target, os, arch, tc.wantOS, tc.wantArch)
 			}
 		})
+	}
+}
+
+func TestUnitDependencyFromExisting(t *testing.T) {
+	existing := &cargo.ConfigMetadataDependency{
+		ID:             "jdk-test",
+		Name:           "Test JDK",
+		Version:        "21.0.13",
+		URI:            "https://example.com/jdk.tgz",
+		Checksum:       "abc123",
+		Source:         "https://example.com/src.tgz",
+		SourceChecksum: "def456",
+		Stacks:         []string{"*"},
+		CPE:            "cpe-notation",
+		PURL:           "some-purl",
+	}
+
+	dep := dependencyFromExisting(existing, "21.0.13+1", "linux", "amd64")
+
+	if dep.SHA256 != "abc123" {
+		t.Errorf("checksum = %q, want %q", dep.SHA256, "abc123")
+	}
+	if dep.SourceSHA256 != "def456" {
+		t.Errorf("source checksum = %q, want %q", dep.SourceSHA256, "def456")
+	}
+	if dep.Version != "21.0.13+1" {
+		t.Errorf("version = %q, want %q", dep.Version, "21.0.13+1")
+	}
+	if dep.Target != "linux-amd64" {
+		t.Errorf("target = %q, want %q", dep.Target, "linux-amd64")
 	}
 }
 

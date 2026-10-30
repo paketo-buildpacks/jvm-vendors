@@ -106,9 +106,14 @@ func getSourceChecksum(sourceURL string, existing []cargo.ConfigMetadataDependen
 	}
 
 	for _, dep := range existing {
-		if dep.Source == sourceURL && dep.SourceSHA256 != "" {
-			sourceChecksumCache[sourceURL] = dep.SourceSHA256
-			return dep.SourceSHA256
+		sourceChecksum := dep.SourceChecksum
+		if sourceChecksum == "" {
+			sourceChecksum = dep.SourceSHA256
+		}
+
+		if dep.Source == sourceURL && sourceChecksum != "" {
+			sourceChecksumCache[sourceURL] = sourceChecksum
+			return sourceChecksum
 		}
 	}
 
