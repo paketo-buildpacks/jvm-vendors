@@ -59,6 +59,18 @@ function unit::run() {
       util::print::error "** GO Test Failed **"
     fi
   popd > /dev/null
+
+  util::print::title "Run Dependency Retrieval Unit Tests"
+
+  retrievaltestout=$(mktemp)
+  pushd "${BUILDPACKDIR}/dependency/retrieval" > /dev/null
+    if go test ./... -v ${GO_TEST_PARAMS} -run Unit | tee "${retrievaltestout}"; then
+      util::tools::tests::checkfocus "${retrievaltestout}"
+      util::print::success "** GO Test Succeeded **"
+    else
+      util::print::error "** GO Test Failed **"
+    fi
+  popd > /dev/null
 }
 
 main "${@:-}"

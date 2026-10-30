@@ -37,7 +37,7 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		return nil, fmt.Errorf("failed to fetch Oracle version for Java %d: %w", majorVersion, err)
 	}
 
-	version := truncateToSemver(rawVersion)
+	version := vendorVersionToSemver(rawVersion)
 
 	var dependencies []Dependency
 
@@ -67,11 +67,10 @@ func generateOracle(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		}
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
-			existingDep.Version = version
 			existingDep.CPE = generateOracleCPE(rawVersion)
 			existingDep.PURL = fmt.Sprintf("pkg:generic/%s@%s?arch=%s", purlName, rawVersion, pt.arch)
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			d := dependencyFromExisting(existingDep, version, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}
@@ -141,5 +140,5 @@ func fetchOracleVersion(majorVersion int) (string, error) {
 		return "", fmt.Errorf("unable to find version for Java %d on Oracle downloads page", majorVersion)
 	}
 
-	return truncateToSemver(strings.TrimSpace(matches[1])), nil
+	return vendorVersionToSemver(strings.TrimSpace(matches[1])), nil
 }

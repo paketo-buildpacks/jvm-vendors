@@ -48,7 +48,7 @@ func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstr
 	}
 
 	correttoVersion := release.TagName
-	javaVersion := correttoVersionToJavaVersion(correttoVersion, majorVersion)
+	javaVersion := correttoVersionToSemver(correttoVersion, majorVersion)
 
 	sourceURL := fmt.Sprintf(
 		"https://github.com/corretto/%s/archive/refs/tags/%s.tar.gz",
@@ -73,7 +73,7 @@ func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstr
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, javaVersion, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			d := dependencyFromExisting(existingDep, javaVersion, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}
@@ -115,16 +115,28 @@ func generateCorretto(id string, constraint cargo.ConfigMetadataDependencyConstr
 	return dependencies, nil
 }
 
-func correttoVersionToJavaVersion(correttoVersion string, majorVersion int) string {
+// correttoVersionToSemver converts a Corretto release tag into a semver version,
+// keeping the Corretto build/revision as build metadata. Corretto publishes
+// several builds under the same Java version, so dropping the trailing
+// components makes them indistinguishable.
+//
+//	21.0.13.0.11 -> 21.0.13+0.11
+//	8.512.09.1   -> 8.0.512+9.1
+func correttoVersionToSemver(correttoVersion string, majorVersion int) string {
 	parts := strings.Split(correttoVersion, ".")
+
 	if majorVersion == 8 {
-		if len(parts) >= 2 {
-			return fmt.Sprintf("8.0.%s", parts[1])
+		if len(parts) >= 3 {
+			return withBuildMetadata(fmt.Sprintf("8.0.%s", parts[1]), parts[2:]...)
 		}
 	} else {
 		if len(parts) >= 3 {
-			return fmt.Sprintf("%s.%s.%s", parts[0], parts[1], parts[2])
+			return withBuildMetadata(
+				fmt.Sprintf("%s.%s.%s", parts[0], parts[1], parts[2]),
+				parts[3:]...,
+			)
 		}
 	}
+
 	return correttoVersion
 }

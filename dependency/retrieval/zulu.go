@@ -61,7 +61,7 @@ func generateZulu(id string, constraint cargo.ConfigMetadataDependencyConstraint
 			azulArch := toAzulArch(pt.arch)
 
 			apiURL := fmt.Sprintf(
-				"https://api.azul.com/metadata/v1/zulu/packages/?java_version=%d&arch=%s&os=linux&java_package_type=%s&latest=true&release_status=ga&availability_status=CA&certifications=tck&page=1&page_size=1",
+				"https://api.azul.com/metadata/v1/zulu/packages/?java_version=%d&arch=%s&os=linux&java_package_type=%s&latest=true&release_status=ga&availability_status=CA&certifications=tck&page=1&page_size=100",
 				majorVersion,
 				azulArch,
 				imageType,
@@ -74,12 +74,31 @@ func generateZulu(id string, constraint cargo.ConfigMetadataDependencyConstraint
 				return
 			}
 
-			if len(packages) == 0 {
+			// the API returns every archive format, so select the tar.gz rather
+			// than assuming the first result is usable
+			pkg, ok := findAzulPackage(packages, imageType)
+			if !ok {
+				fmt.Printf("Warning: no Azul Zulu archive found for %s %s\n", id, pt.target)
 				ch <- nil
 				return
 			}
 
-			pkg := packages[0]
+			// the package list omits sha256_hash, so fetch the package details
+			if pkg.SHA256Hash == "" && pkg.PackageUUID != "" {
+				details, err := fetchAzulPackage(fmt.Sprintf("https://api.azul.com/metadata/v1/zulu/packages/%s", pkg.PackageUUID))
+				if err != nil {
+					fmt.Printf("Warning: failed to fetch Azul package details for %s %s: %v\n", id, pt.target, err)
+					ch <- nil
+					return
+				}
+				pkg = details
+			}
+
+			if pkg.SHA256Hash == "" {
+				fmt.Printf("Warning: no sha256 checksum published for Azul Zulu %s %s\n", id, pt.target)
+				ch <- nil
+				return
+			}
 
 			extractedVersion := extractAzulVersion(pkg.JavaVersion)
 			if extractedVersion == "" {
@@ -87,9 +106,16 @@ func generateZulu(id string, constraint cargo.ConfigMetadataDependencyConstraint
 				return
 			}
 
+			// Zulu republishes a Java version with a new OpenJDK build number, so
+			// keep it as build metadata rather than dropping it.
+			version := extractedVersion
+			if pkg.OpenJDKBuildNumber > 0 {
+				version = withBuildMetadata(extractedVersion, fmt.Sprintf("%d", pkg.OpenJDKBuildNumber))
+			}
+
 			if existingDep := findExistingDependency(existing, id, pkg.DownloadURL); existingDep != nil {
-				fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
-				d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+				fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+				d := dependencyFromExisting(existingDep, version, pt.os, pt.arch)
 				ch <- &d
 				return
 			}
@@ -101,7 +127,7 @@ func generateZulu(id string, constraint cargo.ConfigMetadataDependencyConstraint
 			dep := cargo.ConfigMetadataDependency{
 				ID:       id,
 				Name:     "Azul Zulu " + strings.ToUpper(imageType),
-				Version:  extractedVersion,
+				Version:  version,
 				URI:      pkg.DownloadURL,
 				SHA256:   pkg.SHA256Hash,
 				Stacks:   pt.stacks,
@@ -144,6 +170,42 @@ func fetchAzulPackages(url string) ([]AzulPackage, error) {
 	}
 
 	return packages, nil
+}
+
+func fetchAzulPackage(url string) (AzulPackage, error) {
+	resp, err := httpClient.Get(url)
+	if err != nil {
+		return AzulPackage{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return AzulPackage{}, fmt.Errorf("Azul API returned status %d", resp.StatusCode)
+	}
+
+	var pkg AzulPackage
+	if err := json.NewDecoder(resp.Body).Decode(&pkg); err != nil {
+		return AzulPackage{}, err
+	}
+
+	return pkg, nil
+}
+
+func findAzulPackage(packages []AzulPackage, imageType string) (AzulPackage, bool) {
+	for _, pkg := range packages {
+		if !strings.HasSuffix(pkg.Name, ".tar.gz") {
+			continue
+		}
+		if strings.Contains(pkg.Name, "musl") {
+			continue
+		}
+		if !strings.Contains(pkg.Name, "-"+imageType) {
+			continue
+		}
+		return pkg, true
+	}
+
+	return AzulPackage{}, false
 }
 
 func extractAzulVersion(javaVersion []int) string {
