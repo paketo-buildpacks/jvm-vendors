@@ -24,25 +24,28 @@ import (
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 )
 
+// AdoptiumBinary represents a single download in an Adoptium release
+type AdoptiumBinary struct {
+	Architecture string `json:"architecture"`
+	HeapSize     string `json:"heap_size"`
+	ImageType    string `json:"image_type"`
+	JVMImpl      string `json:"jvm_impl"`
+	OS           string `json:"os"`
+	Package      struct {
+		Checksum string `json:"checksum"`
+		Link     string `json:"link"`
+		Name     string `json:"name"`
+		Size     int    `json:"size"`
+	} `json:"package"`
+	ProjectType string `json:"project_type"`
+	SCMRef      string `json:"scm_ref"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
 // AdoptiumAsset represents the Adoptium API response
 type AdoptiumAsset struct {
-	Binaries []struct {
-		Architecture string `json:"architecture"`
-		HeapSize     string `json:"heap_size"`
-		ImageType    string `json:"image_type"`
-		JVMImpl      string `json:"jvm_impl"`
-		OS           string `json:"os"`
-		Package      struct {
-			Checksum string `json:"checksum"`
-			Link     string `json:"link"`
-			Name     string `json:"name"`
-			Size     int    `json:"size"`
-		} `json:"package"`
-		ProjectType string `json:"project_type"`
-		SCMRef      string `json:"scm_ref"`
-		UpdatedAt   string `json:"updated_at"`
-	} `json:"binaries"`
-	ReleaseName string `json:"release_name"`
+	Binaries    []AdoptiumBinary `json:"binaries"`
+	ReleaseName string           `json:"release_name"`
 	VersionData struct {
 		Major          int    `json:"major"`
 		Minor          int    `json:"minor"`
@@ -102,29 +105,37 @@ func generateAdoptium(id string, constraint cargo.ConfigMetadataDependencyConstr
 				return
 			}
 
-			binary := assets[0].Binaries[0]
+			// The API returns every binary for a release regardless of the
+			// image-type filter, so pick the one matching the image type and
+			// architecture being generated rather than assuming the first.
+			binary, ok := findAdoptiumBinary(assets[0].Binaries, imageType, pt.os, adoptiumArch)
+			if !ok {
+				fmt.Printf("Warning: no Adoptium %s binary found for %s %s\n", imageType, id, pt.target)
+				ch <- nil
+				return
+			}
 
-rawVersion := assets[0].VersionData.Semver
-		extractedVersion := adoptiumVersionToSemver(rawVersion)
-		if extractedVersion == "" {
-			extractedVersion = constraint.Constraint
-		}
+			rawVersion := assets[0].VersionData.Semver
+			extractedVersion := adoptiumVersionToSemver(rawVersion)
+			if extractedVersion == "" {
+				extractedVersion = constraint.Constraint
+			}
 
-		if existingDep := findExistingDependency(existing, id, binary.Package.Link); existingDep != nil {
-			fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
-			ch <- &d
-			return
-		}
+			if existingDep := findExistingDependency(existing, id, binary.Package.Link); existingDep != nil {
+				fmt.Printf("  Using cached metadata for %s %s %s\n", id, extractedVersion, pt.target)
+				d := dependencyFromExisting(existingDep, extractedVersion, pt.os, pt.arch)
+				ch <- &d
+				return
+			}
 
-		purl := fmt.Sprintf("pkg:generic/adoptium-%s@%s?arch=%s", imageType, rawVersion, pt.arch)
+			purl := fmt.Sprintf("pkg:generic/adoptium-%s@%s?arch=%s", imageType, rawVersion, pt.arch)
 
-		cpe := generateOracleCPE(rawVersion)
+			cpe := generateOracleCPE(rawVersion)
 
-		dep := cargo.ConfigMetadataDependency{
-			ID:           id,
-			Name:         "Adoptium " + strings.ToUpper(imageType),
-			Version:      extractedVersion,
+			dep := cargo.ConfigMetadataDependency{
+				ID:           id,
+				Name:         "Adoptium " + strings.ToUpper(imageType),
+				Version:      extractedVersion,
 				URI:          binary.Package.Link,
 				SHA256:       binary.Package.Checksum,
 				Source:       assets[0].Source.Link,
@@ -155,6 +166,16 @@ rawVersion := assets[0].VersionData.Semver
 	}
 
 	return dependencies, nil
+}
+
+func findAdoptiumBinary(binaries []AdoptiumBinary, imageType, os, arch string) (AdoptiumBinary, bool) {
+	for _, binary := range binaries {
+		if binary.ImageType == imageType && binary.OS == os && binary.Architecture == arch {
+			return binary, true
+		}
+	}
+
+	return AdoptiumBinary{}, false
 }
 
 func fetchAdoptiumAssets(url string) ([]AdoptiumAsset, error) {

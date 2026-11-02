@@ -14,7 +14,7 @@ api = "0.10"
     uri = "https://github.com/paketo-buildpacks/jvm-vendors/blob/main/LICENSE"
 
 [metadata]
-  include-files = ["LICENSE", "NOTICE", "README.md", "linux/amd64/bin/build", "linux/amd64/bin/detect", "linux/amd64/bin/main", "linux/amd64/bin/helper", "linux/arm64/bin/build", "linux/arm64/bin/detect", "linux/arm64/bin/main", "linux/arm64/bin/helper", "buildpack.toml"]
+  include-files = ["LICENSE", "NOTICE", "README.md", "linux/amd64/bin/build", "linux/amd64/bin/detect", "linux/amd64/bin/main", "linux/amd64/bin/helper", "linux/arm64/bin/build", "linux/arm64/bin/detect", "linux/arm64/bin/main", "linux/arm64/bin/helper", "linux/ppc64le/bin/build", "linux/ppc64le/bin/detect", "linux/ppc64le/bin/main", "linux/ppc64le/bin/helper", "buildpack.toml"]
   pre-package = "scripts/build.sh"
 
   [[metadata.configurations]]
@@ -2413,11 +2413,6 @@ api = "0.10"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "^27"
-    id = "native-image-svm-oracle"
-    patches = 1
-
-  [[metadata.dependency-constraints]]
     constraint = "^8"
     id = "jdk-microsoft-openjdk"
     patches = 1
@@ -2491,4 +2486,8 @@ api = "0.10"
 
 [[targets]]
   arch = "arm64"
+  os = "linux"
+
+[[targets]]
+  arch = "ppc64le"
   os = "linux"
