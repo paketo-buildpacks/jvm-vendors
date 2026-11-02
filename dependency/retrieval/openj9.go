@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/paketo-buildpacks/packit/v2/cargo"
@@ -56,6 +57,13 @@ func generateOpenJ9(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		return nil, fmt.Errorf("unable to extract Java version from release %s", release.TagName)
 	}
 
+	// Keep the Semeru/OpenJ9 build (e.g. 21.0.12.15 -> 21.0.12+15) so that a
+	// rebuild of the same Java version is not treated as a duplicate.
+	version := javaVersion
+	if fullVersion := extractSemeruFullVersion(release, majorVersion); fullVersion != "" {
+		version = normalizeSemeruVersion(fullVersion)
+	}
+
 	sourceURL := release.TarballURL
 	sourceChecksum := getSourceChecksum(sourceURL, existing)
 
@@ -69,20 +77,20 @@ func generateOpenJ9(id string, constraint cargo.ConfigMetadataDependencyConstrai
 
 		assetURL := findSemeruAsset(release.Assets, imageType, archPattern)
 		if assetURL == "" {
-			fmt.Printf("Warning: no Semeru asset found for %s %s %s\n", id, javaVersion, pt.target)
+			fmt.Printf("Warning: no Semeru asset found for %s %s %s\n", id, version, pt.target)
 			continue
 		}
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
-			fmt.Printf("  Using cached metadata for %s %s %s\n", id, javaVersion, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+			d := dependencyFromExisting(existingDep, version, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}
 
 		checksum, err := downloadAndCalculateSHA256(assetURL)
 		if err != nil {
-			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, javaVersion, pt.target, err)
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
 			continue
 		}
 
@@ -95,7 +103,7 @@ func generateOpenJ9(id string, constraint cargo.ConfigMetadataDependencyConstrai
 		dep := cargo.ConfigMetadataDependency{
 			ID:           id,
 			Name:         name,
-			Version:      javaVersion,
+			Version:      version,
 			URI:          assetURL,
 			SHA256:       checksum,
 			Source:       sourceURL,
@@ -208,4 +216,66 @@ func extractSemeruJavaVersion(tagName string, majorVersion int) string {
 		}
 	}
 	return ""
+}
+
+// semeruVersionPattern matches the version tokens used in Semeru release tags,
+// asset names, and the older 8u-based naming, e.g. 21.0.12.15 or 8u472b08.
+var semeruVersionPattern = regexp.MustCompile(`\d+\.\d+\.\d+(?:\.\d+)*|\d+u\d+(?:b\d+)?`)
+
+// extractSemeruFullVersion returns the complete version, including the
+// Semeru/OpenJ9 build, from the release's JDK asset name or tag.
+func extractSemeruFullVersion(release *GitHubRelease, majorVersion int) string {
+	for _, asset := range release.Assets {
+		if !strings.Contains(asset.Name, "jdk") || !strings.HasSuffix(asset.Name, ".tar.gz") {
+			continue
+		}
+		for _, part := range strings.Split(strings.TrimSuffix(asset.Name, ".tar.gz"), "_") {
+			if version := semeruVersionForMajor(part, majorVersion); version != "" {
+				return version
+			}
+		}
+	}
+
+	for _, part := range strings.Split(release.TagName, "_") {
+		if version := semeruVersionForMajor(part, majorVersion); version != "" {
+			return version
+		}
+	}
+
+	return ""
+}
+
+func semeruVersionForMajor(value string, majorVersion int) string {
+	for _, candidate := range semeruVersionPattern.FindAllString(value, -1) {
+		if majorVersion == 8 {
+			if java8Pattern.MatchString(candidate) || strings.HasPrefix(candidate, "8.") {
+				return candidate
+			}
+			continue
+		}
+
+		if strings.HasPrefix(candidate, fmt.Sprintf("%d.", majorVersion)) {
+			return candidate
+		}
+	}
+
+	return ""
+}
+
+// normalizeSemeruVersion converts a Semeru version into a semver version,
+// keeping the Semeru/OpenJ9 build as build metadata.
+//
+//	21.0.12.15 -> 21.0.12+15
+//	8.0.504.5  -> 8.0.504+5
+//	8u472b08   -> 8.0.472+8
+func normalizeSemeruVersion(rawVersion string) string {
+	if matches := java8Pattern.FindStringSubmatch(rawVersion); matches != nil {
+		build := ""
+		if _, after, ok := strings.Cut(rawVersion, "b"); ok {
+			build = after
+		}
+		return withBuildMetadata(fmt.Sprintf("8.0.%s", matches[2]), build)
+	}
+
+	return vendorVersionToSemver(rawVersion)
 }

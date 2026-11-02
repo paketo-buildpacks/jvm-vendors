@@ -22,6 +22,7 @@ import (
 	"io"
 	"net/http"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -35,6 +36,7 @@ type BellsoftRelease struct {
 	InterimVersion int    `json:"interimVersion"`
 	UpdateVersion  int    `json:"updateVersion"`
 	BuildVersion   int    `json:"buildVersion"`
+	Version        string `json:"version"`
 	DownloadURL    string `json:"downloadUrl"`
 	Architecture   string `json:"architecture"`
 	Components     []struct {
@@ -42,6 +44,22 @@ type BellsoftRelease struct {
 		Component string `json:"component"`
 	}
 }
+
+// bellsoftArchitectures maps the architecture names used by the BellSoft API to
+// the architecture names used by buildpacks.
+var bellsoftArchitectures = map[string]string{
+	"arm":   "arm64",
+	"x86":   "amd64",
+	"ppc":   "ppc64le",
+	"riscv": "riscv64",
+	"s390x": "s390x",
+}
+
+// bellsoftPlatforms are the architectures this buildpack ships BellSoft Liberica
+// for. BellSoft also publishes riscv64 and s390x builds, but those are not
+// supported by the buildpack, so they are skipped rather than being reported
+// under the wrong architecture.
+var bellsoftPlatforms = []string{"amd64", "arm64", "ppc64le"}
 
 func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstraint, existing []cargo.ConfigMetadataDependency) ([]Dependency, error) {
 	bundleType := "jdk"
@@ -129,12 +147,13 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 
 	var dependencies []Dependency
 	for _, release := range releases {
-		arch := release.Architecture
-		switch arch {
-		case "arm":
-			arch = "arm64"
-		case "x86":
-			arch = "amd64"
+		arch, ok := bellsoftArchitectures[release.Architecture]
+		if !ok {
+			fmt.Printf("Warning: unknown BellSoft architecture %q for %s\n", release.Architecture, id)
+			continue
+		}
+		if !slices.Contains(bellsoftPlatforms, arch) {
+			continue
 		}
 
 		pt := PlatformStackTarget{
@@ -145,18 +164,23 @@ func generateBellsoft(id string, constraint cargo.ConfigMetadataDependencyConstr
 		}
 
 		rawVersion := fmt.Sprintf("%d.%d.%d", release.FeatureVersion, release.InterimVersion, release.UpdateVersion)
-		version := truncateToSemver(rawVersion)
 
+		var version string
 		var fullVersion string
 		if product == "nik" {
 			version, fullVersion = determineBellsoftNIKVersion(release)
 		} else {
+			sourceVersion := release.Version
+			if sourceVersion == "" {
+				sourceVersion = rawVersion
+			}
+			version = normalizeLibericaVersion(sourceVersion)
 			fullVersion = rawVersion
 		}
 
 		if existingDep := findExistingDependency(existing, id, release.DownloadURL); existingDep != nil {
 			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			d := dependencyFromExisting(existingDep, version, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}
@@ -246,12 +270,7 @@ func determineBellsoftNIKVersion(r BellsoftRelease) (string, string) {
 		panic(err)
 	}
 
-	rawVersion := componentVersion
-	if v, err := normalizeVersion(componentVersion); err != nil {
-		panic(err)
-	} else {
-		return v, rawVersion
-	}
+	return normalizeLibericaVersion(componentVersion), componentVersion
 }
 
 func retrieveBellsoftComponentVersionFor(r BellsoftRelease, componentName string) (string, error) {
@@ -263,22 +282,23 @@ func retrieveBellsoftComponentVersionFor(r BellsoftRelease, componentName string
 	return "", fmt.Errorf("unable to find a component for: %s", componentName)
 }
 
-func normalizeVersion(version string) (string, error) {
-	version = strings.TrimPrefix(version, "jdk")
-	version = strings.TrimPrefix(version, "-")
+// normalizeLibericaVersion converts a BellSoft Liberica version into a semver
+// version, keeping the Liberica build as build metadata. Liberica republishes
+// the same Java version with a new build (e.g. 21.0.13+11 -> 21.0.13.0.3+5), so
+// dropping the build makes the two indistinguishable.
+//
+//	21.0.13.0.3+5 -> 21.0.13+0.3.5
+//	8u513+9       -> 8.0.513+9
+func normalizeLibericaVersion(rawVersion string) string {
+	rawVersion = strings.TrimPrefix(rawVersion, "jdk")
+	rawVersion = strings.TrimPrefix(rawVersion, "-")
 
-	if matches := java8Pattern.FindStringSubmatch(version); matches != nil {
-		return fmt.Sprintf("8.0.%s", matches[2]), nil
+	if matches := java8Pattern.FindStringSubmatch(rawVersion); matches != nil {
+		_, build, _ := strings.Cut(rawVersion, "+")
+		return withBuildMetadata(fmt.Sprintf("8.0.%s", matches[2]), build)
 	}
 
-	// drop the build number: "11.0.21+10" must not become "11.0.21-10", which
-	// semver reads as a prerelease and excludes from "^11" constraint matching,
-	// so the dependency never makes it into buildpack.toml
-	if i := strings.Index(version, "+"); i != -1 {
-		version = version[:i]
-	}
-
-	return truncateToSemver(version), nil
+	return vendorVersionToSemver(rawVersion)
 }
 
 var versionNumberPattern = regexp.MustCompile(`\d+`)

@@ -48,6 +48,10 @@ func generateDragonwell(id string, constraint cargo.ConfigMetadataDependencyCons
 
 	javaVersion := extractDragonwellJavaVersion(release.TagName, majorVersion)
 
+	// keep the Dragonwell build (e.g. 21.0.12.0.12+8 -> 21.0.12+0.12.8) so that
+	// a rebuild of the same Java version is not treated as a duplicate
+	version := dragonwellVersion(release.TagName, majorVersion, javaVersion)
+
 	sourceURL := release.TarballURL
 	sourceChecksum := getSourceChecksum(sourceURL, existing)
 
@@ -61,20 +65,20 @@ func generateDragonwell(id string, constraint cargo.ConfigMetadataDependencyCons
 
 		assetURL := findDragonwellAsset(release.Assets, archPattern)
 		if assetURL == "" {
-			fmt.Printf("Warning: no Dragonwell asset found for %s %s %s\n", id, javaVersion, pt.target)
+			fmt.Printf("Warning: no Dragonwell asset found for %s %s %s\n", id, version, pt.target)
 			continue
 		}
 
 		if existingDep := findExistingDependency(existing, id, assetURL); existingDep != nil {
-			fmt.Printf("  Using cached metadata for %s %s %s\n", id, javaVersion, pt.target)
-			d := dependencyFromExisting(existingDep, pt.os, pt.arch)
+			fmt.Printf("  Using cached metadata for %s %s %s\n", id, version, pt.target)
+			d := dependencyFromExisting(existingDep, version, pt.os, pt.arch)
 			dependencies = append(dependencies, d)
 			continue
 		}
 
 		checksum, err := downloadAndCalculateSHA256(assetURL)
 		if err != nil {
-			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, javaVersion, pt.target, err)
+			fmt.Printf("Warning: failed to calculate checksum for %s %s %s: %v\n", id, version, pt.target, err)
 			continue
 		}
 
@@ -87,7 +91,7 @@ func generateDragonwell(id string, constraint cargo.ConfigMetadataDependencyCons
 		dep := cargo.ConfigMetadataDependency{
 			ID:           id,
 			Name:         name,
-			Version:      javaVersion,
+			Version:      version,
 			URI:          assetURL,
 			SHA256:       checksum,
 			Source:       sourceURL,
@@ -136,4 +140,25 @@ func extractDragonwellJavaVersion(tagName string, majorVersion int) string {
 		}
 	}
 	return tagName
+}
+
+// dragonwellVersionPattern captures the Dragonwell release version, which sits
+// between the release edition and the Java version, e.g.
+// "dragonwell-standard-21.0.12.0.12+8_jdk-21.0.12-ga" -> "21.0.12.0.12+8".
+var dragonwellVersionPattern = regexp.MustCompile(`^dragonwell-[a-z]+-([^_]+)_jdk`)
+
+func dragonwellVersion(tagName string, majorVersion int, javaVersion string) string {
+	matches := dragonwellVersionPattern.FindStringSubmatch(tagName)
+	if len(matches) < 2 {
+		return javaVersion
+	}
+
+	// Dragonwell tracks Java 8 with a release line (e.g. 8.30.29) rather than a
+	// build number, so keep the Java version as the core and record the release
+	// line as build metadata: 8.30.29 + 8u502 -> 8.0.502+30.29
+	if majorVersion == 8 {
+		return withBuildMetadata(javaVersion, strings.TrimPrefix(matches[1], "8."))
+	}
+
+	return vendorVersionToSemver(matches[1])
 }
