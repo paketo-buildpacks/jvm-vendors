@@ -1,0 +1,22 @@
+{
+  "combined": "jvm-vendors",
+  "integration": true,
+  "libpak-tools": {
+    "command": "build-jvm-vendors",
+    "artifact-flag": "vendors",
+    "include-all-flag": "include-all-vendors"
+  },
+  "buildpacks": [
+    { "name": "jvm-vendors", "image": "jvm-vendors-dev" },
+    { "name": "adoptium", "image": "adoptium-dev" },
+    { "name": "alibaba-dragonwell", "image": "alibaba-dragonwell-dev" },
+    { "name": "amazon-corretto", "image": "amazon-corretto-dev" },
+    { "name": "azul-zulu", "image": "azul-zulu-dev" },
+    { "name": "bellsoft-liberica", "image": "bellsoft-liberica-dev" },
+    { "name": "eclipse-openj9", "image": "eclipse-openj9-dev" },
+    { "name": "graalvm", "image": "graalvm-dev" },
+    { "name": "microsoft-openjdk", "image": "microsoft-openjdk-dev" },
+    { "name": "oracle", "image": "oracle-dev" },
+    { "name": "sap-machine", "image": "sap-machine-dev" }
+  ]
+}
