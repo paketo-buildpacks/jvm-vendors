@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/buildpacks/libcnb/v2 v2.1.0
 	github.com/heroku/color v0.0.6
-	github.com/magiconair/properties v1.18.12
+	github.com/magiconair/properties v1.18.13
 	github.com/mattn/go-shellwords v1.0.16
 	github.com/miekg/dns v1.1.73
 	github.com/onsi/gomega v1.44.0
