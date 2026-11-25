@@ -154,6 +154,17 @@ api = "0.10"
     version = "8.0.514+1"
 
   [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "41e3284f630ba8d3543e7f7395ae433406bedff926c23ce70a97373aa8930f92"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update514:*:*:*:*:*:*"
+    id = "jdk-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@8.0.514+1?arch=arm64"
+    source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk-sources_8u514b01.tar.gz"
+    uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk_aarch64_linux_hotspot_8u514b01.tar.gz"
+    version = "8.0.514+1"
+
+  [[metadata.dependencies]]
     arch = "amd64"
     checksum = "3119b6dd17543e8e61fd0186f9325414bf2601270bf1edf8a314b9a51c5fb89d"
     cpe = "cpe:2.3:a:oracle:jdk:11.0.33:*:*:*:*:*:*:*"
@@ -272,6 +283,17 @@ api = "0.10"
     purl = "pkg:generic/adoptium-jre@8.0.514+1?arch=amd64"
     source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk-sources_8u514b01.tar.gz"
     uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jre_x64_linux_hotspot_8u514b01.tar.gz"
+    version = "8.0.514+1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "5669548cd06075421e2c1f8c9e9430f4f5c25179f1a72ed3bb25358f8070ad74"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update514:*:*:*:*:*:*"
+    id = "jre-adoptium"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jre@8.0.514+1?arch=arm64"
+    source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk-sources_8u514b01.tar.gz"
+    uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jre_aarch64_linux_hotspot_8u514b01.tar.gz"
     version = "8.0.514+1"
 
   [[metadata.dependencies]]
@@ -1957,6 +1979,17 @@ api = "0.10"
     purl = "pkg:generic/adoptium-jdk@8.0.514+1?arch=amd64"
     source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk-sources_8u514b01.tar.gz"
     uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk_x64_linux_hotspot_8u514b01.tar.gz"
+    version = "8.0.514+1"
+
+  [[metadata.dependencies]]
+    arch = "arm64"
+    checksum = "41e3284f630ba8d3543e7f7395ae433406bedff926c23ce70a97373aa8930f92"
+    cpe = "cpe:2.3:a:oracle:jdk:1.8.0:update514:*:*:*:*:*:*"
+    id = "jdk-microsoft-openjdk"
+    os = "linux"
+    purl = "pkg:generic/adoptium-jdk@8.0.514+1?arch=arm64"
+    source = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk-sources_8u514b01.tar.gz"
+    uri = "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk_aarch64_linux_hotspot_8u514b01.tar.gz"
     version = "8.0.514+1"
 
   [[metadata.dependencies]]
