@@ -8,7 +8,7 @@ require (
 	github.com/buildpacks/libcnb/v2 v2.1.0
 	github.com/heroku/color v0.0.6
 	github.com/magiconair/properties v1.18.13
-	github.com/mattn/go-shellwords v1.0.16
+	github.com/mattn/go-shellwords v1.0.17
 	github.com/miekg/dns v1.1.73
 	github.com/onsi/gomega v1.44.0
 	github.com/paketo-buildpacks/libpak/v2 v2.2.0
@@ -32,6 +32,6 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/crypto v0.59.0 // indirect
-	golang.org/x/net v0.62.0 // indirect
+	golang.org/x/net v0.63.0 // indirect
 	golang.org/x/text v0.44.0 // indirect
 )
